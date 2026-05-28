@@ -1,0 +1,167 @@
+{
+  "perfis_ace": [],
+  "pontos_estrategicos": [
+    {
+      "id": 18,
+      "municipio": null,
+      "ace_responsavel": null,
+      "latitude": null,
+      "longitude": null,
+      "data": "2026-05-26",
+      "hora": "13:44",
+      "observacoes": null,
+      "status": "Atrasado",
+      "foto_path": null,
+      "tipo": "Oficina",
+      "origem": "app_flutter_offline",
+      "sincronizado_em": "2026-05-26T16:44:28.860Z",
+      "created_at": "2026-05-26T16:44:28.860Z",
+      "updated_at": "2026-05-26T16:44:28.860Z",
+      "excluido": false,
+      "nome": "bg",
+      "endereco": "gvg",
+      "ultima_visita": null,
+      "ultimaVisita": null
+    }
+  ],
+  "visitas_pe": [
+    {
+      "id": 31,
+      "municipio": "São José Do Sul",
+      "ace_responsavel": "Alex Junior Kich",
+      "latitude": -29.5364613,
+      "longitude": -51.4840938,
+      "data": "26/05/2026 13:44",
+      "hora": "13:44",
+      "observacoes": "",
+      "status": "Visitado",
+      "foto_path": "/data/user/0/com.example.controle_ace/databases/fotos_visitas_pe/visita_pe_1779813899117.jpg",
+      "tipo": "visitas-pe",
+      "origem": "app_flutter_offline",
+      "sincronizado_em": "2026-05-26T16:44:59.980Z",
+      "created_at": "2026-05-26T16:44:59.980Z",
+      "updated_at": "2026-05-26T16:44:59.980Z",
+      "excluido": false,
+      "pe_id": 18,
+      "data_visita": "26/05/2026 13:44",
+      "entrada_em": "26/05/2026 13:44",
+      "saida_em": "26/05/2026 13:44",
+      "agente": "Alex Junior Kich",
+      "situacao": "Visitado",
+      "foco_positivo": true,
+      "quantidade_tubitos": 5,
+      "entrada_latitude": -29.5364643,
+      "entrada_longitude": -51.4841099,
+      "saida_latitude": -29.5364613,
+      "saida_longitude": -51.4840938
+    }
+  ],
+  "visitas_domiciliares": [],
+  "bti": [],
+  "bti_pontos": [],
+  "ovitrampas": [],
+  "ovitrampa_checagens": [],
+  "coletas_larvarias": [],
+  "casos_dengue": [],
+  "esporotricose": [],
+  "quarteiroes": [],
+  "atividades_quarteirao": [],
+  "areas_prioritarias": [],
+  "lira_lia_visitas": [],
+  "exclusoes_log": [],
+  "alertas_emergencia": [],
+  "localidades": [],
+  "setores_operacionais": [],
+  "quarteiroes_operacionais": [],
+  "atribuicoes_setor": [],
+  "progresso_quarteirao": [],
+  "imoveis": [],
+  "moradores": [],
+  "tubitos": [
+    {
+      "id": "tubito_2a87eeec-1bc2-4bc0-b01d-84549e8d3c55",
+      "numero": 1,
+      "status": "reservado",
+      "municipio": "São José Do Sul",
+      "ace_responsavel": "Alex Junior Kich",
+      "reservado_em": "2026-05-26T16:44:59.850Z",
+      "origem": "servidor_local"
+    },
+    {
+      "id": "tubito_97765927-4b26-436a-b669-3d2a620f1194",
+      "numero": 2,
+      "status": "reservado",
+      "municipio": "São José Do Sul",
+      "ace_responsavel": "Alex Junior Kich",
+      "reservado_em": "2026-05-26T16:44:59.850Z",
+      "origem": "servidor_local"
+    },
+    {
+      "id": "tubito_33b09998-9e12-4d09-bf6d-51320a6b15f0",
+      "numero": 3,
+      "status": "reservado",
+      "municipio": "São José Do Sul",
+      "ace_responsavel": "Alex Junior Kich",
+      "reservado_em": "2026-05-26T16:44:59.850Z",
+      "origem": "servidor_local"
+    },
+    {
+      "id": "tubito_7eaca663-34c5-4d32-8508-09bd637c0d64",
+      "numero": 4,
+      "status": "reservado",
+      "municipio": "São José Do Sul",
+      "ace_responsavel": "Alex Junior Kich",
+      "reservado_em": "2026-05-26T16:44:59.850Z",
+      "origem": "servidor_local"
+    },
+    {
+      "id": "tubito_b142de45-c5bf-4485-a690-d324f1faa35b",
+      "numero": 5,
+      "status": "reservado",
+      "municipio": "São José Do Sul",
+      "ace_responsavel": "Alex Junior Kich",
+      "reservado_em": "2026-05-26T16:44:59.850Z",
+      "origem": "servidor_local"
+    }
+  ],
+  "focos": [],
+  "fotos": [],
+  "dispositivos": [],
+  "usuarios": [
+    {
+      "id": "admin-local",
+      "nome": "Administrador local",
+      "perfil": "administrador",
+      "status": "ativo",
+      "origem": "modo_local"
+    }
+  ],
+  "sync_logs": [
+    {
+      "id": "sync_2c984f19-5081-47a6-9e1d-5f64f2c80a6f",
+      "entidade": "visitas-pe",
+      "entity_id": 31,
+      "operacao": "receber",
+      "status": "synced",
+      "origem": "app_flutter_offline",
+      "erro": null,
+      "criado_em": "2026-05-26T16:44:59.980Z"
+    },
+    {
+      "id": "sync_ecd3c1b4-9379-4b0e-8d57-183a0f6047b9",
+      "entidade": "pes",
+      "entity_id": 18,
+      "operacao": "receber",
+      "status": "synced",
+      "origem": "app_flutter_offline",
+      "erro": null,
+      "criado_em": "2026-05-26T16:44:28.867Z"
+    }
+  ],
+  "conflitos": [],
+  "auditoria": [],
+  "meta": {
+    "criado_em": "2026-05-26T15:34:28.222Z",
+    "versao_schema": 1
+  }
+}

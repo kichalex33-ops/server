@@ -1,0 +1,167 @@
+{
+  "municipio": "Poço das Antas",
+  "motoristas": [
+    {
+      "id": "mot-1",
+      "nome": "João Motorista",
+      "telefone": "(54) 99999-1001",
+      "cnh": "12345678901",
+      "status": "ativo",
+      "criado_em": "2026-05-28T08:00:00.000Z"
+    },
+    {
+      "id": "mot-2",
+      "nome": "Maria Condutora",
+      "telefone": "(54) 99999-1002",
+      "cnh": "10987654321",
+      "status": "ativo",
+      "criado_em": "2026-05-28T08:00:00.000Z"
+    }
+  ],
+  "veiculos": [
+    {
+      "id": "vei-1",
+      "nome": "Ambulância 01",
+      "placa": "IZA-1A01",
+      "tipo": "ambulancia",
+      "status": "disponivel",
+      "criado_em": "2026-05-28T08:00:00.000Z"
+    },
+    {
+      "id": "vei-2",
+      "nome": "Van Saúde 02",
+      "placa": "IZA-2B02",
+      "tipo": "van",
+      "status": "disponivel",
+      "criado_em": "2026-05-28T08:00:00.000Z"
+    },
+    {
+      "id": "vei-3",
+      "nome": "Carro Administrativo 03",
+      "placa": "IZA-3C03",
+      "tipo": "administrativo",
+      "status": "disponivel",
+      "criado_em": "2026-05-28T08:00:00.000Z"
+    }
+  ],
+  "pacientes": [
+    {
+      "id": "pac-1",
+      "nome": "Maria L. Santos",
+      "destino": "cardiologia",
+      "tipo": "paciente",
+      "observacoes": "Consulta cardiológica",
+      "criado_em": "2026-05-28T08:00:00.000Z"
+    },
+    {
+      "id": "pac-2",
+      "nome": "João P. Oliveira",
+      "destino": "exame de imagem",
+      "tipo": "paciente",
+      "observacoes": "Tomografia agendada",
+      "criado_em": "2026-05-28T08:00:00.000Z"
+    },
+    {
+      "id": "pac-3",
+      "nome": "Ana R. Souza",
+      "destino": "acompanhante",
+      "tipo": "acompanhante",
+      "observacoes": "Acompanha Maria L. Santos",
+      "criado_em": "2026-05-28T08:00:00.000Z"
+    }
+  ],
+  "passageiros": [
+    {
+      "id": "pas-1",
+      "nome": "Maria L. Santos",
+      "destino": "cardiologia",
+      "tipo": "paciente",
+      "paciente_id": "pac-1",
+      "criado_em": "2026-05-28T08:00:00.000Z"
+    },
+    {
+      "id": "pas-2",
+      "nome": "João P. Oliveira",
+      "destino": "exame de imagem",
+      "tipo": "paciente",
+      "paciente_id": "pac-2",
+      "criado_em": "2026-05-28T08:00:00.000Z"
+    },
+    {
+      "id": "pas-3",
+      "nome": "Ana R. Souza",
+      "destino": "acompanhante",
+      "tipo": "acompanhante",
+      "paciente_id": "pac-3",
+      "criado_em": "2026-05-28T08:00:00.000Z"
+    }
+  ],
+  "viagens": [
+    {
+      "id": "via-1",
+      "origem": "UBS Centro",
+      "destino": "Hospital de referência",
+      "data": "2026-05-28",
+      "hora": "08:30",
+      "status": "agendada",
+      "motorista_id": "mot-1",
+      "veiculo_id": "vei-1",
+      "passageiro_ids": [
+        "pas-1",
+        "pas-3"
+      ],
+      "criado_em": "2026-05-28T08:00:00.000Z",
+      "atualizado_em": "2026-05-28T08:00:00.000Z"
+    },
+    {
+      "id": "via-2",
+      "origem": "Interior",
+      "destino": "Clínica de exames",
+      "data": "2026-05-28",
+      "hora": "10:00",
+      "status": "em_andamento",
+      "motorista_id": "mot-2",
+      "veiculo_id": "vei-2",
+      "passageiro_ids": [
+        "pas-2"
+      ],
+      "criado_em": "2026-05-28T08:00:00.000Z",
+      "atualizado_em": "2026-05-28T08:00:00.000Z"
+    },
+    {
+      "id": "via-3",
+      "origem": "Prefeitura",
+      "destino": "Regulação regional",
+      "data": "2026-05-28",
+      "hora": "14:00",
+      "status": "agendada",
+      "motorista_id": null,
+      "veiculo_id": null,
+      "passageiro_ids": [],
+      "criado_em": "2026-05-28T08:00:00.000Z",
+      "atualizado_em": "2026-05-28T08:00:00.000Z"
+    }
+  ],
+  "driver_events": [
+    {
+      "id": "evt_39b45bb5",
+      "tipo": "checkin",
+      "motorista_id": "mot-1",
+      "viagem_id": null,
+      "payload": {
+        "tipo": "checkin",
+        "motorista_id": "mot-1"
+      },
+      "recebido_em": "2026-05-28T17:20:58.937Z",
+      "origem": "app_motorista"
+    }
+  ],
+  "driver_locations": [],
+  "driver_trips": [],
+  "trip_status": [],
+  "sync_falhas": [],
+  "meta": {
+    "versao": 1,
+    "atualizado_em": "2026-05-28T17:20:58.938Z"
+  }
+}
