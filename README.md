@@ -21,9 +21,13 @@ Copie `.env.example` para `.env` quando precisar personalizar ambiente local.
 
 ```env
 PORT=3000
-NODE_ENV=development
+NODE_ENV=production
 API_TOKEN=
-CORS_ORIGIN=*
+CORS_ORIGIN=
+APP_URL=
+PUBLIC_URL=
+BACKUP_DIR=data/backups
+LOG_LEVEL=info
 ```
 
 Nao versionar `.env` real.
@@ -116,6 +120,12 @@ Backups simples:
 data/backups/
 ```
 
+Backup manual:
+
+```bash
+npm run backup -- antes-atualizacao
+```
+
 ## Documentacao
 
 - `docs/fase1/`: auditoria e arquitetura.
@@ -126,6 +136,7 @@ data/backups/
 - `docs/fase51/`: dashboards avancados, KPIs, graficos, rankings e pendencias da proxima fase.
 - `docs/fase7/`: piloto real, app motorista Flutter, contratos de comunicacao e homologacao.
 - `docs/fase8/`: seguranca operacional avancada, emergencias, LGPD, auditoria e mensageria.
+- `docs/fase9/`: preparacao para producao, VPS, dominio, HTTPS, PM2, backup, rollback e operacao assistida.
 
 ## Nucleo operacional
 
@@ -216,3 +227,24 @@ Estruturas preparadas sem integracao externa real:
 
 - `insurance_events`
 - `assistance_events`
+
+## Producao e operacao assistida
+
+A Fase 9 adiciona:
+
+- `/painel-logistico/admin/infra`: monitoramento de infraestrutura.
+- `GET /api/infra/status`
+- `GET /api/infra/backups`
+- `POST /api/infra/backup`
+- `POST /api/infra/restore`
+
+Documentacao operacional principal:
+
+- `docs/fase9/AMBIENTE_PRODUCAO.md`
+- `docs/fase9/PM2.md`
+- `docs/fase9/NGINX.md`
+- `docs/fase9/HTTPS_SSL.md`
+- `docs/fase9/DOMINIO.md`
+- `docs/fase9/BACKUP_PRODUCAO.md`
+- `docs/fase9/ROLLBACK.md`
+- `docs/fase9/CHECKLIST_PRODUCAO.md`

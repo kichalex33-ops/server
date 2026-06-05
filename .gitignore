@@ -1,5 +1,8 @@
 node_modules/
 .env
+.env.*
+!.env.example
 *.log
 data/*.tmp
 data/*.corrompido-*
+data/backups/

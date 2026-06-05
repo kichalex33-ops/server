@@ -110,6 +110,52 @@ function createLogisticService(repository) {
     };
   }
 
+  function productionInfra() {
+    const data = repository.loadData();
+    const storage = repository.storageInfo();
+    return {
+      servidor: {
+        app: data.config.app,
+        empresa: data.config.empresa,
+        ambiente: process.env.NODE_ENV || data.config.ambiente || "development",
+        uptimeSegundos: Math.round(process.uptime()),
+        node: process.version,
+        porta: Number(process.env.PORT || 3000),
+        appUrl: process.env.APP_URL || null,
+        publicUrl: process.env.PUBLIC_URL || null,
+        corsOrigin: process.env.CORS_ORIGIN || "*",
+        logLevel: process.env.LOG_LEVEL || "info",
+        timestamp: nowIso()
+      },
+      storage,
+      indicadores: {
+        gpsRecebidos: data.localizacoes.length,
+        eventosRecebidos: data.eventos.length,
+        alertasAbertos: data.alertas.filter((item) => isOpen(item.status || "ABERTO")).length,
+        emergenciasAbertas: data.emergencias.filter((item) => isOpen(item.status || "ABERTA")).length,
+        sincronizacoesPendentes: data.syncLogs.filter((item) => normalizeStatus(item.status) === "PENDENTE").length,
+        errosAuditados: data.auditLogs.filter((item) => normalizeStatus(item.tipo).includes("ERRO")).length
+      },
+      backups: storage.lastBackup ? [storage.lastBackup, ...repository.listBackups().slice(1, 5)] : []
+    };
+  }
+
+  function createProductionBackup(payload = {}) {
+    const backup = repository.createBackup(payload.reason || payload.motivo || "manual");
+    audit("BACKUP_PRODUCAO", { origem: "servidor", detalhes: backup });
+    return { backup, storage: repository.storageInfo() };
+  }
+
+  function listProductionBackups() {
+    return { backups: repository.listBackups() };
+  }
+
+  function restoreProductionBackup(payload = {}) {
+    const backup = repository.restoreBackup(payload.file || payload.arquivo);
+    audit("RESTORE_PRODUCAO", { origem: "servidor", detalhes: backup });
+    return { backup, storage: repository.storageInfo() };
+  }
+
   function dashboardSummary() {
     runWaitingMonitor();
     const data = repository.loadData();
@@ -1398,6 +1444,10 @@ function createLogisticService(repository) {
 
   return {
     status,
+    productionInfra,
+    createProductionBackup,
+    listProductionBackups,
+    restoreProductionBackup,
     dashboardSummary,
     list,
     create,

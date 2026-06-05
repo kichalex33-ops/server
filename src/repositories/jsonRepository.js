@@ -3,7 +3,7 @@ const path = require("node:path");
 
 const rootDir = path.join(__dirname, "..", "..");
 const defaultDataFile = path.join(rootDir, "data", "painel-logistico.json");
-const defaultBackupDir = path.join(rootDir, "data", "backups");
+const defaultBackupDir = resolveProjectPath(process.env.BACKUP_DIR || "data/backups");
 
 const collectionPrefixes = {
   usuarios: "usr",
@@ -224,6 +224,55 @@ function createRepository(options = {}) {
     return data;
   }
 
+  function createBackup(reason = "manual") {
+    ensureDataFile();
+    fs.mkdirSync(backupDir, { recursive: true });
+    const backupName = `painel-logistico-${new Date().toISOString().replace(/[:.]/g, "-")}-${safeName(reason)}.json`;
+    const backupPath = path.join(backupDir, backupName);
+    fs.copyFileSync(dataFile, backupPath);
+    return backupMetadata(backupPath);
+  }
+
+  function listBackups() {
+    fs.mkdirSync(backupDir, { recursive: true });
+    return fs.readdirSync(backupDir)
+      .filter((file) => file.endsWith(".json"))
+      .map((file) => backupMetadata(path.join(backupDir, file)))
+      .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+  }
+
+  function restoreBackup(fileName) {
+    if (!fileName || path.basename(fileName) !== fileName) {
+      const error = new Error("Nome de backup invalido.");
+      error.statusCode = 400;
+      throw error;
+    }
+    const backupPath = path.join(backupDir, fileName);
+    if (!fs.existsSync(backupPath)) {
+      const error = new Error("Backup nao encontrado.");
+      error.statusCode = 404;
+      throw error;
+    }
+    createBackup("antes-restore");
+    fs.copyFileSync(backupPath, dataFile);
+    return backupMetadata(backupPath);
+  }
+
+  function storageInfo() {
+    fs.mkdirSync(path.dirname(dataFile), { recursive: true });
+    fs.mkdirSync(backupDir, { recursive: true });
+    const dataStat = fs.existsSync(dataFile) ? fs.statSync(dataFile) : null;
+    const backups = listBackups();
+    return {
+      dataFile,
+      backupDir,
+      dataSizeBytes: dataStat ? dataStat.size : 0,
+      dataUpdatedAt: dataStat ? dataStat.mtime.toISOString() : null,
+      backupCount: backups.length,
+      lastBackup: backups[0] || null
+    };
+  }
+
   function getCollection(collection) {
     const data = loadData();
     assertCollection(data, collection);
@@ -288,7 +337,11 @@ function createRepository(options = {}) {
     getCollection,
     addItem,
     updateItem,
-    findById
+    findById,
+    createBackup,
+    listBackups,
+    restoreBackup,
+    storageInfo
   };
 }
 
@@ -302,6 +355,30 @@ function nextId(items, collection) {
   const prefix = collectionPrefixes[collection] || "item";
   const number = String(items.length + 1).padStart(4, "0");
   return `${prefix}-${number}-${Date.now()}`;
+}
+
+function resolveProjectPath(value) {
+  return path.isAbsolute(value) ? value : path.join(rootDir, value);
+}
+
+function safeName(value) {
+  return String(value || "manual")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-zA-Z0-9_-]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .toLowerCase()
+    .slice(0, 40) || "manual";
+}
+
+function backupMetadata(backupPath) {
+  const stat = fs.statSync(backupPath);
+  return {
+    file: path.basename(backupPath),
+    path: backupPath,
+    sizeBytes: stat.size,
+    created_at: stat.mtime.toISOString()
+  };
 }
 
 module.exports = createRepository;
