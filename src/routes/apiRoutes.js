@@ -9,6 +9,7 @@ function createApiRoutes({ repository }) {
 
   router.get("/status", (req, res) => res.json(service.status()));
   router.get("/infra/status", (req, res) => res.json(ok(service.productionInfra())));
+  router.get("/infra/resources", (req, res) => res.json(ok(service.resourceSnapshot())));
   router.get("/infra/backups", (req, res) => res.json(ok(service.listProductionBackups())));
   router.post("/infra/backup", asyncHandler((req, res) => res.status(201).json(ok(service.createProductionBackup(req.body)))));
   router.post("/infra/restore", asyncHandler((req, res) => res.json(ok(service.restoreProductionBackup(req.body)))));

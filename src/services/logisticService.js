@@ -140,6 +140,36 @@ function createLogisticService(repository) {
     };
   }
 
+  function resourceSnapshot() {
+    const data = repository.loadData();
+    const storage = repository.storageInfo();
+    const memory = process.memoryUsage();
+    return {
+      uptimeSegundos: Math.round(process.uptime()),
+      ambiente: process.env.NODE_ENV || data.config.ambiente || "development",
+      node: process.version,
+      memoria: {
+        rssBytes: memory.rss,
+        heapUsedBytes: memory.heapUsed,
+        heapTotalBytes: memory.heapTotal,
+        externalBytes: memory.external
+      },
+      dados: {
+        tamanhoJsonBytes: storage.dataSizeBytes,
+        viagens: data.viagens.length,
+        localizacoesGps: data.localizacoes.length,
+        alertasAbertos: data.alertas.filter((item) => isOpen(item.status || "ABERTO")).length,
+        falhasSincronizacao: data.syncLogs.filter((item) => normalizeStatus(item.status) === "ERRO").length,
+        ultimoBackup: storage.lastBackup
+      },
+      iaOpcional: {
+        ollamaEnabled: String(process.env.OLLAMA_ENABLED || "false").toLowerCase() === "true",
+        modelo: process.env.OLLAMA_MODEL || "qwen2.5:0.5b"
+      },
+      timestamp: nowIso()
+    };
+  }
+
   function createProductionBackup(payload = {}) {
     const backup = repository.createBackup(payload.reason || payload.motivo || "manual");
     audit("BACKUP_PRODUCAO", { origem: "servidor", detalhes: backup });
@@ -1445,6 +1475,7 @@ function createLogisticService(repository) {
   return {
     status,
     productionInfra,
+    resourceSnapshot,
     createProductionBackup,
     listProductionBackups,
     restoreProductionBackup,

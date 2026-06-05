@@ -28,6 +28,9 @@ APP_URL=
 PUBLIC_URL=
 BACKUP_DIR=data/backups
 LOG_LEVEL=info
+OLLAMA_ENABLED=false
+OLLAMA_BASE_URL=http://localhost:11434
+OLLAMA_MODEL=qwen2.5:0.5b
 ```
 
 Nao versionar `.env` real.
@@ -74,7 +77,7 @@ OPERADOR / OPteste 01
 Na rede Wi-Fi:
 
 ```text
-http://IP_DO_NOTEBOOK:3000
+http://10.0.0.4:3000
 ```
 
 Descobrir IP no Linux:
@@ -89,7 +92,7 @@ ip addr
 No mesmo Wi-Fi:
 
 ```text
-BASE_URL=http://IP_DO_NOTEBOOK:3000
+BASE_URL=http://10.0.0.4:3000
 ```
 
 Fora da rede local, por 3G/4G, usar futuramente um endereco HTTPS publicado por Cloudflare Tunnel ou solucao equivalente.
@@ -137,6 +140,7 @@ npm run backup -- antes-atualizacao
 - `docs/fase7/`: piloto real, app motorista Flutter, contratos de comunicacao e homologacao.
 - `docs/fase8/`: seguranca operacional avancada, emergencias, LGPD, auditoria e mensageria.
 - `docs/fase9/`: preparacao para producao, VPS, dominio, HTTPS, PM2, backup, rollback e operacao assistida.
+- `docs/fase10/`: escalabilidade 2.0, banco relacional futuro, API v2, BI, WebSocket futuro, planejador por regras e Ollama opcional.
 
 ## Nucleo operacional
 
@@ -237,6 +241,7 @@ A Fase 9 adiciona:
 - `GET /api/infra/backups`
 - `POST /api/infra/backup`
 - `POST /api/infra/restore`
+- `GET /api/infra/resources`
 
 Documentacao operacional principal:
 
@@ -248,3 +253,14 @@ Documentacao operacional principal:
 - `docs/fase9/BACKUP_PRODUCAO.md`
 - `docs/fase9/ROLLBACK.md`
 - `docs/fase9/CHECKLIST_PRODUCAO.md`
+
+## Versao 2.0 e escalabilidade
+
+A Fase 10 nao migra banco, nao implementa WebSocket real e nao ativa IA por padrao. Ela prepara:
+
+- PostgreSQL como banco preferencial futuro.
+- API v2 planejada sem quebrar API atual.
+- BI e analytics futuros.
+- App supervisor futuro.
+- Planejador operacional por regras locais.
+- Ollama opcional com `qwen2.5:0.5b`, desligado por padrao.
