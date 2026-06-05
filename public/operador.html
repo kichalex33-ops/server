@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Painel Operacional | Andrade</title>
+    <link rel="stylesheet" href="/assets/css/painel-acesso.css">
+  </head>
+  <body class="operator-light" data-theme="light">
+    <div class="dashboard-shell">
+      <aside class="side-nav">
+        <div class="side-brand">
+          <img src="/assets/img/andrade-gestao-saude.jpeg" alt="Andrade Gestao em Saude">
+        </div>
+        <nav class="nav-section" aria-label="Menu operador">
+          <p>Operacao</p>
+          <a class="active" href="#visao-geral">⌂ Visao Geral</a>
+          <a href="#viagens">▣ Viagens do Dia</a>
+          <a href="/painel-logistico/sala-situacao">⌖ Sala de Situacao</a>
+          <a href="#mapa">◇ Mapa / Rastreamento</a>
+          <a href="#comunicacao">◉ Comunicacao <span class="count">3</span></a>
+          <a href="#ocorrencias">△ Ocorrencias <span class="count">2</span></a>
+          <a href="#checklists">☑ Checklists <span class="count">12</span></a>
+          <a href="#sincronizacao">↻ Sincronizacao</a>
+          <p>Cadastros</p>
+          <a href="#motoristas">♙ Motoristas</a>
+          <a href="#veiculos">▤ Veiculos</a>
+          <a href="#pacientes">♧ Pacientes</a>
+          <a href="#destinos">⌘ Unidades / Destinos</a>
+        </nav>
+        <div class="sync-box">
+          <strong>Sincronizacao</strong>
+          <span>Ultima atualizacao: ha 2 minutos</span>
+          <small><i class="dot"></i> Online</small>
+        </div>
+      </aside>
+
+      <main class="main-dashboard">
+        <header class="topbar">
+          <div class="top-title">
+            <button class="menu-button" type="button">☰</button>
+            <div><h1>Painel Operacional</h1><span>Visao geral da operacao em tempo real</span></div>
+          </div>
+          <div class="top-actions">
+            <button id="themeToggle" class="theme-button" type="button" aria-label="Alternar tema">☀</button>
+            <button class="icon-button" type="button">🔔 <b>5</b></button>
+            <button class="icon-button" type="button">💬 <b>3</b></button>
+            <div class="profile-pill"><span class="profile-avatar">OP</span><div><strong>Operador</strong><span>Central de Operacoes</span></div></div>
+          </div>
+        </header>
+
+        <section id="visao-geral" class="operator-summary">
+          <article id="viagens" class="panel day-summary">
+            <div class="panel-header"><h2>Viagens do Dia</h2><a href="#viagens">Ver todas as viagens</a></div>
+            <div class="day-metrics">
+              <div class="day-metric"><strong>32</strong><span>Agendadas</span></div>
+              <div class="day-metric"><strong style="color:var(--green)">18</strong><span>Em Andamento</span></div>
+              <div class="day-metric"><strong style="color:var(--yellow)">7</strong><span>Em Espera</span></div>
+              <div class="day-metric"><strong style="color:var(--purple)">5</strong><span>Concluidas</span></div>
+              <div class="day-metric"><strong style="color:var(--red)">2</strong><span>Com Ocorrencia</span></div>
+              <div class="day-metric"><strong>4</strong><span>Proximas 2h</span></div>
+            </div>
+            <div class="table-wrap">
+              <table class="data-table">
+                <thead><tr><th>Viagem</th><th>Horario</th><th>Origem</th><th>Destino</th><th>Motorista</th><th>Veiculo</th><th>Passageiros</th><th>Status</th><th>Acao</th></tr></thead>
+                <tbody id="operatorTrips">
+                  <tr><td>V-024</td><td>07:00</td><td>Unidade Central</td><td>Hospital Regional</td><td>Joao Santos</td><td>V-024</td><td>3</td><td><span class="status ok">Em andamento</span></td><td>◎</td></tr>
+                  <tr><td>V-018</td><td>07:30</td><td>Bairro Novo</td><td>Clinica Sao Lucas</td><td>Carlos Lima</td><td>V-018</td><td>2</td><td><span class="status ok">Em andamento</span></td><td>◎</td></tr>
+                  <tr><td>V-027</td><td>08:00</td><td>Vila Esperanca</td><td>Hospital Infantil</td><td>Marcos Paulo</td><td>V-027</td><td>1</td><td><span class="status ok">Em andamento</span></td><td>◎</td></tr>
+                  <tr><td>V-031</td><td>08:30</td><td>Distrito Industrial</td><td>Hospital Regional</td><td>Andre Luiz</td><td>V-031</td><td>2</td><td><span class="status wait">Em espera</span></td><td>◎</td></tr>
+                  <tr><td>V-033</td><td>09:00</td><td>Unidade Sul</td><td>Centro Medico</td><td>Rogerio Alves</td><td>V-033</td><td>3</td><td><span class="status info">Agendada</span></td><td>◎</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </article>
+          <article class="panel date-card"><strong>23 de Maio de 2025</strong><span>Sexta-feira</span></article>
+        </section>
+
+        <section class="kpi-grid">
+          <article class="kpi-card"><div><span>Viagens em Andamento</span><strong id="kpiOngoing">18</strong><small>Em tempo real</small></div><div class="kpi-icon blue">⌁</div></article>
+          <article class="kpi-card"><div><span>Viagens Pendentes</span><strong>7</strong><small>Aguardando inicio</small></div><div class="kpi-icon yellow">◷</div></article>
+          <article class="kpi-card"><div><span>Pacientes em Transito</span><strong>42</strong><small>Neste momento</small></div><div class="kpi-icon green">♧</div></article>
+          <article class="kpi-card"><div><span>Motoristas Ativos</span><strong>19</strong><small>Online</small></div><div class="kpi-icon purple">♙</div></article>
+          <article class="kpi-card"><div><span>Alertas Pendentes</span><strong>5</strong><small>Requer atencao</small></div><div class="kpi-icon red">△</div></article>
+          <article class="kpi-card"><div><span>GPS sem Atualizacao</span><strong>3</strong><small>Acima de 10 min</small></div><div class="kpi-icon">⌖</div></article>
+        </section>
+
+        <section class="ops-grid">
+          <article id="mapa" class="panel">
+            <div class="panel-header"><h2>Mapa de Situacao - Frota em Tempo Real</h2><a href="/painel-logistico/sala-situacao">Ver mapa completo</a></div>
+            <div class="map-preview"><span class="route-line"></span><span class="map-pin pin-a">▣</span><span class="map-pin pin-b">!</span><span class="map-pin pin-c">▣</span></div>
+          </article>
+          <article class="panel">
+            <div class="panel-header"><h2>Alertas em Tempo Real</h2><a href="#ocorrencias">Ver todos</a></div>
+            <div class="list">
+              <div class="list-item"><span class="list-icon red">△</span><div><strong>PANICO ACIONADO</strong><span>Veiculo V-017 - Motorista Joao Silva</span></div><span class="time">08:45</span></div>
+              <div class="list-item"><span class="list-icon yellow">▤</span><div><strong>EXCESSO DE VELOCIDADE</strong><span>Veiculo V-023 - 78 km/h</span></div><span class="time">08:42</span></div>
+              <div class="list-item"><span class="list-icon yellow">⌖</span><div><strong>GPS SEM ATUALIZACAO</strong><span>Ultimo sinal ha 15 min</span></div><span class="time">08:40</span></div>
+              <div class="list-item"><span class="list-icon blue">☑</span><div><strong>CHECKLIST PENDENTE</strong><span>Pre-viagem nao realizado</span></div><span class="time">08:38</span></div>
+            </div>
+          </article>
+          <article class="panel">
+            <div class="panel-header"><h2>Eventos Recentes</h2><a href="#eventos">Ver todos</a></div>
+            <div class="list">
+              <div class="list-item"><span class="dot"></span><div><strong>Viagem V-024 iniciada</strong><span>Unidade Central para Hospital Regional</span></div><span class="time">08:48</span></div>
+              <div class="list-item"><span class="dot"></span><div><strong>Status atualizado</strong><span>Viagem V-018 - Em andamento</span></div><span class="time">08:47</span></div>
+              <div class="list-item"><span class="dot" style="background:var(--red)"></span><div><strong>Panico acionado</strong><span>Veiculo V-017</span></div><span class="time">08:45</span></div>
+              <div class="list-item"><span class="dot" style="background:var(--purple)"></span><div><strong>Mensagem recebida</strong><span>Motorista V-021</span></div><span class="time">08:43</span></div>
+            </div>
+          </article>
+        </section>
+
+        <section class="operator-analytics">
+          <article class="panel chart-card"><div class="panel-header"><h2>Status das Viagens</h2><a>Chart.js</a></div><div class="chart-box"><canvas id="operatorStatusChart"></canvas></div></article>
+          <article class="panel chart-card"><div class="panel-header"><h2>Movimentacao por Hora</h2><a>Tempo real</a></div><div class="chart-box"><canvas id="operatorHourlyChart"></canvas></div></article>
+          <article class="panel chart-card"><div class="panel-header"><h2>Ultimos Eventos</h2><a>Feed</a></div><div id="operatorFeed" class="list"></div></article>
+        </section>
+
+        <section class="bottom-grid">
+          <article class="panel"><div class="panel-header"><h2>Checklists Pendentes</h2></div><div class="day-metric"><strong style="color:var(--gold)">12</strong><span>Pendentes</span></div></article>
+          <article class="panel"><div class="panel-header"><h2>Ocorrencias Abertas</h2></div><div class="day-metric"><strong style="color:var(--gold)">2</strong><span>Abertas</span></div></article>
+          <article class="panel"><div class="panel-header"><h2>Acoes Rapidas</h2></div><div class="quick-actions"><button>Nova Mensagem</button><button>Registrar Ocorrencia</button><button>Rastreamento</button><button>Sincronizar Agora</button></div></article>
+        </section>
+      </main>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="/assets/js/theme.js"></script>
+    <script src="/assets/js/charts/dashboard-charts.js"></script>
+    <script src="/assets/js/operador-dashboard.js"></script>
+  </body>
+</html>

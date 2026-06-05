@@ -1,36 +1,218 @@
-# Plataforma Territorial Epidemiologica - Servidor Local
+# Painel Logistico Node
 
-Servidor Node.js/Express para receber dados dos apps dos ACEs e expor dois ambientes web:
+Plataforma local de testes do Painel Logistico com Node.js, Express, JavaScript, HTML/CSS/JS e persistencia local em JSON.
 
-- `/painel`: Painel Operacional somente leitura.
-- `/comando`: Comando Central administrativo com edicao auditada.
+A interface visual foi reaproveitada da pagina ja aprovada, preservando identidade Andrade Gestao em Saude, mapa, cards, viagem ativa, passageiros, eventos, mensagens, alertas, checklist, relatorios e fallback demonstrativo.
 
-## Modo local
+## Requisitos
 
-Os dados ficam em `data/server-data.json`, com escrita atomica.
+- Node.js 18 ou superior.
+- npm.
 
-Para proteger o Comando Central, crie um arquivo `.env`:
-
-```env
-COMANDO_SENHA=troque-esta-senha
-PORT=3000
-```
-
-Se `COMANDO_SENHA` nao existir, a senha local temporaria sera `admin123`.
-
-## Executar
+## Instalar
 
 ```bash
 npm install
-node server.js
 ```
 
-## Rotas principais
+## Configurar
 
-- `GET /api/status`
-- `GET /api/dashboard`
-- `GET /api/painel/dashboard`
-- `GET /api/comando/dashboard`
-- `GET /api/comando/auditoria`
+Copie `.env.example` para `.env` quando precisar personalizar ambiente local.
 
-Todo `PATCH /api/comando/*/:id` exige `usuario_id`, `justificativa` e senha local.
+```env
+PORT=3000
+NODE_ENV=development
+API_TOKEN=
+CORS_ORIGIN=*
+```
+
+Nao versionar `.env` real.
+
+## Iniciar
+
+```bash
+npm start
+```
+
+Modo desenvolvimento:
+
+```bash
+npm run dev
+```
+
+## Acessar
+
+No proprio notebook:
+
+```text
+http://localhost:3000
+```
+
+Sala de situacao:
+
+```text
+http://localhost:3000/painel-logistico/sala-situacao
+```
+
+Portal de acesso:
+
+```text
+http://localhost:3000/painel-logistico
+```
+
+Credenciais locais de teste:
+
+```text
+GESTAO / GSTteste 01
+OPERADOR / OPteste 01
+```
+
+Na rede Wi-Fi:
+
+```text
+http://IP_DO_NOTEBOOK:3000
+```
+
+Descobrir IP no Linux:
+
+```bash
+hostname -I
+ip addr
+```
+
+## Configurar app motorista
+
+No mesmo Wi-Fi:
+
+```text
+BASE_URL=http://IP_DO_NOTEBOOK:3000
+```
+
+Fora da rede local, por 3G/4G, usar futuramente um endereco HTTPS publicado por Cloudflare Tunnel ou solucao equivalente.
+
+## Testes
+
+```bash
+npm test
+```
+
+Teste rapido da API:
+
+```bash
+curl http://localhost:3000/api/status
+```
+
+## Persistencia
+
+Arquivo local:
+
+```text
+data/painel-logistico.json
+```
+
+Backups simples:
+
+```text
+data/backups/
+```
+
+## Documentacao
+
+- `docs/fase1/`: auditoria e arquitetura.
+- `docs/fase2/`: implementacao Node, API real, JSON, testes e rede.
+- `docs/fase3/`: nucleo operacional de viagens, passageiros, ocorrencias, despesas, sync e timeline.
+- `docs/fase4/`: GPS real, sala de situacao, mapa operacional, alertas e trajetos.
+- `docs/fase5/`: painel gestor, auditoria, custos, relatorios e exportacoes CSV.
+- `docs/fase51/`: dashboards avancados, KPIs, graficos, rankings e pendencias da proxima fase.
+- `docs/fase7/`: piloto real, app motorista Flutter, contratos de comunicacao e homologacao.
+- `docs/fase8/`: seguranca operacional avancada, emergencias, LGPD, auditoria e mensageria.
+
+## Nucleo operacional
+
+A Fase 3 adiciona endpoints para preparacao, saida, espera, retorno, finalizacao, cancelamento, embarque, desembarque, ausencia, ocorrencias, despesas, timeline e sincronizacao offline-first.
+
+## Sala de situacao e GPS
+
+A Fase 4 adiciona:
+
+- `POST /api/gps`: recebe GPS real, valida coordenadas e viagem existente, salva historico e registra evento/sync.
+- `GET /api/live-map`: entrega frota ativa, ultima posicao, alertas, feed e indicadores para o mapa.
+- `GET /api/viagens/:id/trajeto`: retorna o historico de pontos da viagem.
+- `/painel-logistico/sala-situacao`: tela operacional com Leaflet/OpenStreetMap, polling de 5 segundos e alternancia real/demo.
+
+## Painel Gestao
+
+A Fase 5 adiciona:
+
+- `/painel-logistico`: tela principal com acesso separado para Operador Logistico e Gestor.
+- `/painel-logistico/operador`: painel operacional claro, baseado na referencia visual enviada.
+- `/painel-logistico/gestao`: painel gerencial separado.
+- `GET /api/gestao/dashboard`
+- `GET /api/gestao/frota`
+- `GET /api/gestao/motoristas`
+- `GET /api/gestao/passageiros`
+- `GET /api/gestao/custos`
+- `GET /api/gestao/auditoria`
+- `GET /api/export/csv`
+
+## Dashboards avancados
+
+A Fase 5.1 adiciona KPIs executivos, rankings e graficos Chart.js nos paineis Operador e Gestor.
+
+Camada unica de graficos:
+
+```text
+public/assets/js/charts/dashboard-charts.js
+```
+
+Novos endpoints:
+
+- `GET /api/indicadores/operador`
+- `GET /api/indicadores/gestor`
+- `GET /api/graficos/viagens`
+- `GET /api/graficos/custos`
+- `GET /api/graficos/frota`
+- `GET /api/graficos/ocorrencias`
+
+## App motorista e piloto real
+
+A Fase 7 conecta a plataforma ao app Flutter localizado em:
+
+```text
+C:\dev\plataforma\app\plataforma teste
+```
+
+Contratos principais:
+
+- `POST /api/driver/login`
+- `GET /api/driver/trips?motorista_id=mot-001`
+- `GET /api/driver/notices`
+- `POST /api/driver/trips/:id/checklist`
+- `POST /api/driver/trips/:id/km-inicial`
+- `POST /api/driver/trips/:id/flow`
+- `POST /api/driver/trips/:id/finalizar`
+- `POST /api/driver/panic`
+- `POST /api/driver/proofs`
+
+## Seguranca operacional e emergencias
+
+A Fase 8 adiciona:
+
+- `/painel-logistico/emergencias`: Central de Emergencia.
+- `POST /api/panico`
+- `GET /api/emergencias`
+- `POST /api/emergencias/:id/atender`
+- `POST /api/emergencias/:id/finalizar`
+- `POST /api/giroflex/iniciar`
+- `POST /api/giroflex/finalizar`
+- `GET /api/watchdog`
+- `GET /api/antifraude`
+- `GET /api/mensagens`
+- `POST /api/mensagens`
+- `GET /api/auditoria`
+- `GET /api/lgpd`
+
+Estruturas preparadas sem integracao externa real:
+
+- `insurance_events`
+- `assistance_events`

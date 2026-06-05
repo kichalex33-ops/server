@@ -1,29 +1,182 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-BR">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Portal — ACE Territorial &amp; LogiSaúde</title>
-  <link rel="stylesheet" href="/styles.css">
-  <link rel="stylesheet" href="/logisaude.css">
-</head>
-<body>
-  <main class="portal-landing">
-    <section class="hero">
-      <span class="eyebrow" style="color:#0f5c91;font-weight:700;text-transform:uppercase;font-size:0.8rem;letter-spacing:0.06em">Servidor local</span>
-      <h1>Portal de plataformas</h1>
-      <p class="subtitle">Escolha o ambiente de trabalho. O ACE Territorial mantém painel e comando epidemiológico; o LogiSaúde concentra transporte sanitário e integração com o app motorista.</p>
-      <div class="portal-grid">
-        <a class="portal-card ace" href="/painel-ace">
-          <h2>ACE Territorial</h2>
-          <p>Painel operacional, comando central, vigilância epidemiológica e APIs do app de campo.</p>
-        </a>
-        <a class="portal-card logisaude" href="/logisaude">
-          <h2>LogiSaúde</h2>
-          <p>Dashboard de transporte, viagens, frota, pacientes, rastreamento e sincronização com o app motorista.</p>
-        </a>
-      </div>
-    </section>
-  </main>
-</body>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Painel Logístico | Andrade Gestão em Saúde</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+    <link rel="stylesheet" href="assets/css/style.css">
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar">
+        <div class="brand-card"><img src="assets/img/andrade-gestao-saude.jpeg" alt="Andrade Gestão em Saúde"></div>
+        <div class="side-title"><strong>Painel Logístico</strong><span>Central Operacional</span></div>
+        <nav class="nav-list" aria-label="Menu do painel">
+          <a href="#visao-geral" class="active">Visão Geral</a>
+          <a href="/painel-logistico/sala-situacao">Sala de Situação</a>
+          <a href="#viagem">Viagens</a>
+          <a href="#mapa">Mapa / Rastreamento</a>
+          <a href="#comunicacao">Comunicação</a>
+          <a href="#ocorrencias">Ocorrências</a>
+          <a href="#relatorios">Relatórios</a>
+          <a href="#sistema">Configurações</a>
+        </nav>
+        <div class="sidebar-status"><span class="status-dot"></span><div><strong>Sistema Online</strong><small>Gestão integrada por Andrade Gestão em Saúde</small></div></div>
+      </aside>
+
+      <main class="main-content">
+        <header class="topbar">
+          <div class="municipal-block">
+            <img src="assets/img/brasao-sao-jose-do-sul.png" alt="Brasão do Município de São José do Sul">
+            <div><p class="eyebrow">Município de São José do Sul</p><h1>Painel Logístico</h1><span>Central Operacional de Transportes</span></div>
+          </div>
+          <div class="top-actions">
+            <label class="search-box"><span>Buscar</span><input type="search" placeholder="Viagem, passageiro, veículo"></label>
+            <button id="refreshBtn" class="ghost">Atualizar</button>
+            <button id="syncBtn" class="success">Sincronizar</button>
+            <button id="exportBtn" class="dark">Exportar</button>
+            <div class="clock-panel"><strong id="currentTime">--:--</strong><small id="lastUpdate">Última atualização: aguardando dados</small></div>
+          </div>
+        </header>
+
+        <section class="institution-strip"><strong>ANDRADE</strong><span>GESTÃO EM SAÚDE</span><em>Gestão integrada por Andrade Gestão em Saúde</em></section>
+
+        <section id="visao-geral" class="overview-hero panel">
+          <div class="panel-header">
+            <div><p class="eyebrow">Visão Geral do Dia</p><h2>Resumo executivo da operação</h2></div>
+            <span id="overviewStatus" class="badge neutral">Aguardando dados</span>
+          </div>
+          <div class="overview-metrics">
+            <article><span>Viagens hoje</span><strong>1</strong></article>
+            <article><span>Em andamento</span><strong id="overviewOngoing">1</strong></article>
+            <article><span>Concluídas</span><strong id="overviewCompleted">0</strong></article>
+            <article><span>Motoristas ativos</span><strong>1</strong></article>
+            <article><span>Veículos em operação</span><strong>1</strong></article>
+            <article><span>Passageiros previstos</span><strong>4</strong></article>
+            <article><span>Pacientes</span><strong>2</strong></article>
+            <article><span>Acompanhantes</span><strong>2</strong></article>
+            <article><span>Ocorrências</span><strong id="overviewIncidents">0</strong></article>
+            <article><span>Pendências sync</span><strong id="overviewPending">0</strong></article>
+          </div>
+          <div class="overview-grid">
+            <div class="overview-card">
+              <h3>Resumo operacional do dia</h3>
+              <dl>
+                <div><dt>Viagem principal</dt><dd>VIA-SJS-0001</dd></div>
+                <div><dt>Origem</dt><dd>UBS / Centro de Saúde São José do Sul</dd></div>
+                <div><dt>Destino</dt><dd>Hospital Montenegro</dd></div>
+                <div><dt>Motorista</dt><dd>João Santos</dd></div>
+                <div><dt>Veículo</dt><dd>Van Saúde 01 - LOG-2045</dd></div>
+                <div><dt>Status atual</dt><dd id="overviewTripStatus">Programada</dd></div>
+                <div><dt>Progresso</dt><dd id="overviewProgress">0%</dd></div>
+                <div><dt>Última atualização</dt><dd id="overviewLastUpdate">Aguardando dados</dd></div>
+              </dl>
+            </div>
+            <div class="overview-card">
+              <h3>Relatório rápido</h3>
+              <dl>
+                <div><dt>Total previsto</dt><dd>4 passageiros</dd></div>
+                <div><dt>Embarcados</dt><dd id="overviewBoarded">0</dd></div>
+                <div><dt>Desembarcados</dt><dd id="overviewDropped">0</dd></div>
+                <div><dt>Km simulados</dt><dd>42 km</dd></div>
+                <div><dt>Tempo estimado</dt><dd>58 min</dd></div>
+                <div><dt>Eventos recebidos</dt><dd id="overviewEvents">0</dd></div>
+                <div><dt>Sincronizações</dt><dd id="overviewSyncs">0</dd></div>
+                <div><dt>Ocorrências</dt><dd id="overviewIncidentTotal">0</dd></div>
+              </dl>
+            </div>
+            <div class="overview-card actions-card">
+              <h3>Próximas ações</h3>
+              <button id="overviewStartBtn">Iniciar simulação</button>
+              <button id="overviewNextBtn" class="secondary">Avançar evento</button>
+              <button id="overviewSyncBtn" class="success">Sincronizar agora</button>
+              <button id="overviewExportBtn" class="dark">Exportar relatório</button>
+              <a href="#mapa">Ver mapa</a>
+              <a href="#ocorrencias">Ver ocorrências</a>
+            </div>
+          </div>
+          <div class="overview-table-wrap">
+            <h3>Viagens do dia</h3>
+            <table class="day-table"><thead><tr><th>Código</th><th>Horário</th><th>Origem</th><th>Destino</th><th>Motorista</th><th>Veículo</th><th>Passageiros</th><th>Status</th><th>Última atualização</th></tr></thead><tbody><tr><td>VIA-SJS-0001</td><td>07:30</td><td>UBS São José do Sul</td><td>Hospital Montenegro</td><td>João Santos</td><td>Van Saúde 01</td><td>4</td><td id="dayTripStatus">Programada</td><td id="dayTripUpdate">Aguardando</td></tr></tbody></table>
+          </div>
+        </section>
+        <section id="dashboard" class="metric-grid secondary-metrics">
+          <article class="metric-card"><span>Viagens hoje</span><strong>1</strong></article>
+          <article class="metric-card"><span>Motoristas ativos</span><strong>1</strong></article>
+          <article class="metric-card"><span>Veículos em operação</span><strong>1</strong></article>
+          <article class="metric-card"><span>Pacientes transportados</span><strong id="metricPatients">0</strong></article>
+          <article class="metric-card"><span>Acompanhantes</span><strong id="metricCompanions">0</strong></article>
+          <article class="metric-card"><span>Passageiros totais</span><strong id="metricPassengers">0</strong></article>
+          <article class="metric-card warning"><span>Ocorrências hoje</span><strong id="metricIncidents">0</strong></article>
+        </section>
+
+        <section class="control-panel">
+          <button id="startBtn">Iniciar simulação</button>
+          <button id="pauseBtn" class="secondary">Pausar</button>
+          <button id="nextBtn" class="secondary">Avançar evento</button>
+          <button id="resetBtn" class="ghost">Reiniciar</button>
+          <button id="incidentBtn" class="danger">Simular ocorrência</button>
+          <span id="receivingIndicator" class="receiving-pill">Aguardando dados do app motorista</span>
+        </section>
+
+        <div class="ops-layout">
+          <section id="mapa" class="panel map-panel">
+            <div class="panel-header"><div><p class="eyebrow">Rastreamento GPS</p><h2>UBS São José do Sul → Hospital Montenegro</h2></div><span id="mapMode" class="badge moving">Mapa real</span></div>
+            <div id="map" class="map-real"></div>
+            <div id="mapFallback" class="map-fallback" hidden>
+              <strong>Mapa real indisponível. Exibindo rota demonstrativa.</strong>
+              <p>A simulação continua funcionando em modo local.</p>
+              <div class="fallback-route"><span class="fallback-point start">UBS</span><span id="fallbackVan" class="fallback-van">SMS-01</span><span class="fallback-point end">Hospital</span></div>
+            </div>
+          </section>
+          <aside class="right-column">
+            <section id="eventos" class="panel"><div class="panel-header compact"><h2>Eventos recentes</h2><span id="eventCounter" class="badge neutral">0/25</span></div><ol id="eventList" class="event-list"></ol></section>
+            <section id="ocorrencias" class="panel alert-panel"><div class="panel-header compact"><h2>Ocorrências ativas</h2><span id="incidentCount" class="badge danger">0</span></div><div id="incidentList" class="stack-list"></div></section>
+          </aside>
+        </div>
+
+        <section id="operacao" class="panel operation-panel">
+          <div class="panel-header"><div><p class="eyebrow">Viagem em andamento</p><h2>Progresso da viagem</h2></div><span id="simulationState" class="badge neutral">Aguardando</span></div>
+          <div class="route-progress-label"><span>UBS São José do Sul</span><strong id="progressText">0%</strong><span>Hospital Montenegro</span></div>
+          <div class="progress-track"><div id="progressBar"></div></div>
+          <div class="live-grid">
+            <div><span>Status da viagem</span><strong id="tripStatus">Programada</strong></div>
+            <div><span>Etapa atual</span><strong id="currentEvent">Aguardando início</strong></div>
+            <div><span>Distância simulada</span><strong>42 km</strong></div>
+            <div><span>Previsão de chegada</span><strong id="arrivalEstimate">58 min</strong></div>
+            <div><span>Último GPS</span><strong id="lastGps">Sem posição recebida</strong></div>
+          </div>
+        </section>
+
+        <div class="cards-3">
+          <section id="motorista" class="panel"><div class="panel-header compact"><h2>Motorista</h2><span class="badge success">Em viagem</span></div><div class="profile-row"><button id="driverAlertBtn" class="avatar-btn" type="button">JS</button><div><strong>João Santos</strong><span>Comunicação online</span></div></div><div class="info-grid"><div><span>CNH</span><strong>Válida</strong></div><div><span>Último GPS</span><strong id="driverGps">Aguardando</strong></div><div><span>Checklist</span><strong id="driverChecklist">Pendente</strong></div><div><span>Status</span><strong>Em viagem</strong></div></div></section>
+          <section id="veiculo" class="panel"><div class="panel-header compact"><h2>Veículo</h2><span class="badge success">Operacional</span></div><div class="info-grid"><div><span>Modelo</span><strong>Van Saúde 01</strong></div><div><span>Placa</span><strong>LOG-2045</strong></div><div><span>Prefixo</span><strong>SMS-01</strong></div><div><span>Capacidade</span><strong>7 lugares</strong></div><div><span>Ocupação</span><strong id="vehicleOccupation">0/7</strong></div><div><span>Combustível</span><strong>78%</strong></div><div><span>Km atual</span><strong>84.216 km</strong></div><div><span>Status</span><strong id="vehicleStatus">Aguardando despacho</strong></div></div></section>
+          <section class="panel"><div class="panel-header compact"><h2>Ocupação do veículo</h2><span id="occupationBadge" class="badge neutral">0/7</span></div><div class="occupancy-bar"><div id="occupancyFill"></div></div><div class="info-grid"><div><span>Capacidade</span><strong>7</strong></div><div><span>Ocupados</span><strong id="occupiedSeats">0</strong></div><div><span>Livres</span><strong id="freeSeats">7</strong></div><div><span>Pacientes</span><strong>2</strong></div><div><span>Acompanhantes</span><strong>2</strong></div></div></section>
+        </div>
+
+        <section id="viagem" class="panel"><div class="panel-header compact"><h2>Tabela de viagem ativa</h2><span id="tripBadge" class="badge neutral">VIA-SJS-0001</span></div><div class="trip-table"><div><span>Código</span><strong>VIA-SJS-0001</strong></div><div><span>Origem</span><strong>Centro de Saúde / UBS São José do Sul</strong></div><div><span>Destino</span><strong>Hospital Montenegro</strong></div><div><span>Motorista</span><strong>João Santos</strong></div><div><span>Veículo</span><strong>Van Saúde 01</strong></div><div><span>Passageiros</span><strong>4</strong></div><div><span>Status dinâmico</span><strong id="tripTableStatus">Programada</strong></div><div><span>Último GPS recebido</span><strong id="tripLastGps">Sem posição recebida</strong></div></div></section>
+
+        <div class="workspace-grid">
+          <section id="passageiros" class="panel"><div class="panel-header compact"><h2>Pacientes e acompanhantes</h2><span id="passengerBadge" class="badge neutral">0 embarcados</span></div><div id="passengerList" class="passenger-list"></div></section>
+          <section id="comunicacao" class="panel"><div class="panel-header compact"><h2>Comunicação Base ↔ Motorista</h2><span class="badge moving">Online</span></div><div id="messageList" class="message-list"></div></section>
+        </div>
+
+        <div class="workspace-grid">
+          <section class="panel"><div class="panel-header compact"><h2>Painel de despacho</h2><span class="badge neutral">Etapas</span></div><div id="dispatchList" class="dispatch-list"></div></section>
+          <section id="sync" class="panel"><div class="panel-header compact"><h2>Sincronização</h2><span id="syncStatusBadge" class="badge neutral">Online</span></div><div class="status-grid sync-wide"><div><span>Última sincronização</span><strong id="syncLast">Não realizada</strong></div><div><span>Eventos pendentes</span><strong id="syncPending">0</strong></div><div><span>Fila de processamento</span><strong id="syncQueue">0</strong></div><div><span>Eventos recebidos hoje</span><strong id="syncReceived">0</strong></div></div></section>
+        </div>
+
+        <div class="cards-3">
+          <section id="checklist" class="panel"><div class="panel-header compact"><h2>Checklist</h2><span id="checklistBadge" class="badge neutral">Pendente</span></div><div id="checklistList" class="checklist-list"></div></section>
+          <section id="sistema" class="panel"><div class="panel-header compact"><h2>Status do sistema</h2><span class="badge success">Sistema Online</span></div><div class="system-list"><div><span>Servidor</span><strong>Online</strong></div><div><span>Banco de Dados</span><strong>API/Fallback</strong></div><div><span>API</span><strong>Operacional</strong></div><div><span>GPS</span><strong id="gpsStatus">Aguardando dados</strong></div><div><span>Sync</span><strong>Ativo</strong></div></div></section>
+          <section id="relatorios" class="panel reports-panel"><div class="panel-header compact"><h2>Resumo da operação</h2><span class="badge success">Dados recebidos</span></div><div class="report-grid"><div><span>Viagens concluídas</span><strong id="reportTrips">0</strong></div><div><span>Pacientes transportados</span><strong id="reportPatients">0</strong></div><div><span>Acompanhantes transportados</span><strong id="reportCompanions">0</strong></div><div><span>Ocorrências</span><strong id="reportIncidents">0</strong></div><div><span>Eventos recebidos</span><strong id="reportEvents">0</strong></div><div><span>Km simulados</span><strong>42 km</strong></div><div><span>Tempo estimado</span><strong>58 min</strong></div></div></section>
+        </div>
+
+        <footer class="footer-strip"><span>Painel Logístico</span><span>Andrade Gestão em Saúde</span><span>Município de São José do Sul</span><span>Sistema Online</span></footer>
+      </main>
+    </div>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="assets/js/app.js"></script>
+  </body>
 </html>
