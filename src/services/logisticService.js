@@ -1,5 +1,6 @@
 const { requireAny, requireField, validateCoordinates } = require("../utils/validation");
 const httpError = require("../utils/httpError");
+const { analyzeOperationalHealth } = require("./watchdogService");
 
 const collectionResponseKeys = {
   viagens: "viagens",
@@ -362,7 +363,9 @@ function createLogisticService(repository) {
       throw error;
     }
     console.log("[CHECKLIST] Checklist recebido", viagemId);
-    return repository.addItem("checklists", { ...payload, viagemId, viagem_id: viagemId, created_at: payload.created_at || nowIso() });
+    const checklist = repository.addItem("checklists", { ...payload, viagemId, viagem_id: viagemId, created_at: payload.created_at || nowIso() });
+    audit("CHECKLIST", { viagem_id: viagemId, motorista_id: payload.motorista_id || payload.motoristaId || null, detalhes: { tipo: payload.tipo, checklist_id: checklist.id } });
+    return checklist;
   }
 
   function addSimpleLogged(collection, label, payload) {
@@ -516,7 +519,7 @@ function createLogisticService(repository) {
     return recordSync({
       tipo: payload.tipo || "SYNC_EVENTO",
       origem: payload.origem || "app_motorista",
-      status: payload.status || "RECEBIDO",
+      status: normalizeSyncStatus(payload.status || "RECEBIDO"),
       viagem_id: payload.viagem_id || payload.viagemId || null,
       payload: payload.payload || payload
     });
@@ -525,12 +528,35 @@ function createLogisticService(repository) {
   function syncStatus() {
     runWaitingMonitor();
     const logs = repository.getCollection("syncLogs");
+    const pendentes = logs.filter((log) => normalizeStatus(log.status) === "PENDENTE");
+    const erros = logs.filter((log) => normalizeStatus(log.status) === "ERRO");
     return {
-      pendentes: logs.filter((log) => normalizeStatus(log.status) === "PENDENTE").length,
+      pendentes: pendentes.length,
       confirmados: logs.filter((log) => ["CONFIRMADO", "RECEBIDO", "ENVIADO"].includes(normalizeStatus(log.status))).length,
-      erros: logs.filter((log) => normalizeStatus(log.status) === "ERRO").length,
+      erros: erros.length,
+      enviando: logs.filter((log) => normalizeStatus(log.status) === "ENVIANDO").length,
+      eventosPendentes: pendentes.slice(-50).reverse(),
+      eventosErro: erros.slice(-50).reverse(),
       ultimaSincronizacao: logs[logs.length - 1] || null
     };
+  }
+
+  function retrySyncErrors(payload = {}) {
+    const onlyId = payload.id || payload.sync_id || null;
+    const logs = repository.getCollection("syncLogs");
+    const targets = logs.filter((log) => normalizeStatus(log.status) === "ERRO" && (!onlyId || String(log.id) === String(onlyId)));
+    const updated = [];
+    for (const log of targets) {
+      const item = repository.updateItem("syncLogs", log.id, {
+        status: "PENDENTE",
+        tentativas: Number(log.tentativas || 0) + 1,
+        ultima_tentativa: nowIso(),
+        updated_at: nowIso()
+      });
+      if (item) updated.push(item);
+    }
+    audit("SINCRONIZACAO_REENVIO_MANUAL", { detalhes: { total: updated.length, id: onlyId } });
+    return { reenfileirados: updated.length, eventos: updated };
   }
 
   function forceSync() {
@@ -915,6 +941,7 @@ function createLogisticService(repository) {
     });
     if (!driver || senha !== "OPteste 01") throw httpError(401, "Credenciais do motorista invalidas.");
     const tokenSource = `${driver.id}:${Date.now()}`;
+    audit("LOGIN", { origem: "app_motorista", motorista_id: driver.id, usuario: driver.nome, detalhes: { identificador } });
     return {
       motorista: driver,
       sessao: {
@@ -1235,7 +1262,12 @@ function createLogisticService(repository) {
   function advancedWatchdog() {
     const generated = runOperationalMonitors();
     const data = repository.loadData();
+    const operational = analyzeOperationalHealth(data);
     const alertas = [];
+    for (const item of operational.alertas) {
+      const alert = ensureAlert(item);
+      if (alert) alertas.push(alert);
+    }
     for (const trip of data.viagens) {
       const latest = latestLocation(data, trip.id);
       if (latest && Number(latest.velocidade || 0) > speedLimitForTrip(data, trip)) {
@@ -1269,7 +1301,9 @@ function createLogisticService(repository) {
     return {
       alertasGerados: generated + alertas.length,
       alertas,
-      monitores: ["GPS_PARADO", "VEICULO_PARADO", "ESPERA_EXCESSIVA", "RETORNO_NAO_INICIADO", "VIAGEM_SEM_ATUALIZACAO", "SINCRONIZACAO_TRAVADA"]
+      metricas: operational.metricas,
+      status: operational.status,
+      monitores: ["GPS_PARADO", "VEICULO_PARADO", "ESPERA_EXCESSIVA", "RETORNO_NAO_INICIADO", "VIAGEM_SEM_ATUALIZACAO", "DISPOSITIVO_DESCONECTADO", "FILA_SYNC_CRESCENDO", "SINCRONIZACAO_TRAVADA"]
     };
   }
 
@@ -1360,20 +1394,24 @@ function createLogisticService(repository) {
   }
 
   function recordEvent(payload) {
-    return repository.addItem("eventos", {
+    const event = repository.addItem("eventos", {
       categoria: payload.categoria || payload.tipo || "OPERACIONAL",
       ...payload,
       viagemId: payload.viagemId || payload.viagem_id || null,
       viagem_id: payload.viagem_id || payload.viagemId || null,
       created_at: payload.created_at || nowIso()
     });
+    if (["GPS_RECEBIDO", "PASSAGEIRO_EMBARCADO", "PASSAGEIRO_DESEMBARCADO", "PASSAGEIRO_AUSENTE", "PANICO", "OCORRENCIA", "VIAGEM_STATUS"].includes(String(event.tipo || "").toUpperCase())) {
+      audit(event.tipo, { viagem_id: event.viagem_id, motorista_id: event.motorista_id || null, veiculo_id: event.veiculo_id || null, detalhes: { evento_id: event.id, descricao: event.descricao } });
+    }
+    return event;
   }
 
   function recordSync(payload) {
     return repository.addItem("syncLogs", {
       tipo: payload.tipo || "OPERACIONAL",
       origem: payload.origem || "servidor",
-      status: payload.status || "PENDENTE",
+      status: normalizeSyncStatus(payload.status || "PENDENTE"),
       viagem_id: payload.viagem_id || payload.viagemId || null,
       payload: payload.payload || payload,
       created_at: payload.created_at || nowIso(),
@@ -1504,6 +1542,7 @@ function createLogisticService(repository) {
     addExpense,
     addSyncEvent,
     syncStatus,
+    retrySyncErrors,
     forceSync,
     timeline,
     liveMap,
@@ -1877,6 +1916,14 @@ function normalizePassenger(passenger) {
 
 function normalizeStatus(status) {
   return String(status || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toUpperCase();
+}
+
+function normalizeSyncStatus(status) {
+  const normalized = normalizeStatus(status);
+  if (["PENDENTE", "ENVIANDO", "CONFIRMADO", "ERRO"].includes(normalized)) return normalized;
+  if (["RECEBIDO", "ENVIADO", "SINCRONIZADO"].includes(normalized)) return "CONFIRMADO";
+  if (["FALHA", "ERROR"].includes(normalized)) return "ERRO";
+  return normalized || "PENDENTE";
 }
 
 function normalizePassengerType(type) {

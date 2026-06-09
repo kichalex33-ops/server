@@ -74,8 +74,10 @@ function createApiRoutes({ repository }) {
   router.get("/sync/logs", (req, res) => res.json(ok(service.list("syncLogs"))));
   router.post("/sync/logs", (req, res) => res.status(201).json(ok(service.addSimpleLogged("syncLogs", "SYNC", req.body))));
   router.post("/sync/evento", asyncHandler((req, res) => res.status(201).json(ok({ syncLog: service.addSyncEvent(req.body) }))));
+  router.get("/sync/painel", (req, res) => res.json(ok(service.syncStatus())));
   router.get("/sync/status", (req, res) => res.json(ok(service.syncStatus())));
   router.post("/sync/forcar", asyncHandler((req, res) => res.json(ok(service.forceSync()))));
+  router.post("/sync/reenvio", asyncHandler((req, res) => res.json(ok(service.retrySyncErrors(req.body)))));
 
   router.get("/gestao/dashboard", (req, res) => res.json(ok(service.managementDashboard(req.query))));
   router.get("/gestao/frota", (req, res) => res.json(ok(service.managementFleet(req.query))));
@@ -163,11 +165,20 @@ function systemHealth(repository) {
   const storage = repository.storageInfo ? repository.storageInfo() : {};
   const gpsQueue = countPending(data.localizacoes);
   const syncQueue = countPending(data.syncLogs) + countPending(data.eventos);
+  const latestGps = Array.isArray(data.localizacoes) ? data.localizacoes.slice().sort((a, b) => new Date(a.created_at || a.registrado_em || a.timestamp_dispositivo || 0).getTime() - new Date(b.created_at || b.registrado_em || b.timestamp_dispositivo || 0).getTime()).at(-1) : null;
+  const today = new Date().toISOString().slice(0, 10);
+  const gpsToday = Array.isArray(data.localizacoes)
+    ? data.localizacoes.filter((item) => String(item.created_at || item.registrado_em || item.timestamp_dispositivo || "").slice(0, 10) === today).length
+    : 0;
   return {
     status: "ok",
+    server_time: new Date().toISOString(),
     uptime: Math.round(process.uptime()),
     memory: process.memoryUsage(),
     storage,
+    last_gps_received: latestGps ? latestGps.created_at || latestGps.registrado_em || latestGps.timestamp_dispositivo || "" : "",
+    gps_today: gpsToday,
+    pending_sync_events: syncQueue,
     node_version: process.version,
     gps_queue: gpsQueue,
     sync_queue: syncQueue,

@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Saúde do Sistema - Plataforma Logística</title>
+  <link rel="stylesheet" href="/assets/css/style.css">
+  <style>
+    body { background: #0f172a; color: #e5e7eb; font-family: Arial, sans-serif; margin: 0; }
+    main { max-width: 1120px; margin: 0 auto; padding: 32px 20px; }
+    h1 { margin: 0 0 8px; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-top: 24px; }
+    .card { background: #111827; border: 1px solid #334155; border-radius: 8px; padding: 18px; }
+    .label { color: #94a3b8; font-size: 13px; text-transform: uppercase; }
+    .value { font-size: 28px; font-weight: 700; margin-top: 8px; }
+    .ok { color: #22c55e; }
+    .warn { color: #f59e0b; }
+    pre { white-space: pre-wrap; background: #020617; border-radius: 8px; padding: 16px; overflow: auto; }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Saúde do Sistema</h1>
+    <p>Monitor operacional do servidor, GPS e sincronização da Plataforma Logística.</p>
+    <section class="grid" id="cards">
+      <article class="card"><div class="label">Servidor</div><div class="value warn">Carregando</div></article>
+    </section>
+    <h2>Erros e Alertas Recentes</h2>
+    <pre id="alerts">Carregando...</pre>
+  </main>
+  <script>
+    const cards = document.getElementById("cards");
+    const alerts = document.getElementById("alerts");
+
+    function card(label, value, extraClass = "") {
+      return `<article class="card"><div class="label">${label}</div><div class="value ${extraClass}">${value}</div></article>`;
+    }
+
+    async function loadHealth() {
+      const [healthResponse, watchdogResponse] = await Promise.all([
+        fetch("/api/system/health"),
+        fetch("/api/watchdog")
+      ]);
+      const health = await healthResponse.json();
+      const watchdog = await watchdogResponse.json();
+      const data = health.data || health;
+      const watchdogData = watchdog.data || {};
+      const memoryMb = Math.round((data.memory?.rss || 0) / 1024 / 1024);
+      cards.innerHTML = [
+        card("Servidor online", data.status || "indisponível", data.status === "ok" ? "ok" : "warn"),
+        card("Memória utilizada", `${memoryMb} MB`),
+        card("Espaço/dados", `${data.storage?.dataSizeBytes || 0} bytes`),
+        card("GPS recebidos hoje", data.gps_today || 0),
+        card("Eventos pendentes", data.pending_sync_events || 0),
+        card("Uptime", `${data.uptime || 0}s`)
+      ].join("");
+      alerts.textContent = JSON.stringify(watchdogData.alertas || [], null, 2);
+    }
+
+    loadHealth().catch((error) => {
+      cards.innerHTML = card("Servidor", "erro", "warn");
+      alerts.textContent = error.message;
+    });
+  </script>
+</body>
+</html>

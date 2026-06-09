@@ -7,6 +7,7 @@ module.exports = {
       exec_mode: "fork",
       watch: false,
       autorestart: true,
+      max_memory_restart: "300M",
       max_restarts: 10,
       min_uptime: "10s",
       out_file: "logs/painel-logistico-out.log",

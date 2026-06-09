@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sincronização - Plataforma Logística</title>
+  <link rel="stylesheet" href="/assets/css/style.css">
+  <style>
+    body { background: #f8fafc; color: #0f172a; font-family: Arial, sans-serif; margin: 0; }
+    main { max-width: 1120px; margin: 0 auto; padding: 32px 20px; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin: 24px 0; }
+    .card { background: #fff; border: 1px solid #cbd5e1; border-radius: 8px; padding: 18px; }
+    .label { color: #64748b; font-size: 13px; text-transform: uppercase; }
+    .value { font-size: 28px; font-weight: 700; margin-top: 8px; }
+    button { background: #1d4ed8; color: #fff; border: 0; border-radius: 6px; padding: 10px 14px; cursor: pointer; }
+    table { width: 100%; border-collapse: collapse; background: #fff; }
+    th, td { border-bottom: 1px solid #e2e8f0; padding: 10px; text-align: left; font-size: 14px; }
+    th { background: #e2e8f0; }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Sincronização Operacional</h1>
+    <p>Eventos pendentes, falhas e reenvio manual da fila offline-first.</p>
+    <button id="retry">Reenviar erros</button>
+    <section class="grid" id="summary"></section>
+    <table>
+      <thead><tr><th>Tipo</th><th>Status</th><th>Viagem</th><th>Criado em</th></tr></thead>
+      <tbody id="rows"><tr><td colspan="4">Carregando...</td></tr></tbody>
+    </table>
+  </main>
+  <script>
+    const summary = document.getElementById("summary");
+    const rows = document.getElementById("rows");
+    const retry = document.getElementById("retry");
+
+    function card(label, value) {
+      return `<article class="card"><div class="label">${label}</div><div class="value">${value}</div></article>`;
+    }
+
+    async function loadSync() {
+      const response = await fetch("/api/sync/painel");
+      const body = await response.json();
+      const data = body.data || {};
+      summary.innerHTML = [
+        card("Pendentes", data.pendentes || 0),
+        card("Erros", data.erros || 0),
+        card("Enviando", data.enviando || 0),
+        card("Confirmados", data.confirmados || 0)
+      ].join("");
+      const events = [...(data.eventosErro || []), ...(data.eventosPendentes || [])];
+      rows.innerHTML = events.length ? events.map((item) => `
+        <tr>
+          <td>${item.tipo || "-"}</td>
+          <td>${item.status || "-"}</td>
+          <td>${item.viagem_id || "-"}</td>
+          <td>${item.created_at || "-"}</td>
+        </tr>
+      `).join("") : `<tr><td colspan="4">Nenhum evento pendente ou com erro.</td></tr>`;
+    }
+
+    retry.addEventListener("click", async () => {
+      await fetch("/api/sync/reenvio", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({})
+      });
+      await loadSync();
+    });
+
+    loadSync().catch((error) => {
+      rows.innerHTML = `<tr><td colspan="4">${error.message}</td></tr>`;
+    });
+  </script>
+</body>
+</html>

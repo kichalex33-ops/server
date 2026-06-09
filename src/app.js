@@ -1,19 +1,18 @@
 require("dotenv").config();
 
 const path = require("node:path");
-const cors = require("cors");
 const express = require("express");
 
 const createApiRoutes = require("./routes/apiRoutes");
 const authToken = require("./middlewares/authToken");
 const errorHandler = require("./middlewares/errorHandler");
 const requestLogger = require("./middlewares/requestLogger");
+const configureSecurity = require("./middlewares/security");
 
 function createApp({ repository }) {
   const app = express();
-  const corsOrigin = process.env.CORS_ORIGIN || "*";
 
-  app.use(cors({ origin: corsOrigin === "*" ? "*" : corsOrigin.split(",").map((item) => item.trim()) }));
+  configureSecurity(app);
   app.use(express.json({ limit: "1mb" }));
   app.use(requestLogger);
   app.use(authToken);
@@ -34,6 +33,12 @@ function createApp({ repository }) {
   });
   app.get("/painel-logistico/admin/infra", (req, res) => {
     res.sendFile(path.join(__dirname, "..", "public", "admin-infra.html"));
+  });
+  app.get("/sistema/saude", (req, res) => {
+    res.sendFile(path.join(__dirname, "..", "public", "sistema-saude.html"));
+  });
+  app.get("/operador/sincronizacao", (req, res) => {
+    res.sendFile(path.join(__dirname, "..", "public", "operador-sincronizacao.html"));
   });
   app.get(["/motorista", "/app-motorista"], (req, res) => {
     res.sendFile(path.join(__dirname, "..", "public", "motorista", "index.html"));
