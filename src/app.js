@@ -35,6 +35,9 @@ function createApp({ repository }) {
   app.get("/painel-logistico/admin/infra", (req, res) => {
     res.sendFile(path.join(__dirname, "..", "public", "admin-infra.html"));
   });
+  app.get(["/motorista", "/app-motorista"], (req, res) => {
+    res.sendFile(path.join(__dirname, "..", "public", "motorista", "index.html"));
+  });
   app.use(express.static(path.join(__dirname, "..", "public")));
   app.use("/api", createApiRoutes({ repository }));
   app.use(errorHandler);
