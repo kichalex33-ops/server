@@ -9,6 +9,7 @@ function createApiRoutes({ repository }) {
   const service = createLogisticService(repository);
 
   router.get("/status", (req, res) => res.json(service.status()));
+  router.get("/system/health", (req, res) => res.json(systemHealth(repository)));
   router.get("/infra/status", (req, res) => res.json(ok(service.productionInfra())));
   router.get("/infra/resources", (req, res) => res.json(ok(service.resourceSnapshot())));
   router.get("/infra/backups", (req, res) => res.json(ok(service.listProductionBackups())));
@@ -155,6 +156,31 @@ function ok(data) {
 function okOr404(data, message) {
   if (!data) throw httpError(404, message);
   return ok(data);
+}
+
+function systemHealth(repository) {
+  const data = repository.loadData();
+  const storage = repository.storageInfo ? repository.storageInfo() : {};
+  const gpsQueue = countPending(data.localizacoes);
+  const syncQueue = countPending(data.syncLogs) + countPending(data.eventos);
+  return {
+    status: "ok",
+    uptime: Math.round(process.uptime()),
+    memory: process.memoryUsage(),
+    storage,
+    node_version: process.version,
+    gps_queue: gpsQueue,
+    sync_queue: syncQueue,
+    timestamp: new Date().toISOString()
+  };
+}
+
+function countPending(items) {
+  if (!Array.isArray(items)) return 0;
+  return items.filter((item) => {
+    const status = String(item.status || item.statusSync || item.sync_status || "").toLowerCase();
+    return ["pendente", "pending", "erro", "error", "local"].includes(status);
+  }).length;
 }
 
 module.exports = createApiRoutes;
