@@ -1,4 +1,5 @@
 const express = require("express");
+const createDriverPairingRoutes = require("./driverPairingRoutes");
 const createLogisticService = require("../services/logisticService");
 const asyncHandler = require("../utils/asyncHandler");
 const httpError = require("../utils/httpError");
@@ -131,6 +132,8 @@ function createApiRoutes({ repository }) {
   router.post("/driver/occurrences", asyncHandler((req, res) => res.status(201).json(ok({ ocorrencia: service.addOccurrence(req.body) }))));
   router.post("/driver/expenses", asyncHandler((req, res) => res.status(201).json(ok({ despesa: service.addExpense(req.body) }))));
   router.post("/driver/sync", asyncHandler((req, res) => res.status(201).json(ok({ syncLog: service.addSyncEvent(req.body) }))));
+
+  router.use(createDriverPairingRoutes({ repository }));
 
   router.use((req, res) => res.status(404).json({ ok: false, error: "Endpoint nao encontrado." }));
 

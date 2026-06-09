@@ -142,6 +142,17 @@ a { color: inherit; text-decoration: none; }
 .chart-card { min-height: 260px; display: grid; grid-template-rows: auto minmax(190px, 1fr); }
 .chart-box { position: relative; min-height: 190px; }
 .operator-analytics { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+.pairing-modal { position: fixed; inset: 0; z-index: 50; display: grid; place-items: center; padding: 20px; background: rgba(15, 23, 42, .62); }
+.pairing-modal[hidden] { display: none; }
+.pairing-dialog { width: min(920px, 100%); border: 1px solid var(--line); border-radius: 8px; background: var(--panel); color: var(--text); box-shadow: 0 24px 80px rgba(15, 23, 42, .35); padding: 18px; }
+.pairing-grid { display: grid; grid-template-columns: 330px 1fr; gap: 16px; align-items: start; }
+.pairing-qr { min-height: 300px; display: grid; place-items: center; border: 1px solid var(--line); border-radius: 8px; background: #fff; padding: 14px; }
+.pairing-qr canvas { width: 256px; height: 256px; image-rendering: pixelated; }
+.pairing-hint { display: block; margin-top: 9px; color: var(--muted); line-height: 1.4; }
+.pairing-info { display: grid; gap: 12px; }
+.pairing-info strong { color: var(--text); font-size: 18px; }
+.pairing-info code { display: block; max-height: 180px; overflow: auto; border: 1px solid var(--line); border-radius: 8px; background: var(--panel-2); color: var(--text); padding: 10px; white-space: pre-wrap; word-break: break-word; }
+.qr-button { border: 1px solid var(--line); border-radius: 8px; background: var(--gold); color: #1f2937; padding: 8px 10px; font-weight: 900; cursor: pointer; }
 
 .manager-grid { display: grid; grid-template-columns: repeat(6, minmax(150px, 1fr)); gap: 12px; }
 .manager-content { display: grid; grid-template-columns: 1.4fr 1fr .9fr; gap: 12px; }
@@ -163,4 +174,5 @@ a { color: inherit; text-decoration: none; }
   .side-nav { position: static; height: auto; }
   .topbar { align-items: flex-start; flex-direction: column; padding: 14px 20px; }
   .day-metrics, .kpi-grid, .manager-grid { grid-template-columns: repeat(2, minmax(130px, 1fr)); }
+  .pairing-grid { grid-template-columns: 1fr; }
 }

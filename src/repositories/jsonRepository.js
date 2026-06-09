@@ -28,7 +28,9 @@ const collectionPrefixes = {
   lgpdConsents: "lgp",
   ocorrencias: "oco",
   despesas: "des",
-  syncLogs: "syn"
+  syncLogs: "syn",
+  driverPairings: "pair",
+  driverDevices: "dev"
 };
 
 const tripDefaultStatus = "AGUARDANDO";
@@ -66,6 +68,8 @@ function createEmptyData() {
     ocorrencias: [],
     despesas: [],
     syncLogs: [],
+    driverPairings: [],
+    driverDevices: [],
     config: {
       app: "Painel Logistico",
       empresa: "Andrade Gestao em Saude",

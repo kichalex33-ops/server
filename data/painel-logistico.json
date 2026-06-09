@@ -1,5 +1,7 @@
 {
   "usuarios": [],
+  "driverPairings": [],
+  "driverDevices": [],
   "motoristas": [
     {
       "id": "mot-001",
