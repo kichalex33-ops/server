@@ -28,7 +28,18 @@ function createApiRoutes({ repository }) {
   router.post("/viagens/:id/cancelar", asyncHandler((req, res) => res.json(ok(service.operationalTripAction(req.params.id, "cancelar", req.body)))));
   router.get("/viagens/:id/timeline", (req, res) => res.json(ok(service.timeline(req.params.id))));
 
-  registerCollection(router, service, "motoristas", "/motoristas", "motorista");
+  router.get("/motoristas", (req, res) => res.json(ok(listDriversWithPairing(repository))));
+  router.post("/motoristas", (req, res) => {
+    const payload = normalizeDriverPayload(req.body);
+    validateDriverPayload(payload);
+    res.status(201).json(ok({ motorista: service.create("motoristas", payload) }));
+  });
+  router.put("/motoristas/:id", (req, res) => {
+    const payload = normalizeDriverPayload(req.body);
+    validateDriverPayload(payload);
+    const motorista = repository.updateItem("motoristas", req.params.id, payload);
+    res.json(okOr404(motorista ? { motorista } : null, "Motorista nao encontrado."));
+  });
   registerCollection(router, service, "veiculos", "/veiculos", "veiculo");
   registerCollection(router, service, "pacientes", "/pacientes", "paciente");
 
@@ -158,6 +169,43 @@ function ok(data) {
 function okOr404(data, message) {
   if (!data) throw httpError(404, message);
   return ok(data);
+}
+
+function listDriversWithPairing(repository) {
+  const data = repository.loadData();
+  const devices = Array.isArray(data.driverDevices) ? data.driverDevices : [];
+  const motoristas = data.motoristas.map((driver) => {
+    const device = devices.find((item) => String(item.motorista_id || item.motoristaId || "") === String(driver.id));
+    return {
+      ...driver,
+      app_pareado: Boolean(device),
+      dispositivo_app: device || null
+    };
+  });
+  return { motoristas };
+}
+
+function normalizeDriverPayload(payload = {}) {
+  return {
+    nome: stringOrEmpty(payload.nome),
+    cpf: stringOrEmpty(payload.cpf),
+    telefone: stringOrEmpty(payload.telefone),
+    cnh: stringOrEmpty(payload.cnh),
+    categoria_cnh: stringOrEmpty(payload.categoria_cnh || payload.categoriaCnh),
+    validade_cnh: stringOrEmpty(payload.validade_cnh || payload.validadeCnh),
+    status: stringOrEmpty(payload.status).toLowerCase(),
+    observacoes: stringOrEmpty(payload.observacoes)
+  };
+}
+
+function validateDriverPayload(payload) {
+  if (!payload.nome) throw httpError(400, "nome e obrigatorio.");
+  if (!payload.telefone) throw httpError(400, "telefone e obrigatorio.");
+  if (!payload.status) throw httpError(400, "status e obrigatorio.");
+}
+
+function stringOrEmpty(value) {
+  return String(value ?? "").trim();
 }
 
 function systemHealth(repository) {

@@ -128,18 +128,55 @@
               <h2>Motoristas</h2>
               <span>Cadastros liberados para pareamento seguro do App Motorista.</span>
             </div>
-            <button id="refreshDriversBtn" class="secondary" type="button">Atualizar</button>
+            <div class="panel-actions">
+              <button id="newDriverBtn" type="button">Novo Motorista</button>
+              <button id="refreshDriversBtn" class="secondary" type="button">Atualizar</button>
+            </div>
           </div>
+          <div id="driverFormMessage" class="form-message" hidden></div>
           <div class="table-wrap">
             <table class="data-table">
-              <thead><tr><th>Nome</th><th>Telefone</th><th>Status</th><th>App</th><th>Acao</th></tr></thead>
+              <thead><tr><th>Nome</th><th>Telefone</th><th>CNH</th><th>Categoria</th><th>Validade</th><th>Status</th><th>App pareado</th><th>Acoes</th></tr></thead>
               <tbody id="operatorDrivers">
-                <tr><td colspan="5">Carregando motoristas...</td></tr>
+                <tr><td colspan="8">Carregando motoristas...</td></tr>
               </tbody>
             </table>
           </div>
         </section>
       </main>
+    </div>
+    <div id="driverFormModal" class="pairing-modal" hidden>
+      <div class="pairing-dialog" role="dialog" aria-modal="true" aria-labelledby="driverFormTitle">
+        <div class="panel-header">
+          <div>
+            <h2 id="driverFormTitle">Novo Motorista</h2>
+            <span>Cadastro operacional para acesso ao App Motorista.</span>
+          </div>
+          <button id="driverFormCloseBtn" class="ghost" type="button">Fechar</button>
+        </div>
+        <form id="driverForm" class="driver-form">
+          <input type="hidden" id="driverId" name="id">
+          <label>Nome <input id="driverName" name="nome" required autocomplete="name"></label>
+          <label>CPF <input id="driverCpf" name="cpf" inputmode="numeric"></label>
+          <label>Telefone <input id="driverPhone" name="telefone" required autocomplete="tel"></label>
+          <label>CNH <input id="driverCnh" name="cnh"></label>
+          <label>Categoria CNH <input id="driverCnhCategory" name="categoria_cnh" placeholder="B, C, D..."></label>
+          <label>Validade CNH <input id="driverCnhValidity" name="validade_cnh" type="date"></label>
+          <label>Status
+            <select id="driverStatus" name="status" required>
+              <option value="ativo">Ativo</option>
+              <option value="inativo">Inativo</option>
+              <option value="afastado">Afastado</option>
+            </select>
+          </label>
+          <label class="driver-form-wide">Observações <textarea id="driverNotes" name="observacoes" rows="3"></textarea></label>
+          <div class="driver-form-actions">
+            <span id="driverFormError" class="form-error"></span>
+            <button class="ghost" id="driverFormCancelBtn" type="button">Cancelar</button>
+            <button type="submit">Salvar</button>
+          </div>
+        </form>
+      </div>
     </div>
     <div id="driverPairingModal" class="pairing-modal" hidden>
       <div class="pairing-dialog" role="dialog" aria-modal="true" aria-labelledby="driverPairingTitle">
