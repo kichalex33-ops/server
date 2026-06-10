@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Painel Operacional</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <div class="shell">
+    <aside class="sidebar">
+      <div class="brand">Painel Operacional</div>
+      <div class="brand-sub">Somente leitura · dados recebidos dos ACEs</div>
+      <nav class="nav" id="nav"></nav>
+    </aside>
+    <main class="main">
+      <div class="topbar">
+        <div class="title">
+          <h1 id="titulo">Dashboard</h1>
+          <p id="subtitulo">Visualizacao operacional territorial.</p>
+        </div>
+        <button class="button ghost" onclick="carregar()">Atualizar</button>
+      </div>
+
+      <section class="cards" id="cards"></section>
+      <section class="filters" id="filters"></section>
+      <section id="content"></section>
+    </main>
+  </div>
+
+  <div class="modal" id="modal">
+    <div class="modal-card">
+      <div class="topbar">
+        <div class="title"><h1>Detalhes</h1><p>Registro recebido do aplicativo.</p></div>
+        <button class="button ghost" onclick="fecharModal()">Fechar</button>
+      </div>
+      <pre class="json" id="modalJson"></pre>
+    </div>
+  </div>
+
+  <script src="/painel.js"></script>
+</body>
+</html>

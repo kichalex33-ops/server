@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Central de Emergencia | Andrade Gestao em Saude</title>
+    <link rel="stylesheet" href="/assets/css/painel-acesso.css" />
+    <link rel="stylesheet" href="/assets/css/emergencias.css" />
+  </head>
+  <body>
+    <div class="emergency-shell">
+      <aside class="sidebar">
+        <div class="brand"><img src="/assets/img/andrade-gestao-saude.jpeg" alt="Andrade Gestao em Saude" /></div>
+        <nav class="side-menu">
+          <a href="/painel-logistico/operador">Operador</a>
+          <a href="/painel-logistico/sala-situacao">Sala de Situacao</a>
+          <a href="/painel-logistico/emergencias" class="active">Emergencias</a>
+          <a href="/painel-logistico/gestao">Gestao</a>
+        </nav>
+      </aside>
+      <main class="emergency-main">
+        <header class="emergency-hero">
+          <div>
+            <span>Seguranca Operacional</span>
+            <h1>Central de Emergencia</h1>
+          </div>
+          <button id="soundToggle" type="button">Som configuravel</button>
+        </header>
+
+        <section class="emergency-grid">
+          <article class="emergency-panel critical">
+            <div class="panel-header"><h2>Alertas Criticos</h2><button id="refreshButton" type="button">Atualizar</button></div>
+            <div id="emergencyList" class="emergency-list"></div>
+          </article>
+          <article class="emergency-panel">
+            <div class="panel-header"><h2>Protocolo de Resposta</h2><span id="selectedStatus">Aguardando</span></div>
+            <div id="emergencyDetail" class="emergency-detail"></div>
+            <form id="protocolForm" class="protocol-form">
+              <input name="responsavel" placeholder="Responsavel" value="Operador" />
+              <select name="acao">
+                <option value="motorista_contatado">Motorista contatado</option>
+                <option value="suporte_acionado">Suporte acionado</option>
+                <option value="ambulancia_reserva">Ambulancia reserva</option>
+                <option value="veiculo_reserva">Veiculo reserva</option>
+                <option value="ocorrencia_resolvida">Ocorrencia resolvida</option>
+              </select>
+              <textarea name="observacoes" placeholder="Observacoes"></textarea>
+              <div class="protocol-actions">
+                <button type="submit">Registrar atendimento</button>
+                <button id="finishButton" type="button" class="finish">Encerrar</button>
+              </div>
+            </form>
+          </article>
+        </section>
+      </main>
+    </div>
+    <script src="/assets/js/emergencias.js"></script>
+  </body>
+</html>

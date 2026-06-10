@@ -1,0 +1,31 @@
+:root { --danger: #c81e1e; --danger-dark: #7f1212; --danger-soft: #fff1f1; }
+body { background: #f8fafc; }
+.emergency-shell { min-height: 100vh; display: grid; grid-template-columns: 260px 1fr; }
+.emergency-main { padding: 18px; display: grid; gap: 16px; }
+.emergency-hero { min-height: 110px; border-radius: 8px; padding: 18px 22px; background: linear-gradient(135deg, var(--danger-dark), var(--danger)); color: #fff; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 16px 40px rgba(127, 18, 18, .24); }
+.emergency-hero span { display: block; color: #ffd7d7; font-weight: 900; text-transform: uppercase; font-size: 12px; }
+.emergency-hero h1 { margin: 4px 0 0; font-size: 30px; letter-spacing: 0; }
+.emergency-hero button { border: 1px solid rgba(255,255,255,.45); background: rgba(255,255,255,.12); color: #fff; border-radius: 8px; min-height: 42px; padding: 0 14px; font-weight: 900; }
+.emergency-grid { display: grid; grid-template-columns: 1.1fr .9fr; gap: 16px; }
+.emergency-panel { background: #fff; border: 1px solid #e5e7eb; border-radius: 8px; padding: 14px; box-shadow: 0 12px 30px rgba(15, 36, 56, .08); }
+.emergency-panel.critical { border-top: 5px solid var(--danger); }
+.emergency-list { display: grid; gap: 10px; }
+.emergency-card { border: 1px solid #efc3c3; background: var(--danger-soft); border-radius: 8px; padding: 12px; display: grid; gap: 8px; cursor: pointer; }
+.emergency-card.active { outline: 3px solid rgba(200, 30, 30, .24); }
+.emergency-card h3 { margin: 0; color: var(--danger-dark); font-size: 18px; }
+.emergency-card .meta, .emergency-detail .meta { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.emergency-card span, .emergency-detail span { color: #667085; font-size: 12px; font-weight: 800; display: block; }
+.emergency-card strong, .emergency-detail strong { display: block; color: #111827; margin-top: 2px; }
+.emergency-detail { display: grid; gap: 10px; min-height: 180px; }
+.protocol-form { display: grid; gap: 10px; margin-top: 12px; }
+.protocol-form input, .protocol-form select, .protocol-form textarea { width: 100%; border: 1px solid #d9e2ec; border-radius: 8px; min-height: 42px; padding: 9px 11px; }
+.protocol-form textarea { min-height: 76px; resize: vertical; }
+.protocol-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.protocol-actions button { border: 0; border-radius: 8px; min-height: 44px; background: #0f2438; color: #fff; font-weight: 900; }
+.protocol-actions .finish { background: var(--danger); }
+
+@media (max-width: 1100px) {
+  .emergency-shell { grid-template-columns: 1fr; }
+  .sidebar { display: none; }
+  .emergency-grid { grid-template-columns: 1fr; }
+}

@@ -1,0 +1,19 @@
+{
+  "name": "Painel Logistico Motorista",
+  "short_name": "Motorista",
+  "description": "App Motorista offline-first do Painel Logistico.",
+  "start_url": "/motorista",
+  "scope": "/motorista/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "theme_color": "#252b42",
+  "background_color": "#f4f6fb",
+  "icons": [
+    {
+      "src": "/motorista/assets/icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

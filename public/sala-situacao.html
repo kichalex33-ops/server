@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Sala de Situacao | Painel Logistico Andrade</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+    <link rel="stylesheet" href="/assets/css/sala-situacao.css">
+  </head>
+  <body>
+    <header class="command-header">
+      <a class="brand" href="/">
+        <img src="/assets/img/andrade-gestao-saude.jpeg" alt="Andrade Gestao em Saude">
+        <span><strong>Sala de Situacao</strong><small>Central de comando operacional</small></span>
+      </a>
+      <nav aria-label="Acesso rapido">
+        <a href="/">Painel</a>
+        <a href="/#viagem">Viagens</a>
+        <a href="/#ocorrencias">Ocorrencias</a>
+      </nav>
+      <label class="mode-toggle">
+        <input id="demoToggle" type="checkbox">
+        <span>Demo</span>
+      </label>
+    </header>
+
+    <main class="situation-shell">
+      <section class="status-strip" aria-label="Indicadores da operacao">
+        <article><span>Viagens ativas</span><strong id="metricTrips">0</strong></article>
+        <article><span>Veiculos em rota</span><strong id="metricVehicles">0</strong></article>
+        <article><span>Alertas ativos</span><strong id="metricAlerts">0</strong></article>
+        <article><span>GPS sem atualizacao</span><strong id="metricGps">0</strong></article>
+        <article><span>Ultima leitura</span><strong id="metricUpdated">--:--</strong></article>
+      </section>
+
+      <div class="command-grid">
+        <section class="map-zone" aria-label="Mapa operacional">
+          <div class="map-toolbar">
+            <div>
+              <p>Mapa operacional</p>
+              <h1>Frota, alertas e trajetos em tempo real</h1>
+            </div>
+            <span id="mapBadge" class="badge neutral">Conectando</span>
+          </div>
+          <div id="liveMap"></div>
+          <div id="mapFallback" class="map-fallback" hidden>
+            <strong>Mapa indisponivel</strong>
+            <span>Os dados continuam atualizando na lateral.</span>
+          </div>
+        </section>
+
+        <aside class="command-panel" aria-label="Central de comando">
+          <section>
+            <div class="panel-title"><h2>Viagens ativas</h2><span id="tripCount">0</span></div>
+            <div id="activeTrips" class="stack"></div>
+          </section>
+          <section>
+            <div class="panel-title"><h2>Alertas</h2><span id="alertCount">0</span></div>
+            <div id="alertsList" class="stack compact"></div>
+          </section>
+          <section>
+            <div class="panel-title"><h2>Feed operacional</h2><span id="feedCount">0</span></div>
+            <ol id="feedList" class="feed"></ol>
+          </section>
+        </aside>
+      </div>
+    </main>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="/assets/js/sala-situacao.js"></script>
+  </body>
+</html>

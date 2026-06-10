@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Comando Central</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <div class="shell">
+    <aside class="sidebar">
+      <div class="brand">Comando Central</div>
+      <div class="brand-sub">Administrativo · edicao com auditoria</div>
+      <nav class="nav" id="nav"></nav>
+    </aside>
+    <main class="main">
+      <div class="topbar">
+        <div class="title">
+          <h1 id="titulo">Dashboard</h1>
+          <p id="subtitulo">Correcoes, conflitos e auditoria local.</p>
+        </div>
+        <button class="button ghost" onclick="carregar()">Atualizar</button>
+      </div>
+      <section class="cards" id="cards"></section>
+      <section class="filters" id="filters"></section>
+      <section id="content"></section>
+    </main>
+  </div>
+
+  <div class="modal" id="loginModal">
+    <div class="modal-card">
+      <h1>Acesso ao Comando Central</h1>
+      <p>Modo local temporario. Defina COMANDO_SENHA no .env para trocar a senha.</p>
+      <input id="senha" type="password" placeholder="Senha local">
+      <div style="height:12px"></div>
+      <button class="button primary" onclick="login()">Entrar</button>
+    </div>
+  </div>
+
+  <div class="modal" id="modal">
+    <div class="modal-card">
+      <div class="topbar">
+        <div class="title"><h1 id="modalTitulo">Detalhes</h1><p>Edicoes exigem justificativa.</p></div>
+        <button class="button ghost" onclick="fecharModal()">Fechar</button>
+      </div>
+      <pre class="json" id="modalJson"></pre>
+      <div id="editor"></div>
+    </div>
+  </div>
+
+  <script src="/comando.js"></script>
+</body>
+</html>
