@@ -46,6 +46,16 @@ test("driver login and daily trips expose vehicle, passengers and notices", asyn
     assert.equal(login.body.data.motorista.id, "mot-001");
     assert.ok(login.body.data.sessao.token);
 
+    const appLogin = await requestJson(baseUrl, "/api/driver/login", {
+      method: "POST",
+      body: { login: "mot-001", senha: "OPteste 01" }
+    });
+    assert.equal(appLogin.response.status, 200);
+    assert.equal(appLogin.body.data.usuario.id, "mot-001");
+    assert.equal(appLogin.body.data.usuario.perfil, "motorista");
+    assert.ok(appLogin.body.data.token);
+    assert.ok(appLogin.body.data.refresh_token);
+
     const trips = await requestJson(baseUrl, "/api/driver/trips?motorista_id=mot-001");
     assert.equal(trips.response.status, 200);
     assert.ok(trips.body.data.viagens[0].passageiros.length >= 4);

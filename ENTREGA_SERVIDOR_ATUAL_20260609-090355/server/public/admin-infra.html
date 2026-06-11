@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Infraestrutura | Painel Logistico</title>
+    <link rel="stylesheet" href="/assets/css/painel-acesso.css" />
+    <link rel="stylesheet" href="/assets/css/admin-infra.css" />
+  </head>
+  <body>
+    <div class="infra-shell">
+      <aside class="sidebar">
+        <div class="brand"><img src="/assets/img/andrade-gestao-saude.jpeg" alt="Andrade Gestao em Saude" /></div>
+        <nav class="side-menu">
+          <a href="/painel-logistico/operador">Operador</a>
+          <a href="/painel-logistico/gestao">Gestao</a>
+          <a href="/painel-logistico/emergencias">Emergencias</a>
+          <a href="/painel-logistico/admin/infra" class="active">Infraestrutura</a>
+        </nav>
+      </aside>
+      <main class="infra-main">
+        <header class="infra-header">
+          <div>
+            <span>Operacao em producao</span>
+            <h1>Infraestrutura</h1>
+          </div>
+          <button id="backupButton" type="button">Criar backup</button>
+        </header>
+
+        <section id="infraCards" class="infra-cards"></section>
+
+        <section class="infra-grid">
+          <article class="infra-panel">
+            <h2>Servidor</h2>
+            <dl id="serverDetails"></dl>
+          </article>
+          <article class="infra-panel">
+            <h2>Backups</h2>
+            <div id="backupList" class="backup-list"></div>
+          </article>
+        </section>
+      </main>
+    </div>
+    <script src="/assets/js/admin-infra.js"></script>
+  </body>
+</html>

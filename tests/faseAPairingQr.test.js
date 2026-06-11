@@ -46,7 +46,10 @@ test("driver pairing creates a temporary QR payload without exposing token hash"
     assert.equal(created.response.status, 201);
     assert.equal(created.body.data.qrPayload.type, "PAINEL_LOGISTICO_DRIVER_PAIRING");
     assert.equal(created.body.data.qrPayload.server_url, "http://10.0.0.4:3000");
+    assert.equal(created.body.data.qrPayload.api, "http://10.0.0.4:3000");
+    assert.ok(created.body.data.qrPayload.token);
     assert.ok(created.body.data.qrPayload.pairing_token);
+    assert.equal(created.body.data.qrPayload.token, created.body.data.qrPayload.pairing_token);
     assert.equal(created.body.data.qrPayload.pairing_token_hash, undefined);
 
     const data = repository.loadData();
@@ -57,6 +60,54 @@ test("driver pairing creates a temporary QR payload without exposing token hash"
     assert.notEqual(data.driverPairings[0].pairing_token_hash, created.body.data.qrPayload.pairing_token);
     assert.ok(data.auditLogs.some((log) => log.evento === "DRIVER_APP_PAIRING_CREATED"));
   });
+});
+
+test("driver pairing accepts Flutter QR scanner payload and returns app session data", async () => {
+  const previousToken = process.env.API_TOKEN;
+  process.env.API_TOKEN = "teste-api-token";
+  try {
+    await withServer(async ({ baseUrl, repository }) => {
+      const created = await requestJson(baseUrl, "/api/operator/drivers/mot-001/pairing", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "x-api-token": "teste-api-token" },
+        body: { server_url: "http://10.0.0.4:3000" }
+      });
+      const qrPayload = created.body.data.qrPayload;
+
+      const confirmed = await requestJson(baseUrl, "/api/driver/pairing/confirm", {
+        method: "POST",
+        body: {
+          pairing_id: qrPayload.pairing_id,
+          token: qrPayload.token,
+          platform: "android"
+        }
+      });
+
+      assert.equal(confirmed.response.status, 200);
+      assert.equal(confirmed.body.ok, true);
+      assert.equal(confirmed.body.data.paired, true);
+      assert.equal(confirmed.body.data.login, "mot-001");
+      assert.equal(confirmed.body.data.senha_inicial, "OPteste 01");
+      assert.equal(confirmed.body.data.temporary_password, "OPteste 01");
+      assert.equal(confirmed.body.data.server_url, "http://10.0.0.4:3000");
+      assert.equal(confirmed.body.data.motorista.id, "mot-001");
+      assert.equal(confirmed.body.data.motorista.perfil, "motorista");
+      assert.deepEqual(confirmed.body.data.motorista.modulos_permitidos, ["logistica"]);
+      assert.ok(confirmed.body.data.token);
+      assert.ok(confirmed.body.data.refresh_token);
+
+      const data = repository.loadData();
+      assert.equal(data.driverDevices[0].platform, "android");
+      assert.equal(data.motoristas[0].app_login, "mot-001");
+      assert.equal(data.motoristas[0].senha_inicial_app, "OPteste 01");
+    });
+  } finally {
+    if (previousToken === undefined) {
+      delete process.env.API_TOKEN;
+    } else {
+      process.env.API_TOKEN = previousToken;
+    }
+  }
 });
 
 test("driver pairing confirm saves device and blocks token reuse", async () => {
