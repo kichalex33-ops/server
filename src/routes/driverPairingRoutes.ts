@@ -2,9 +2,9 @@ import express from 'express';
 import { createDriverPairingService } from '../services/driverPairingService.js';
 import asyncHandler from '../utils/asyncHandler.js';
 
-function createDriverPairingRoutes({ repository }: { repository: any }) {
+function createDriverPairingRoutes({ factory }: { factory: any }) {
   const router = express.Router();
-  const service = createDriverPairingService(repository);
+  const service = createDriverPairingService(factory.json); // Pairing ainda usa JSON base por enquanto
 
   router.post('/operator/drivers/:motoristaId/pairing', asyncHandler(async (req, res) => {
     const result = service.createPairing({

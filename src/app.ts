@@ -12,8 +12,9 @@ import configureSecurity from './middlewares/security.js';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-function createApp({ repository }: { repository: any }) {
+function createApp({ factory }: { factory: any }) {
   const app: Express = express();
+  const repository = factory.json; // Fallback para arquivos estáticos se necessário
 
   configureSecurity(app);
   app.use(express.json({ limit: '1mb' }));
@@ -51,7 +52,7 @@ function createApp({ repository }: { repository: any }) {
   });
 
   app.use(express.static(publicPath));
-  app.use('/api', createApiRoutes({ repository }));
+  app.use('/api', createApiRoutes({ factory }));
   app.use(errorHandler);
 
   return app;

@@ -9,8 +9,9 @@ import requestLogger from './middlewares/requestLogger.js';
 import configureSecurity from './middlewares/security.js';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-function createApp({ repository }) {
+function createApp({ factory }) {
     const app = express();
+    const repository = factory.json; // Fallback para arquivos estáticos se necessário
     configureSecurity(app);
     app.use(express.json({ limit: '1mb' }));
     app.use(requestLogger);
@@ -44,7 +45,7 @@ function createApp({ repository }) {
         res.sendFile(path.join(publicPath, 'motorista', 'index.html'));
     });
     app.use(express.static(publicPath));
-    app.use('/api', createApiRoutes({ repository }));
+    app.use('/api', createApiRoutes({ factory }));
     app.use(errorHandler);
     return app;
 }

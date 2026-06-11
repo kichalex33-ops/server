@@ -65,13 +65,19 @@ const SPEED_LIMIT_KMH = 80;
 
 import { createDriverPairingService } from './driverPairingService.js';
 
-export function createLogisticService(repository: any) {
-  const pairingService = createDriverPairingService(repository);
+export function createLogisticService(factory: any) {
+  const repository = factory.json; // Fallback para operacoes nao migradas
+  const motoristaRepo = factory.motoristas;
+  const veiculoRepo = factory.veiculos;
+  const pacienteRepo = factory.pacientes;
+  const viagemRepo = factory.viagens;
+  
+  const pairingService = createDriverPairingService(factory.json);
 
   async function createMotorista(payload: any) {
     requireField(payload, 'nome', 'nome');
     requireField(payload, 'cpf', 'cpf');
-    const motorista = await repository.addItem('motoristas', {
+    const motorista = await motoristaRepo.addItem('motoristas', {
       ...payload,
       status: payload.status || 'ativo',
     });
