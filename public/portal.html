@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Painel Logistico | Acesso</title>
+    <link rel="stylesheet" href="/assets/css/painel-acesso.css">
+  </head>
+  <body class="portal-page" data-theme="light">
+    <main class="access-shell">
+      <section class="access-brand">
+        <img class="access-logo" src="/assets/img/andrade-gestao-saude.jpeg" alt="Andrade Gestao em Saude">
+        <div>
+          <p class="eyebrow">Painel Logistico</p>
+          <h1>Escolha seu painel de trabalho</h1>
+          <span>Transporte de pacientes com visao operacional e gerencial separadas.</span>
+        </div>
+        <button id="themeToggle" class="theme-button" type="button" aria-label="Alternar tema">☀</button>
+      </section>
+
+      <section class="access-grid" aria-label="Perfis de acesso">
+        <article class="access-card operator-card">
+          <div class="access-icon">⌂</div>
+          <div>
+            <p class="eyebrow">Operacao</p>
+            <h2>Operador Logistico</h2>
+            <span>Viagens do dia, sala de situacao, mapa, comunicacao e ocorrencias.</span>
+          </div>
+          <form class="login-form" data-profile="OPERADOR" data-target="/painel-logistico/operador">
+            <label>Login<input name="login" autocomplete="username" placeholder="OPERADOR"></label>
+            <label>Senha<input name="password" type="password" autocomplete="current-password" placeholder="OPteste 01"></label>
+            <button type="submit">Entrar no Operador</button>
+            <small class="login-feedback" aria-live="polite"></small>
+          </form>
+        </article>
+
+        <article class="access-card manager-card">
+          <div class="access-icon">◈</div>
+          <div>
+            <p class="eyebrow">Gestao</p>
+            <h2>Painel Gestor</h2>
+            <span>Indicadores, custos, frota, motoristas, auditoria, relatorios e CSV.</span>
+          </div>
+          <form class="login-form" data-profile="GESTAO" data-target="/painel-logistico/gestao">
+            <label>Login<input name="login" autocomplete="username" placeholder="GESTAO"></label>
+            <label>Senha<input name="password" type="password" autocomplete="current-password" placeholder="GSTteste 01"></label>
+            <button type="submit">Entrar na Gestao</button>
+            <small class="login-feedback" aria-live="polite"></small>
+          </form>
+        </article>
+      </section>
+    </main>
+    <script src="/assets/js/api-config.js"></script>
+    <script src="/assets/js/auth-client.js"></script>
+    <script src="/assets/js/portal.js"></script>
+  </body>
+</html>

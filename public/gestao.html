@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Painel do Gestor | Andrade</title>
+    <link rel="stylesheet" href="/assets/css/painel-acesso.css">
+  </head>
+  <body data-theme="light">
+    <div class="dashboard-shell">
+      <aside class="side-nav">
+        <div class="side-brand">
+          <img src="/assets/img/andrade-gestao-saude.jpeg" alt="Andrade Gestao em Saude">
+        </div>
+        <nav class="nav-section" aria-label="Menu gestor">
+          <p>Gestao</p>
+          <a class="active" href="#dashboard">⌂ Dashboard Gerencial</a>
+          <a href="#indicadores">⌁ Indicadores</a>
+          <a href="#custos">▧ Custos Operacionais</a>
+          <a href="#combustivel">▥ Combustivel</a>
+          <a href="#frota">▤ Frota</a>
+          <a href="#motoristas">♙ Motoristas</a>
+          <a href="#passageiros">♧ Passageiros</a>
+          <a href="#auditoria">◎ Auditoria</a>
+          <a href="#relatorios">▣ Relatorios</a>
+          <a href="#exportacoes">⇩ Exportacoes</a>
+          <a href="#seguranca">◇ Seguranca Operacional</a>
+          <p>Configuracoes</p>
+          <a href="#usuarios">♙ Usuarios</a>
+          <a href="#perfis">♧ Perfis de Acesso</a>
+          <a href="#parametros">⚙ Parametros do Sistema</a>
+        </nav>
+        <div class="sync-box">
+          <strong>Sincronizacao</strong>
+          <span>Dados gerenciais atualizados pela API</span>
+          <small><i class="dot"></i> Online</small>
+        </div>
+      </aside>
+
+      <main class="main-dashboard">
+        <header class="topbar">
+          <div class="top-title">
+            <button class="menu-button" type="button">☰</button>
+            <div><h1>Painel do Gestor</h1><span>Visao estrategica e gerencial da operacao</span></div>
+          </div>
+          <div class="top-actions">
+            <select id="periodFilter" class="filter-button"><option value="">Periodo completo</option><option value="today">Hoje</option><option value="month">Mes</option></select>
+            <select id="driverFilter" class="filter-button"><option value="">Todos os Motoristas</option></select>
+            <select id="vehicleFilter" class="filter-button"><option value="">Todos os Veiculos</option></select>
+            <button id="filterBtn" class="filter-button" type="button">Filtrar</button>
+            <button id="themeToggle" class="theme-button" type="button" aria-label="Alternar tema">☀</button>
+            <div class="profile-pill"><span class="profile-avatar">GE</span><div><strong>Gestor</strong><span>Perfil Gestor</span></div></div>
+          </div>
+        </header>
+
+        <section id="dashboard" class="manager-grid">
+          <article class="kpi-card"><div><span>Custo por KM</span><strong id="kpiCostKm">R$ 0,00</strong><small>vs periodo anterior</small></div><div class="kpi-icon green">$</div></article>
+          <article class="kpi-card"><div><span>Custo por Paciente</span><strong id="kpiCostPatient">R$ 0,00</strong><small>vs periodo anterior</small></div><div class="kpi-icon purple">♧</div></article>
+          <article class="kpi-card"><div><span>Total de Viagens</span><strong id="kpiTrips">0</strong><small>no periodo</small></div><div class="kpi-icon blue">▣</div></article>
+          <article class="kpi-card"><div><span>Pacientes Transportados</span><strong id="kpiPatients">0</strong><small>dados reais</small></div><div class="kpi-icon green">♧</div></article>
+          <article class="kpi-card"><div><span>Taxa de Ocupacao</span><strong id="kpiOccupation">0%</strong><small>media no periodo</small></div><div class="kpi-icon yellow">◔</div></article>
+          <article class="kpi-card"><div><span>Absenteismo</span><strong id="kpiAbsence">0%</strong><small>ausencias e desistencias</small></div><div class="kpi-icon red">△</div></article>
+        </section>
+
+        <section class="manager-content">
+          <article id="custos" class="panel chart-card">
+            <div class="panel-header"><h2>Viagens por Mes</h2><button>Chart.js</button></div>
+            <div class="chart-box"><canvas id="managerTripsMonthChart"></canvas></div>
+          </article>
+          <article id="motoristas" class="panel">
+            <div class="panel-header"><h2>Viagens por Motorista</h2><button>Todos</button></div>
+            <div id="driverRanking" class="ranking"></div>
+          </article>
+          <article class="panel">
+            <div class="panel-header"><h2>Alertas e Pontos de Atencao</h2><a>Ver todos</a></div>
+            <div id="attentionList" class="list"></div>
+          </article>
+        </section>
+
+        <section class="manager-content">
+          <article id="frota" class="panel chart-card">
+            <div class="panel-header"><h2>Veiculos Mais Utilizados</h2><button>Todos os Veiculos</button></div>
+            <div class="chart-box"><canvas id="managerFleetChart"></canvas></div>
+          </article>
+          <article id="passageiros" class="panel chart-card">
+            <div class="panel-header"><h2>Custos por Categoria</h2><button>Financeiro</button></div>
+            <div class="chart-box"><canvas id="managerCostsChart"></canvas></div>
+          </article>
+          <article id="exportacoes" class="panel">
+            <div class="panel-header"><h2>Exportacoes Rapidas</h2></div>
+            <div class="export-list">
+              <a href="/api/export/csv?tipo=viagens">Viagens Consolidado <span>⇩</span></a>
+              <a href="/api/export/csv?tipo=despesas">Custos Detalhados <span>⇩</span></a>
+              <a href="/api/export/csv?tipo=passageiros">Passageiros <span>⇩</span></a>
+              <a href="/api/export/csv?tipo=eventos">Auditoria <span>⇩</span></a>
+            </div>
+          </article>
+        </section>
+
+        <section class="manager-content">
+          <article class="panel chart-card">
+            <div class="panel-header"><h2>Ocorrencias por Tipo</h2><button>Auditoria</button></div>
+            <div class="chart-box"><canvas id="managerOccurrencesChart"></canvas></div>
+          </article>
+          <article class="panel chart-card">
+            <div class="panel-header"><h2>Absenteismo</h2><button>Mensal</button></div>
+            <div class="chart-box"><canvas id="managerAbsenceChart"></canvas></div>
+          </article>
+          <article class="panel">
+            <div class="panel-header"><h2>Rankings Executivos</h2><button>Top 10</button></div>
+            <div id="passengerSummary" class="ranking"></div>
+            <div id="fleetRanking" class="ranking"></div>
+          </article>
+        </section>
+
+        <section id="auditoria" class="panel">
+          <div class="panel-header"><h2>Auditoria Operacional</h2><a href="/api/export/csv?tipo=eventos">Exportar CSV</a></div>
+          <div class="table-wrap">
+            <table class="data-table">
+              <thead><tr><th>Origem</th><th>Tipo</th><th>Viagem</th><th>Descricao</th><th>Data</th></tr></thead>
+              <tbody id="auditTable"></tbody>
+            </table>
+          </div>
+        </section>
+      </main>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="/assets/js/api-config.js"></script>
+    <script src="/assets/js/auth-client.js"></script>
+    <script src="/assets/js/theme.js"></script>
+    <script src="/assets/js/charts/dashboard-charts.js"></script>
+    <script src="/assets/js/gestao.js"></script>
+  </body>
+</html>
