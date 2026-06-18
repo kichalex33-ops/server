@@ -1,0 +1,16 @@
+Options -Indexes
+DirectoryIndex index.php
+
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+
+  RewriteRule ^api(?:/(.*))?$ api/index.php [QSA,L]
+
+  RewriteRule ^painel-logistico/?$ public/portal.html [L]
+  RewriteRule ^painel-logistico/operador/?$ public/operador.html [L]
+  RewriteRule ^painel-logistico/gestao/?$ public/gestao.html [L]
+
+  RewriteCond %{DOCUMENT_ROOT}/public/$1 -f [OR]
+  RewriteCond %{DOCUMENT_ROOT}/public/$1 -d
+  RewriteRule ^(.+)$ public/$1 [L]
+</IfModule>
