@@ -1,8 +1,8 @@
-const apiRoot = "/api";
+const apiRoot = window.PAINEL_API_ROOT || "/api";
 const brl = new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" });
 
 async function apiGet(path) {
-  const response = await fetch(`${apiRoot}${path}`, { headers: { Accept: "application/json" } });
+  const response = await window.authFetch(`${apiRoot}${path}`, { headers: { Accept: "application/json" } });
   const body = await response.json();
   if (!response.ok || !body.ok) throw new Error(body.error || "Falha ao carregar dados.");
   return body.data;
@@ -16,10 +16,10 @@ async function loadGestao() {
     apiGet("/gestao/passageiros"),
     apiGet("/gestao/custos"),
     apiGet("/gestao/auditoria"),
-    fetchChartData("/api/graficos/viagens"),
-    fetchChartData("/api/graficos/custos"),
-    fetchChartData("/api/graficos/frota"),
-    fetchChartData("/api/graficos/ocorrencias")
+    fetchChartData(window.apiUrl("/graficos/viagens")),
+    fetchChartData(window.apiUrl("/graficos/custos")),
+    fetchChartData(window.apiUrl("/graficos/frota")),
+    fetchChartData(window.apiUrl("/graficos/ocorrencias"))
   ]);
 
   fillDashboard(dashboard, custos);
@@ -33,6 +33,7 @@ async function loadGestao() {
     frota: frotaChart,
     ocorrencias: ocorrenciasChart
   });
+  bindAuthenticatedExports();
 }
 
 function fillDashboard(dashboard, custos) {
@@ -127,6 +128,24 @@ function formatDate(value) {
 
 function escapeHtml(value) {
   return String(value).replace(/[&<>"']/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;" }[char]));
+}
+
+function bindAuthenticatedExports() {
+  document.querySelectorAll('a[href^="/api/export/"]').forEach((link) => {
+    link.addEventListener("click", async (event) => {
+      event.preventDefault();
+      const href = link.getAttribute("href").replace(/^\/api/, "");
+      const response = await window.authFetch(window.apiUrl(href), { headers: { Accept: "text/csv" } });
+      if (!response.ok) throw new Error("Falha ao exportar CSV.");
+      const blob = await response.blob();
+      const downloadUrl = URL.createObjectURL(blob);
+      const anchor = document.createElement("a");
+      anchor.href = downloadUrl;
+      anchor.download = new URL(link.href).searchParams.get("tipo") || "export";
+      anchor.click();
+      URL.revokeObjectURL(downloadUrl);
+    });
+  });
 }
 
 loadGestao().catch((error) => {

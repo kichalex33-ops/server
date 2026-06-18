@@ -116,59 +116,45 @@
           <article class="panel chart-card"><div class="panel-header"><h2>Ultimos Eventos</h2><a>Feed</a></div><div id="operatorFeed" class="list"></div></article>
         </section>
 
+        <section id="motoristas" class="manager-content">
+          <article class="panel">
+            <div class="panel-header"><h2>Cadastro de Motorista</h2><span id="driverFormStatus"></span></div>
+            <form id="driverForm" class="quick-actions">
+              <input name="nome" required placeholder="Nome completo">
+              <input name="cpf" placeholder="CPF">
+              <input name="matricula" placeholder="Matricula">
+              <input name="telefone" placeholder="Telefone">
+              <input name="cnh" placeholder="CNH">
+              <input name="senha" type="password" autocomplete="new-password" placeholder="Senha do app motorista">
+              <button type="submit">Cadastrar Motorista</button>
+            </form>
+          </article>
+          <article class="panel">
+            <div class="panel-header"><h2>Motoristas Cadastrados</h2><button id="refreshDriversBtn" type="button">Atualizar</button></div>
+            <div id="driversList" class="ranking"></div>
+          </article>
+          <article class="panel">
+            <div class="panel-header"><h2>QR Code para o App</h2><span id="driverQrStatus"></span></div>
+            <div class="qr-box">
+              <canvas id="driverQrCanvas" width="220" height="220"></canvas>
+              <textarea id="driverQrPayload" readonly rows="6" placeholder="O QR Code gerado aparecera aqui para leitura no app."></textarea>
+            </div>
+          </article>
+        </section>
+
         <section class="bottom-grid">
           <article class="panel"><div class="panel-header"><h2>Checklists Pendentes</h2></div><div class="day-metric"><strong style="color:var(--gold)">12</strong><span>Pendentes</span></div></article>
           <article class="panel"><div class="panel-header"><h2>Ocorrencias Abertas</h2></div><div class="day-metric"><strong style="color:var(--gold)">2</strong><span>Abertas</span></div></article>
           <article class="panel"><div class="panel-header"><h2>Acoes Rapidas</h2></div><div class="quick-actions"><button>Nova Mensagem</button><button>Registrar Ocorrencia</button><button>Rastreamento</button><button>Sincronizar Agora</button></div></article>
         </section>
-
-        <section id="motoristas" class="panel">
-          <div class="panel-header">
-            <div>
-              <h2>Motoristas</h2>
-              <span>Cadastros liberados para pareamento seguro do App Motorista.</span>
-            </div>
-            <button id="refreshDriversBtn" class="secondary" type="button">Atualizar</button>
-          </div>
-          <div class="table-wrap">
-            <table class="data-table">
-              <thead><tr><th>Nome</th><th>Telefone</th><th>Status</th><th>App</th><th>Acao</th></tr></thead>
-              <tbody id="operatorDrivers">
-                <tr><td colspan="5">Carregando motoristas...</td></tr>
-              </tbody>
-            </table>
-          </div>
-        </section>
       </main>
     </div>
-    <div id="driverPairingModal" class="pairing-modal" hidden>
-      <div class="pairing-dialog" role="dialog" aria-modal="true" aria-labelledby="driverPairingTitle">
-        <div class="panel-header">
-          <div>
-            <h2 id="driverPairingTitle">Parear App Motorista</h2>
-            <span id="driverPairingDriver">Motorista</span>
-          </div>
-          <button id="driverPairingCloseBtn" class="ghost" type="button">Fechar</button>
-        </div>
-        <div class="pairing-grid">
-          <div>
-            <div id="driverPairingQr" class="pairing-qr"></div>
-            <small class="pairing-hint">Aponte a camera do app para este QR Code. O token expira em 10 minutos.</small>
-          </div>
-          <div class="pairing-info">
-            <strong id="driverPairingStatus">Aguardando geracao do QR</strong>
-            <span id="driverPairingExpires">--</span>
-            <code id="driverPairingPayload">{}</code>
-            <button id="driverPairingCancelBtn" class="danger" type="button">Cancelar pareamento</button>
-          </div>
-        </div>
-      </div>
-    </div>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.4/build/qrcode.min.js"></script>
+    <script src="/assets/js/api-config.js"></script>
+    <script src="/assets/js/auth-client.js"></script>
     <script src="/assets/js/theme.js"></script>
     <script src="/assets/js/charts/dashboard-charts.js"></script>
-    <script src="/assets/js/vendor/qrcode.min.js"></script>
-    <script src="/assets/js/driver-pairing.js"></script>
     <script src="/assets/js/operador-dashboard.js"></script>
   </body>
 </html>

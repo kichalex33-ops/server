@@ -36,7 +36,8 @@ function createDashboardChart(canvasId, dataset, options = {}) {
 }
 
 async function fetchChartData(path) {
-  const response = await fetch(path, { headers: { Accept: "application/json" } });
+  const request = window.authFetch || fetch;
+  const response = await request(path, { headers: { Accept: "application/json" } });
   const body = await response.json();
   if (!response.ok || !body.ok) throw new Error(body.error || "Falha ao carregar grafico.");
   return body.data.datasets || [];
