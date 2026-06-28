@@ -1,0 +1,1 @@
+Teste de envio da homologacao H525 para validar permissao de escrita no repositorio.
