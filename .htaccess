@@ -17,7 +17,8 @@ DirectoryIndex index.php
 <IfModule mod_rewrite.c>
   RewriteEngine On
 
-  RewriteRule ^(?:db|docs|scripts|storage)(?:/.*)?$ - [F,L]
+  # H526 FIX: bloquear data/ (continha painel-logistico.json exposto publicamente)
+  RewriteRule ^(?:data|db|docs|scripts|storage)(?:/.*)?$ - [F,L]
   RewriteRule ^api/(?:src|config)(?:/.*)?$ - [F,L]
   RewriteRule ^(?:gerar-hash|hash-password|backup-mysql)\.php$ - [F,L]
 
@@ -29,6 +30,7 @@ DirectoryIndex index.php
 
   RewriteRule ^$ public/portal.html [L]
   RewriteRule ^index\.php$ public/portal.html [L]
+  RewriteRule ^comando(?:/(.*))?$ public/comando.html [L]
   RewriteRule ^painel-logistico/?$ public/portal.html [L]
   RewriteRule ^painel-logistico/operador/?$ public/operador.html [L]
   RewriteRule ^painel-logistico/gestao/?$ public/gestao.html [L]
