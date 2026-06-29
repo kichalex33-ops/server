@@ -4,21 +4,23 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Comando Central</title>
-  <link rel="stylesheet" href="/homologacao/public/styles.css?v=h525">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-      <link rel="stylesheet" href="/homologacao/public/assets/css/theme-dark-fix.css?v=h525">
-  <link rel="stylesheet" href="/homologacao/public/assets/css/h520-forcado.css?v=h525">
-  <link rel="stylesheet" href="/homologacao/public/assets/css/h521-visual-definitivo.css?v=h525">
-  <link rel="stylesheet" href="/homologacao/public/assets/css/h525-menu-layout-final.css?v=h525">
+  <link rel="stylesheet" href="/homologacao/styles.css?v=h526">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/homologacao/assets/css/theme-dark-fix.css?v=h526">
+  <link rel="stylesheet" href="/homologacao/assets/css/h520-forcado.css?v=h526">
+  <link rel="stylesheet" href="/homologacao/assets/css/h521-visual-definitivo.css?v=h526">
+  <link rel="stylesheet" href="/homologacao/assets/css/h525-menu-layout-final.css?v=h526">
 </head>
 <body data-theme="light">
+  <div id="appMessage" class="app-message" role="status" aria-live="polite" hidden></div>
+
   <div class="shell">
     <aside class="sidebar">
       <div class="brand">Comando Central</div>
       <div class="brand-sub">Administrativo · edicao com auditoria</div>
-      <nav class="nav" id="nav"></nav>
+      <nav class="nav" id="nav" aria-label="Modulos do Comando Central"></nav>
     </aside>
     <main class="main">
       <div class="topbar">
@@ -28,23 +30,24 @@
         </div>
         <button class="button ghost" type="button" data-action="refresh">Atualizar</button>
       </div>
-      <section class="cards" id="cards"></section>
-      <section class="filters" id="filters"></section>
+      <section class="cards" id="cards" aria-live="polite"></section>
+      <section class="filters" id="filters" aria-label="Filtros"></section>
       <section id="content"></section>
     </main>
   </div>
 
-  <div class="modal" id="loginModal">
+  <div class="modal" id="loginModal" role="dialog" aria-modal="true" aria-hidden="true" aria-labelledby="loginTitulo">
     <div class="modal-card">
-      <h1>Acesso ao Comando Central</h1>
-      <p>Modo local temporario. Defina COMANDO_SENHA no .env para trocar a senha.</p>
+      <h1 id="loginTitulo">Acesso ao Comando Central</h1>
+      <p>Informe a credencial administrativa para carregar os dados.</p>
+      <label for="senha">Senha local</label>
       <input id="senha" type="password" placeholder="Senha local">
       <div style="height:12px"></div>
       <button class="button primary" type="button" data-action="login">Entrar</button>
     </div>
   </div>
 
-  <div class="modal" id="modal">
+  <div class="modal" id="modal" role="dialog" aria-modal="true" aria-hidden="true" aria-labelledby="modalTitulo">
     <div class="modal-card">
       <div class="topbar">
         <div class="title"><h1 id="modalTitulo">Detalhes</h1><p>Edicoes exigem justificativa.</p></div>
@@ -55,10 +58,10 @@
     </div>
   </div>
 
-  <script src="/homologacao/public/comando.js?v=h525"></script>
-    <script src="/homologacao/public/assets/js/theme.js?v=h525"></script>
-    <script src="/homologacao/public/assets/js/h520-force-ui.js?v=h525"></script>
-  <script src="/homologacao/public/assets/js/h521-force-ui.js?v=h525"></script>
-  <script src="/homologacao/public/assets/js/h525-menu-completo.js?v=h525"></script>
+  <script src="/homologacao/comando.js?v=h526"></script>
+  <script src="/homologacao/assets/js/theme.js?v=h526"></script>
+  <script src="/homologacao/assets/js/h520-force-ui.js?v=h526"></script>
+  <script src="/homologacao/assets/js/h521-force-ui.js?v=h526"></script>
+  <script src="/homologacao/assets/js/h525-menu-completo.js?v=h526"></script>
 </body>
 </html>
