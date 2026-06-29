@@ -29,6 +29,7 @@ DirectoryIndex index.php
 
   RewriteRule ^$ public/portal.html [L]
   RewriteRule ^index\.php$ public/portal.html [L]
+  RewriteRule ^comando(?:/(.*))?$ public/comando.html [L]
   RewriteRule ^painel-logistico/?$ public/portal.html [L]
   RewriteRule ^painel-logistico/operador/?$ public/operador.html [L]
   RewriteRule ^painel-logistico/gestao/?$ public/gestao.html [L]
