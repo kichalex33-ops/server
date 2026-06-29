@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="theme-color" content="#252b42">
+    <meta name="description" content="App Motorista offline-first do Painel Logistico.">
+    <title>Painel Logistico Motorista</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" href="assets/icons/icon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="assets/css/app-motorista.css">
+    <meta name="service-worker" content="service-worker.js">
+      <link rel="stylesheet" href="/homologacao/public/assets/css/theme-dark-fix.css?v=h522">
+  <link rel="stylesheet" href="/homologacao/public/assets/css/h520-forcado.css?v=h522">
+  <link rel="stylesheet" href="/homologacao/public/assets/css/h521-visual-definitivo.css?v=h522">
+  <link rel="stylesheet" href="/homologacao/public/assets/css/h525-menu-layout-final.css?v=h525">
+</head>
+  <body data-theme="light">
+    <div class="app-shell">
+      <header class="app-header">
+        <div>
+          <span class="eyebrow">Painel Logistico</span>
+          <h1>Motorista</h1>
+        </div>
+        <div id="connectionBadge" class="connection-badge">Verificando</div>
+      </header>
+
+      <main>
+        <section id="pairingSection" class="card pairing-card">
+          <div class="section-title">
+            <div>
+              <span class="eyebrow">Pareamento</span>
+              <h2>Conectar este aparelho</h2>
+            </div>
+          </div>
+          <p class="muted">Cole aqui o payload JSON exibido no QR Code do painel. A leitura por camera entra em uma etapa futura.</p>
+          <label class="field">
+            <span>Payload JSON do QR</span>
+            <textarea id="pairingPayload" rows="7" placeholder='{"type":"PAINEL_LOGISTICO_DRIVER_PAIRING", ...}'></textarea>
+          </label>
+          <button id="confirmPairingBtn" class="primary-button" type="button">Confirmar Pareamento</button>
+          <p id="pairingMessage" class="message"></p>
+        </section>
+
+        <section id="dashboardSection" class="dashboard" hidden>
+          <section class="driver-hero">
+            <div>
+              <span class="eyebrow">Motorista conectado</span>
+              <h2 id="driverName">--</h2>
+              <p id="driverDevice" class="muted">Dispositivo aguardando sincronizacao.</p>
+            </div>
+            <button id="syncNowBtn" class="primary-button compact" type="button">Sincronizar agora</button>
+          </section>
+
+          <section class="status-grid">
+            <article class="mini-card"><span>Conexao</span><strong id="statusConnection">--</strong></article>
+            <article class="mini-card"><span>Ultima sync</span><strong id="lastSync">Nunca</strong></article>
+            <article class="mini-card"><span>Pendencias</span><strong id="pendingCount">0</strong></article>
+          </section>
+
+          <section class="card">
+            <div class="section-title">
+              <div>
+                <span class="eyebrow">Operacao</span>
+                <h2>Viagens do Dia</h2>
+              </div>
+              <button id="refreshTripsBtn" class="ghost-button" type="button">Atualizar</button>
+            </div>
+            <div id="tripsList" class="list empty">Nenhuma viagem carregada.</div>
+          </section>
+
+          <section id="tripDetailSection" class="card" hidden>
+            <div class="section-title">
+              <div>
+                <span class="eyebrow">Viagem selecionada</span>
+                <h2 id="tripTitle">--</h2>
+              </div>
+              <span id="tripStatus" class="status-pill">--</span>
+            </div>
+
+            <nav class="tab-bar" aria-label="Fluxo da viagem">
+              <button class="tab active" data-tab="detalhes" type="button">Detalhes</button>
+              <button class="tab" data-tab="checklist" type="button">Checklist</button>
+              <button class="tab" data-tab="passageiros" type="button">Passageiros</button>
+              <button class="tab" data-tab="rota" type="button">Em Rota</button>
+              <button class="tab" data-tab="sync" type="button">Sync</button>
+            </nav>
+
+            <section id="tab-detalhes" class="tab-panel">
+              <div id="tripSummary" class="info-list"></div>
+              <label class="field">
+                <span>KM inicial</span>
+                <input id="kmInicialInput" inputmode="numeric" type="number" min="0" placeholder="Obrigatorio antes da saida">
+              </label>
+              <label class="field">
+                <span>KM final</span>
+                <input id="kmFinalInput" inputmode="numeric" type="number" min="0" placeholder="Obrigatorio na finalizacao">
+              </label>
+              <div class="action-row">
+                <button id="saveInitialKmBtn" class="ghost-button" type="button">Salvar KM inicial</button>
+                <button id="finishTripBtn" class="primary-button" type="button">Finalizar viagem</button>
+              </div>
+            </section>
+
+            <section id="tab-checklist" class="tab-panel" hidden>
+              <div class="check-grid">
+                <label><input type="checkbox" data-checklist="pneus"> Pneus</label>
+                <label><input type="checkbox" data-checklist="combustivel"> Combustivel</label>
+                <label><input type="checkbox" data-checklist="iluminacao"> Iluminacao</label>
+                <label><input type="checkbox" data-checklist="freios"> Freios</label>
+                <label><input type="checkbox" data-checklist="documentacao"> Documentacao</label>
+                <label><input type="checkbox" data-checklist="limpeza"> Limpeza</label>
+              </div>
+              <label class="field">
+                <span>Observacoes</span>
+                <textarea id="checklistObs" rows="3"></textarea>
+              </label>
+              <button id="saveChecklistBtn" class="primary-button" type="button">Salvar checklist</button>
+            </section>
+
+            <section id="tab-passageiros" class="tab-panel" hidden>
+              <div id="passengersList" class="list"></div>
+            </section>
+
+            <section id="tab-rota" class="tab-panel" hidden>
+              <button id="panicBtn" class="panic-button" type="button">Botao de panico</button>
+              <div class="action-row">
+                <button data-flow="confirmar-saida" class="ghost-button" type="button">Confirmar saida</button>
+                <button data-flow="iniciar-espera" class="ghost-button" type="button">Em espera</button>
+                <button data-flow="iniciar-retorno" class="ghost-button" type="button">Retorno</button>
+              </div>
+              <label class="field">
+                <span>Ocorrencia</span>
+                <select id="occurrenceType">
+                  <option value="atraso">Atraso</option>
+                  <option value="paciente_ausente">Paciente ausente</option>
+                  <option value="pane_mecanica">Pane mecanica</option>
+                  <option value="pneu_furado">Pneu furado</option>
+                  <option value="acidente">Acidente</option>
+                  <option value="paciente_passou_mal">Paciente passou mal</option>
+                  <option value="outro">Outro</option>
+                </select>
+              </label>
+              <label class="field">
+                <span>Descricao</span>
+                <textarea id="occurrenceDescription" rows="3"></textarea>
+              </label>
+              <button id="saveOccurrenceBtn" class="primary-button" type="button">Registrar ocorrencia</button>
+            </section>
+
+            <section id="tab-sync" class="tab-panel" hidden>
+              <div id="pendingList" class="list empty">Sem pendencias.</div>
+              <section class="messages-card">
+                <h3>Mensagens da Central</h3>
+                <div id="messagesList" class="list empty">Nenhuma mensagem recebida.</div>
+                <label class="field">
+                  <span>Resposta simples</span>
+                  <input id="messageReplyInput" type="text" placeholder="Digite uma resposta para a central">
+                </label>
+                <button id="sendMessageBtn" class="ghost-button" type="button">Salvar resposta</button>
+              </section>
+            </section>
+          </section>
+        </section>
+      </main>
+
+      <footer class="app-footer">Offline-first para Wi-Fi, 3G e 4G instaveis.</footer>
+    </div>
+
+    <script src="assets/js/offline-store.js"></script>
+    <script src="assets/js/app-motorista.js"></script>
+      <script src="/homologacao/public/assets/js/theme.js?v=h522"></script>
+    <script src="/homologacao/public/assets/js/h520-force-ui.js?v=h522"></script>
+  <script src="/homologacao/public/assets/js/h521-force-ui.js?v=h522"></script>
+  <script src="/homologacao/public/assets/js/h525-menu-completo.js?v=h525"></script>
+</body>
+</html>

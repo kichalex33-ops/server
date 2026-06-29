@@ -3,13 +3,20 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <title>Painel Logistico | Acesso</title>
-    <link rel="stylesheet" href="/assets/css/painel-acesso.css">
-  </head>
+    <link rel="stylesheet" href="/homologacao/public/assets/css/painel-acesso.css?v=h525">
+      <link rel="stylesheet" href="/homologacao/public/assets/css/theme-dark-fix.css?v=h525">
+  <link rel="stylesheet" href="/homologacao/public/assets/css/h520-forcado.css?v=h525">
+  <link rel="stylesheet" href="/homologacao/public/assets/css/h521-visual-definitivo.css?v=h525">
+  <link rel="stylesheet" href="/homologacao/public/assets/css/h525-menu-layout-final.css?v=h525">
+</head>
   <body class="portal-page" data-theme="light">
     <main class="access-shell">
       <section class="access-brand">
-        <img class="access-logo" src="/assets/img/andrade-gestao-saude.jpeg" alt="Andrade Gestao em Saude">
+        <img class="access-logo" src="/homologacao/public/assets/img/andrade-gestao-saude.jpeg" alt="Andrade Gestao em Saude">
         <div>
           <p class="eyebrow">Painel Logistico</p>
           <h1>Escolha seu painel de trabalho</h1>
@@ -20,7 +27,7 @@
 
       <section class="access-grid" aria-label="Perfis de acesso">
         <article class="access-card operator-card">
-          <div class="access-icon">⌂</div>
+          <div class="access-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" ><path d="M4 20V8l8-5 8 5v12"/><path d="M9 20v-6h6v6"/></svg></div>
           <div>
             <p class="eyebrow">Operacao</p>
             <h2>Operador Logistico</h2>
@@ -28,30 +35,34 @@
           </div>
           <form class="login-form" data-profile="OPERADOR" data-target="/painel-logistico/operador">
             <label>Login<input name="login" autocomplete="username" placeholder="OPERADOR"></label>
-            <label>Senha<input name="password" type="password" autocomplete="current-password" placeholder="OPteste 01"></label>
+            <label>Senha<input name="password" type="password" autocomplete="current-password" placeholder="Digite sua senha"></label>
             <button type="submit">Entrar no Operador</button>
             <small class="login-feedback" aria-live="polite"></small>
           </form>
         </article>
 
         <article class="access-card manager-card">
-          <div class="access-icon">◈</div>
+          <div class="access-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" ><path d="M12 2l8 5v6c0 5-3.4 8-8 9-4.6-1-8-4-8-9V7l8-5Z"/><path d="M9 12l2 2 4-4"/></svg></div>
           <div>
             <p class="eyebrow">Gestao</p>
             <h2>Painel Gestor</h2>
             <span>Indicadores, custos, frota, motoristas, auditoria, relatorios e CSV.</span>
           </div>
-          <form class="login-form" data-profile="GESTAO" data-target="/painel-logistico/gestao">
+          <form class="login-form" data-profile="GESTOR" data-target="/painel-logistico/gestao">
             <label>Login<input name="login" autocomplete="username" placeholder="GESTAO"></label>
-            <label>Senha<input name="password" type="password" autocomplete="current-password" placeholder="GSTteste 01"></label>
+            <label>Senha<input name="password" type="password" autocomplete="current-password" placeholder="Digite sua senha"></label>
             <button type="submit">Entrar na Gestao</button>
             <small class="login-feedback" aria-live="polite"></small>
           </form>
         </article>
       </section>
     </main>
-    <script src="/assets/js/api-config.js"></script>
-    <script src="/assets/js/auth-client.js"></script>
-    <script src="/assets/js/portal.js"></script>
-  </body>
+    <script src="/homologacao/public/assets/js/api-config.js?v=h525"></script>
+    <script src="/homologacao/public/assets/js/auth-client.js?v=h525"></script>
+    <script src="/homologacao/public/assets/js/portal.js?v=h525"></script>
+      <script src="/homologacao/public/assets/js/theme.js?v=h525"></script>
+    <script src="/homologacao/public/assets/js/h520-force-ui.js?v=h525"></script>
+  <script src="/homologacao/public/assets/js/h521-force-ui.js?v=h525"></script>
+  <script src="/homologacao/public/assets/js/h525-menu-completo.js?v=h525"></script>
+</body>
 </html>

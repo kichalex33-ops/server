@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Central de Emergencia | Andrade Gestao em Saude</title>
+    <link rel="stylesheet" href="/homologacao/public/assets/css/painel-acesso.css?v=h525" />
+    <link rel="stylesheet" href="/homologacao/public/assets/css/emergencias.css?v=h525" />
+      <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+      <link rel="stylesheet" href="/homologacao/public/assets/css/theme-dark-fix.css?v=h525">
+  <link rel="stylesheet" href="/homologacao/public/assets/css/h520-forcado.css?v=h525">
+  <link rel="stylesheet" href="/homologacao/public/assets/css/h521-visual-definitivo.css?v=h525">
+  <link rel="stylesheet" href="/homologacao/public/assets/css/h525-menu-layout-final.css?v=h525">
+</head>
+  <body data-theme="light">
+    <div class="emergency-shell">
+      <aside class="sidebar">
+        <div class="brand"><img src="/homologacao/public/assets/img/andrade-gestao-saude.jpeg" alt="Andrade Gestao em Saude" /></div>
+        <nav class="side-menu">
+          <a href="/homologacao/painel-logistico/operador">Operador</a>
+          <a href="/homologacao/painel-logistico/sala-situacao">Sala de Situacao</a>
+          <a href="/homologacao/painel-logistico/emergencias" class="active">Emergencias</a>
+        </nav>
+      </aside>
+      <main class="emergency-main">
+        <header class="emergency-hero">
+          <div>
+            <span>Seguranca Operacional</span>
+            <h1>Central de Emergencia</h1>
+          </div>
+          <button id="soundToggle" type="button">Som configuravel</button>
+        </header>
+
+        <section class="emergency-grid">
+          <article class="emergency-panel critical">
+            <div class="panel-header"><h2>Alertas Criticos</h2><button id="refreshButton" type="button">Atualizar</button></div>
+            <div id="emergencyList" class="emergency-list"></div>
+          </article>
+          <article class="emergency-panel">
+            <div class="panel-header"><h2>Protocolo de Resposta</h2><span id="selectedStatus">Aguardando</span></div>
+            <div id="emergencyDetail" class="emergency-detail"></div>
+            <form id="protocolForm" class="protocol-form">
+              <input name="responsavel" placeholder="Responsavel" value="Operador" />
+              <select name="acao">
+                <option value="motorista_contatado">Motorista contatado</option>
+                <option value="suporte_acionado">Suporte acionado</option>
+                <option value="ambulancia_reserva">Ambulancia reserva</option>
+                <option value="veiculo_reserva">Veiculo reserva</option>
+                <option value="ocorrencia_resolvida">Ocorrencia resolvida</option>
+              </select>
+              <textarea name="observacoes" placeholder="Observacoes"></textarea>
+              <div class="protocol-actions">
+                <button type="submit">Registrar atendimento</button>
+                <button id="finishButton" type="button" class="finish">Encerrar</button>
+              </div>
+            </form>
+          </article>
+        </section>
+      </main>
+    </div>
+    <script src="/homologacao/public/assets/js/api-config.js?v=h525"></script>
+    <script src="/homologacao/public/assets/js/auth-client.js?v=h525"></script>
+    <script src="/homologacao/public/assets/js/emergencias.js?v=h525"></script>
+      <script src="/homologacao/public/assets/js/theme.js?v=h525"></script>
+    <script src="/homologacao/public/assets/js/h520-force-ui.js?v=h525"></script>
+  <script src="/homologacao/public/assets/js/h521-force-ui.js?v=h525"></script>
+  <script src="/homologacao/public/assets/js/h525-menu-completo.js?v=h525"></script>
+</body>
+</html>

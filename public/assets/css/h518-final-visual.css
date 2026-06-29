@@ -1,0 +1,509 @@
+
+/* H5.18 - refinamento real aplicado sobre o pacote ativo enviado pelo usuário.
+   Este arquivo deve ser o último CSS carregado. */
+
+:root {
+  --h518-bg: #07111e;
+  --h518-surface: #0e1f35;
+  --h518-surface-2: #122944;
+  --h518-surface-3: #0b1a2c;
+  --h518-border: rgba(127, 172, 225, .30);
+  --h518-border-soft: rgba(127, 172, 225, .18);
+  --h518-text: #f5f9ff;
+  --h518-muted: #bdd1e8;
+  --h518-blue: #6dadff;
+  --h518-shadow: 0 16px 38px rgba(0,0,0,.28);
+}
+
+html, body,
+.operator-app,
+.manager-app,
+.operator-app *,
+.manager-app * {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+}
+
+body .dashboard-shell.operator-app,
+body .dashboard-shell.manager-app {
+  grid-template-columns: minmax(0, 1fr) !important;
+}
+
+body .dashboard-shell.operator-app > .side-nav,
+body .dashboard-shell.manager-app > .side-nav {
+  position: fixed !important;
+  inset: 0 auto 0 0 !important;
+  width: min(320px, 88vw) !important;
+  height: 100vh !important;
+  overflow-y: auto !important;
+  transform: translateX(-108%) !important;
+  transition: transform .22s ease, box-shadow .22s ease !important;
+  z-index: 60 !important;
+}
+
+body.operator-menu-open .dashboard-shell.operator-app > .side-nav,
+body.operator-menu-open .dashboard-shell.manager-app > .side-nav {
+  transform: translateX(0) !important;
+  box-shadow: 0 24px 60px rgba(0,0,0,.48) !important;
+}
+
+body.operator-menu-open::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: rgba(2,8,23,.62);
+  backdrop-filter: blur(2px);
+  z-index: 55;
+}
+
+body .menu-button {
+  display: inline-grid !important;
+  place-items: center !important;
+}
+
+body .operator-app .main-dashboard,
+body .manager-app .main-dashboard {
+  padding: 18px 26px 34px !important;
+  gap: 18px !important;
+}
+
+body .operator-app .topbar,
+body .manager-app .topbar {
+  min-height: 66px !important;
+  padding: 0 22px !important;
+  margin: -18px -26px 0 !important;
+}
+
+body .operator-app .top-title h1,
+body .manager-app .top-title h1 {
+  font-size: clamp(21px, 2vw, 26px) !important;
+  line-height: 1.12 !important;
+  font-weight: 800 !important;
+  letter-spacing: -.025em !important;
+}
+
+body .operator-app .top-title span,
+body .manager-app .top-title span,
+body .operator-app .page-heading p,
+body .manager-app .page-heading p,
+body .operator-app small,
+body .manager-app small {
+  line-height: 1.45 !important;
+}
+
+body .operator-app .page-heading,
+body .manager-app .page-heading {
+  padding: 18px 20px !important;
+  margin: 0 !important;
+  border-radius: 16px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 18px !important;
+}
+
+body .operator-app .page-heading h2,
+body .manager-app .page-heading h2 {
+  font-size: clamp(21px, 1.8vw, 25px) !important;
+  font-weight: 800 !important;
+  letter-spacing: -.025em !important;
+  margin: 0 !important;
+}
+
+body .operator-app .page-heading p,
+body .manager-app .page-heading p {
+  font-size: 14px !important;
+  margin: 6px 0 0 !important;
+}
+
+body .operator-app .panel,
+body .operator-app .kpi-card,
+body .operator-app .quick-menu-card,
+body .manager-app .panel,
+body .manager-app .kpi-card,
+body .manager-app .quick-menu-card,
+body .operator-app .ops-metric-strip article,
+body .manager-app .ops-metric-strip article,
+body .operator-app .compact-stats article,
+body .manager-app .compact-stats article,
+body .operator-app .date-card,
+body .manager-app .date-card {
+  border-radius: 16px !important;
+}
+
+body .operator-app .panel,
+body .manager-app .panel {
+  padding: 18px !important;
+}
+
+body .operator-app .panel-header,
+body .manager-app .panel-header {
+  margin-bottom: 14px !important;
+  padding-bottom: 10px !important;
+}
+
+body .operator-app .panel-header h2,
+body .manager-app .panel-header h2 {
+  font-size: 17px !important;
+  font-weight: 800 !important;
+}
+
+body .operator-app .ops-metric-strip,
+body .manager-app .ops-metric-strip,
+body .operator-app .compact-stats,
+body .manager-app .compact-stats {
+  display: grid !important;
+  gap: 14px !important;
+  margin: 6px 0 12px !important;
+}
+
+body .operator-app .ops-metric-strip,
+body .manager-app .ops-metric-strip {
+  grid-template-columns: repeat(4, minmax(170px, 1fr)) !important;
+}
+
+body .operator-app .compact-stats,
+body .manager-app .compact-stats {
+  grid-template-columns: repeat(4, minmax(150px, 1fr)) !important;
+}
+
+body .operator-app .ops-metric-strip article,
+body .manager-app .ops-metric-strip article,
+body .operator-app .compact-stats article,
+body .manager-app .compact-stats article {
+  min-height: 104px !important;
+  padding: 17px 18px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: center !important;
+}
+
+body .operator-app .ops-metric-strip article span,
+body .manager-app .ops-metric-strip article span,
+body .operator-app .compact-stats article span,
+body .manager-app .compact-stats article span {
+  font-size: 12px !important;
+  font-weight: 800 !important;
+  letter-spacing: .045em !important;
+  text-transform: uppercase !important;
+}
+
+body .operator-app .ops-metric-strip article strong,
+body .manager-app .ops-metric-strip article strong,
+body .operator-app .compact-stats article strong,
+body .manager-app .compact-stats article strong {
+  font-size: 32px !important;
+  font-weight: 850 !important;
+  line-height: .95 !important;
+  margin: 9px 0 7px !important;
+}
+
+body .operator-app .ops-metric-strip article small,
+body .manager-app .ops-metric-strip article small,
+body .operator-app .compact-stats article small,
+body .manager-app .compact-stats article small {
+  font-size: 13px !important;
+  font-weight: 500 !important;
+}
+
+body .operator-app .kpi-grid,
+body .manager-app .kpi-grid,
+body .operator-app .manager-grid,
+body .manager-app .manager-grid {
+  gap: 14px !important;
+}
+
+body .operator-app .kpi-card,
+body .manager-app .kpi-card {
+  min-height: 134px !important;
+  padding: 18px !important;
+}
+
+body .operator-app .kpi-card strong,
+body .manager-app .kpi-card strong {
+  font-size: 34px !important;
+  font-weight: 850 !important;
+}
+
+body .operator-app .data-table th,
+body .manager-app .data-table th {
+  height: 42px !important;
+  font-size: 12px !important;
+  font-weight: 800 !important;
+  letter-spacing: .02em !important;
+}
+
+body .operator-app .data-table td,
+body .manager-app .data-table td {
+  min-height: 44px !important;
+  padding: 12px 10px !important;
+  font-size: 13px !important;
+}
+
+body .operator-app input,
+body .operator-app select,
+body .operator-app textarea,
+body .manager-app input,
+body .manager-app select,
+body .manager-app textarea,
+body .operator-app button,
+body .manager-app button,
+body .operator-app .subtab,
+body .manager-app .subtab {
+  min-height: 42px !important;
+  border-radius: 10px !important;
+  font-size: 14px !important;
+}
+
+/* Dark mode: selectors intentionally repeat html/body/class to beat older !important rules. */
+html[data-theme="dark"] body,
+body[data-theme="dark"],
+body.theme-dark {
+  background: var(--h518-bg) !important;
+  color: var(--h518-text) !important;
+}
+
+html[data-theme="dark"] body .operator-app .main-dashboard,
+html[data-theme="dark"] body .manager-app .main-dashboard,
+body[data-theme="dark"] .operator-app .main-dashboard,
+body[data-theme="dark"] .manager-app .main-dashboard,
+body.theme-dark .operator-app .main-dashboard,
+body.theme-dark .manager-app .main-dashboard {
+  background: radial-gradient(circle at 22% 0%, rgba(45, 95, 151, .30), transparent 32%), linear-gradient(180deg, #081624 0%, #06101c 100%) !important;
+  color: var(--h518-text) !important;
+}
+
+html[data-theme="dark"] body .operator-app .topbar,
+html[data-theme="dark"] body .manager-app .topbar,
+body[data-theme="dark"] .operator-app .topbar,
+body[data-theme="dark"] .manager-app .topbar,
+body.theme-dark .operator-app .topbar,
+body.theme-dark .manager-app .topbar {
+  background: linear-gradient(90deg, #0b2036, #0e2a47) !important;
+  border-bottom: 1px solid var(--h518-border) !important;
+  box-shadow: 0 10px 28px rgba(0,0,0,.30) !important;
+  color: #fff !important;
+}
+
+html[data-theme="dark"] body .operator-app .side-nav,
+html[data-theme="dark"] body .manager-app .side-nav,
+body[data-theme="dark"] .operator-app .side-nav,
+body[data-theme="dark"] .manager-app .side-nav,
+body.theme-dark .operator-app .side-nav,
+body.theme-dark .manager-app .side-nav {
+  background: linear-gradient(180deg, #08192b 0%, #06101c 100%) !important;
+  border-right: 1px solid var(--h518-border) !important;
+  color: #eaf4ff !important;
+}
+
+html[data-theme="dark"] body .operator-app .page-heading,
+html[data-theme="dark"] body .manager-app .page-heading,
+body[data-theme="dark"] .operator-app .page-heading,
+body[data-theme="dark"] .manager-app .page-heading,
+body.theme-dark .operator-app .page-heading,
+body.theme-dark .manager-app .page-heading,
+html[data-theme="dark"] body .operator-app .date-card,
+html[data-theme="dark"] body .manager-app .date-card,
+body[data-theme="dark"] .operator-app .date-card,
+body[data-theme="dark"] .manager-app .date-card,
+body.theme-dark .operator-app .date-card,
+body.theme-dark .manager-app .date-card {
+  background: linear-gradient(180deg, #102842 0%, #0b1e33 100%) !important;
+  border: 1px solid var(--h518-border) !important;
+  color: #fff !important;
+  box-shadow: var(--h518-shadow) !important;
+}
+
+html[data-theme="dark"] body .operator-app .panel,
+html[data-theme="dark"] body .manager-app .panel,
+body[data-theme="dark"] .operator-app .panel,
+body[data-theme="dark"] .manager-app .panel,
+body.theme-dark .operator-app .panel,
+body.theme-dark .manager-app .panel,
+html[data-theme="dark"] body .operator-app .kpi-card,
+html[data-theme="dark"] body .manager-app .kpi-card,
+body[data-theme="dark"] .operator-app .kpi-card,
+body[data-theme="dark"] .manager-app .kpi-card,
+body.theme-dark .operator-app .kpi-card,
+body.theme-dark .manager-app .kpi-card,
+html[data-theme="dark"] body .operator-app .quick-menu-card,
+html[data-theme="dark"] body .manager-app .quick-menu-card,
+body[data-theme="dark"] .operator-app .quick-menu-card,
+body[data-theme="dark"] .manager-app .quick-menu-card,
+body.theme-dark .operator-app .quick-menu-card,
+body.theme-dark .manager-app .quick-menu-card,
+html[data-theme="dark"] body .operator-app .ops-metric-strip article,
+html[data-theme="dark"] body .manager-app .ops-metric-strip article,
+body[data-theme="dark"] .operator-app .ops-metric-strip article,
+body[data-theme="dark"] .manager-app .ops-metric-strip article,
+body.theme-dark .operator-app .ops-metric-strip article,
+body.theme-dark .manager-app .ops-metric-strip article,
+html[data-theme="dark"] body .operator-app .compact-stats article,
+html[data-theme="dark"] body .manager-app .compact-stats article,
+body[data-theme="dark"] .operator-app .compact-stats article,
+body[data-theme="dark"] .manager-app .compact-stats article,
+body.theme-dark .operator-app .compact-stats article,
+body.theme-dark .manager-app .compact-stats article {
+  background: linear-gradient(180deg, #122b47 0%, #0b1d31 100%) !important;
+  background-color: #102842 !important;
+  color: var(--h518-text) !important;
+  border: 1px solid var(--h518-border) !important;
+  box-shadow: var(--h518-shadow) !important;
+}
+
+html[data-theme="dark"] body .operator-app .ops-metric-strip article,
+body[data-theme="dark"] .operator-app .ops-metric-strip article,
+body.theme-dark .operator-app .ops-metric-strip article,
+html[data-theme="dark"] body .manager-app .ops-metric-strip article,
+body[data-theme="dark"] .manager-app .ops-metric-strip article,
+body.theme-dark .manager-app .ops-metric-strip article,
+html[data-theme="dark"] body .operator-app .compact-stats article,
+body[data-theme="dark"] .operator-app .compact-stats article,
+body.theme-dark .operator-app .compact-stats article,
+html[data-theme="dark"] body .manager-app .compact-stats article,
+body[data-theme="dark"] .manager-app .compact-stats article,
+body.theme-dark .manager-app .compact-stats article {
+  border-left: 5px solid var(--h518-blue) !important;
+}
+
+html[data-theme="dark"] body .operator-app h1,
+html[data-theme="dark"] body .operator-app h2,
+html[data-theme="dark"] body .operator-app h3,
+html[data-theme="dark"] body .operator-app strong,
+html[data-theme="dark"] body .manager-app h1,
+html[data-theme="dark"] body .manager-app h2,
+html[data-theme="dark"] body .manager-app h3,
+html[data-theme="dark"] body .manager-app strong,
+body[data-theme="dark"] .operator-app h1,
+body[data-theme="dark"] .operator-app h2,
+body[data-theme="dark"] .operator-app h3,
+body[data-theme="dark"] .operator-app strong,
+body[data-theme="dark"] .manager-app h1,
+body[data-theme="dark"] .manager-app h2,
+body[data-theme="dark"] .manager-app h3,
+body[data-theme="dark"] .manager-app strong,
+body.theme-dark .operator-app h1,
+body.theme-dark .operator-app h2,
+body.theme-dark .operator-app h3,
+body.theme-dark .operator-app strong,
+body.theme-dark .manager-app h1,
+body.theme-dark .manager-app h2,
+body.theme-dark .manager-app h3,
+body.theme-dark .manager-app strong {
+  color: #ffffff !important;
+}
+
+html[data-theme="dark"] body .operator-app span,
+html[data-theme="dark"] body .operator-app small,
+html[data-theme="dark"] body .operator-app p,
+html[data-theme="dark"] body .manager-app span,
+html[data-theme="dark"] body .manager-app small,
+html[data-theme="dark"] body .manager-app p,
+body[data-theme="dark"] .operator-app span,
+body[data-theme="dark"] .operator-app small,
+body[data-theme="dark"] .operator-app p,
+body[data-theme="dark"] .manager-app span,
+body[data-theme="dark"] .manager-app small,
+body[data-theme="dark"] .manager-app p,
+body.theme-dark .operator-app span,
+body.theme-dark .operator-app small,
+body.theme-dark .operator-app p,
+body.theme-dark .manager-app span,
+body.theme-dark .manager-app small,
+body.theme-dark .manager-app p {
+  color: var(--h518-muted) !important;
+}
+
+html[data-theme="dark"] body .operator-app .topbar span,
+html[data-theme="dark"] body .operator-app .topbar strong,
+html[data-theme="dark"] body .manager-app .topbar span,
+html[data-theme="dark"] body .manager-app .topbar strong,
+body[data-theme="dark"] .operator-app .topbar span,
+body[data-theme="dark"] .operator-app .topbar strong,
+body[data-theme="dark"] .manager-app .topbar span,
+body[data-theme="dark"] .manager-app .topbar strong,
+body.theme-dark .operator-app .topbar span,
+body.theme-dark .operator-app .topbar strong,
+body.theme-dark .manager-app .topbar span,
+body.theme-dark .manager-app .topbar strong {
+  color: #ffffff !important;
+}
+
+html[data-theme="dark"] body .operator-app .data-table th,
+html[data-theme="dark"] body .manager-app .data-table th,
+body[data-theme="dark"] .operator-app .data-table th,
+body[data-theme="dark"] .manager-app .data-table th,
+body.theme-dark .operator-app .data-table th,
+body.theme-dark .manager-app .data-table th {
+  background: rgba(255,255,255,.045) !important;
+  color: #abd0ff !important;
+  border-color: var(--h518-border-soft) !important;
+}
+
+html[data-theme="dark"] body .operator-app .data-table td,
+html[data-theme="dark"] body .manager-app .data-table td,
+body[data-theme="dark"] .operator-app .data-table td,
+body[data-theme="dark"] .manager-app .data-table td,
+body.theme-dark .operator-app .data-table td,
+body.theme-dark .manager-app .data-table td {
+  background: transparent !important;
+  color: #edf6ff !important;
+  border-color: var(--h518-border-soft) !important;
+}
+
+html[data-theme="dark"] body .operator-app input,
+html[data-theme="dark"] body .operator-app select,
+html[data-theme="dark"] body .operator-app textarea,
+html[data-theme="dark"] body .manager-app input,
+html[data-theme="dark"] body .manager-app select,
+html[data-theme="dark"] body .manager-app textarea,
+body[data-theme="dark"] .operator-app input,
+body[data-theme="dark"] .operator-app select,
+body[data-theme="dark"] .operator-app textarea,
+body[data-theme="dark"] .manager-app input,
+body[data-theme="dark"] .manager-app select,
+body[data-theme="dark"] .manager-app textarea,
+body.theme-dark .operator-app input,
+body.theme-dark .operator-app select,
+body.theme-dark .operator-app textarea,
+body.theme-dark .manager-app input,
+body.theme-dark .manager-app select,
+body.theme-dark .manager-app textarea {
+  background: #0b1d31 !important;
+  color: #f5f9ff !important;
+  border-color: var(--h518-border) !important;
+}
+
+body .nav-section .nav-logout {
+  margin-top: 12px !important;
+  color: #fecaca !important;
+}
+
+body[data-theme="dark"] .nav-section .nav-logout,
+body.theme-dark .nav-section .nav-logout,
+html[data-theme="dark"] body .nav-section .nav-logout {
+  background: rgba(127,29,29,.18) !important;
+  border-color: rgba(248,113,113,.22) !important;
+  color: #fecaca !important;
+}
+
+@media (max-width: 1100px) {
+  body .operator-app .ops-metric-strip,
+  body .manager-app .ops-metric-strip,
+  body .operator-app .compact-stats,
+  body .manager-app .compact-stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+}
+
+@media (max-width: 640px) {
+  body .operator-app .main-dashboard,
+  body .manager-app .main-dashboard { padding: 12px !important; }
+  body .operator-app .topbar,
+  body .manager-app .topbar { margin: -12px -12px 0 !important; padding: 0 12px !important; }
+  body .operator-app .ops-metric-strip,
+  body .manager-app .ops-metric-strip,
+  body .operator-app .compact-stats,
+  body .manager-app .compact-stats { grid-template-columns: 1fr !important; }
+  body .operator-app .page-heading,
+  body .manager-app .page-heading { align-items: flex-start !important; flex-direction: column !important; }
+}

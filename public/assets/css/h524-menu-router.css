@@ -1,0 +1,29 @@
+
+/* H5.24 - menus por tela: gestor e operador */
+body .side-nav { overflow-y: auto !important; }
+body .nav-section a { display:flex !important; align-items:center !important; gap:10px !important; min-height:42px !important; line-height:1.2 !important; }
+body .nav-section .nav-icon { flex:0 0 20px !important; width:20px !important; height:20px !important; display:inline-grid !important; place-items:center !important; opacity:.9 !important; }
+body .nav-section .nav-icon svg { width:18px !important; height:18px !important; display:block !important; min-width:18px !important; min-height:18px !important; }
+body .nav-section .nav-label { display:inline !important; white-space:normal !important; overflow:visible !important; }
+body .nav-section .nav-logout { margin-top:8px !important; color:#fecaca !important; }
+body .nav-section p { margin:18px 8px 8px !important; }
+body .side-nav .sync-box { margin-top:14px !important; }
+body .app-screen[hidden], body main > section[hidden], body .driver-subpanel[hidden] { display:none !important; }
+body .manager-content > article[hidden] { display:none !important; }
+body .manager-single-panel[hidden] { display:none !important; }
+body .manager-content.manager-visible { display:grid !important; }
+body .manager-content.manager-empty { display:none !important; }
+body[data-theme="dark"] .nav-section a,
+body.theme-dark .nav-section a,
+html[data-theme="dark"] body .nav-section a { color:#dbeafe !important; }
+body[data-theme="dark"] .nav-section a.active,
+body.theme-dark .nav-section a.active,
+html[data-theme="dark"] body .nav-section a.active { background:#1d4371 !important; color:#fff !important; border-color:rgba(147,197,253,.34) !important; }
+body[data-theme="dark"] .nav-icon,
+body.theme-dark .nav-icon,
+html[data-theme="dark"] body .nav-icon { color:#9db8d8 !important; }
+body[data-theme="dark"] .nav-section a.active .nav-icon,
+body.theme-dark .nav-section a.active .nav-icon,
+html[data-theme="dark"] body .nav-section a.active .nav-icon { color:#ffffff !important; }
+.manager-page-note { margin: 0 0 14px; color: var(--muted, #9fb0c5); font-size:13px; }
+@media (max-width: 860px) { body .nav-section a { min-height:44px !important; } }

@@ -1,16 +1,54 @@
 Options -Indexes
 DirectoryIndex index.php
 
+<IfModule mod_authz_core.c>
+  <FilesMatch "^\.env">
+    Require all denied
+  </FilesMatch>
+</IfModule>
+
+<IfModule !mod_authz_core.c>
+  <FilesMatch "^\.env">
+    Order allow,deny
+    Deny from all
+  </FilesMatch>
+</IfModule>
+
 <IfModule mod_rewrite.c>
   RewriteEngine On
 
+  RewriteRule ^(?:db|docs|scripts|storage)(?:/.*)?$ - [F,L]
+  RewriteRule ^api/(?:src|config)(?:/.*)?$ - [F,L]
+  RewriteRule ^(?:gerar-hash|hash-password|backup-mysql)\.php$ - [F,L]
+
+  RewriteCond %{REQUEST_FILENAME} -f [OR]
+  RewriteCond %{REQUEST_FILENAME} -d
+  RewriteRule ^ - [L]
+
   RewriteRule ^api(?:/(.*))?$ api/index.php [QSA,L]
 
+  RewriteRule ^$ public/portal.html [L]
+  RewriteRule ^index\.php$ public/portal.html [L]
   RewriteRule ^painel-logistico/?$ public/portal.html [L]
   RewriteRule ^painel-logistico/operador/?$ public/operador.html [L]
   RewriteRule ^painel-logistico/gestao/?$ public/gestao.html [L]
+  RewriteRule ^painel-logistico/sala-situacao/?$ public/sala-situacao.html [L]
+  RewriteRule ^painel-logistico/emergencias/?$ public/emergencias.html [L]
+  RewriteRule ^painel-logistico/admin/infra/?$ public/admin-infra.html [L]
+  RewriteRule ^painel-logistico/saude/?$ public/sistema-saude.html [L]
+  RewriteRule ^sala-situacao/?$ public/sala-situacao.html [L]
 
-  RewriteCond %{DOCUMENT_ROOT}/public/$1 -f [OR]
-  RewriteCond %{DOCUMENT_ROOT}/public/$1 -d
-  RewriteRule ^(.+)$ public/$1 [L]
+  RewriteRule ^assets/(.*)$ public/assets/$1 [L]
+  RewriteRule ^public/assets/(.*)$ public/assets/$1 [L]
+  RewriteRule ^painel-logistico/assets/(.*)$ public/assets/$1 [L]
+  RewriteRule ^motorista(?:/(.*))?$ public/motorista/$1 [L]
+  RewriteRule ^(.+\.(?:css|js|png|jpg|jpeg|gif|svg|webp|ico|json|txt|map|woff|woff2))$ public/$1 [L]
+</IfModule>
+
+<IfModule mod_headers.c>
+  Header always set X-Frame-Options "SAMEORIGIN"
+  Header always set X-Content-Type-Options "nosniff"
+  Header always set Referrer-Policy "strict-origin-when-cross-origin"
+  Header always set Permissions-Policy "geolocation=(self), camera=(self), microphone=()"
+  Header always set Content-Security-Policy "default-src 'self'; script-src 'self' https://cdn.jsdelivr.net https://unpkg.com; style-src 'self' 'unsafe-inline' https://unpkg.com https://cdn.jsdelivr.net https://fonts.googleapis.com; img-src 'self' data: blob: https://*.tile.openstreetmap.org https://tile.openstreetmap.org https://*.openstreetmap.org; connect-src 'self' https://agsap.com.br; font-src 'self' data: https://cdn.jsdelivr.net https://fonts.gstatic.com; frame-ancestors 'none'; base-uri 'self'; form-action 'self'"
 </IfModule>

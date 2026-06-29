@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Sala de Situacao | Painel Logistico Andrade</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+    <link rel="stylesheet" href="/homologacao/public/assets/css/sala-situacao.css?v=h525">
+      <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+      <link rel="stylesheet" href="/homologacao/public/assets/css/theme-dark-fix.css?v=h525">
+  <link rel="stylesheet" href="/homologacao/public/assets/css/h520-forcado.css?v=h525">
+  <link rel="stylesheet" href="/homologacao/public/assets/css/h521-visual-definitivo.css?v=h525">
+  <link rel="stylesheet" href="/homologacao/public/assets/css/h525-menu-layout-final.css?v=h525">
+</head>
+  <body data-theme="light">
+    <header class="command-header">
+      <a class="brand" href="/homologacao/">
+        <img src="/homologacao/public/assets/img/andrade-gestao-saude.jpeg" alt="Andrade Gestao em Saude">
+        <span><strong>Sala de Situacao</strong><small>Central de comando operacional</small></span>
+      </a>
+      <nav aria-label="Acesso rapido">
+        <a href="/homologacao/">Painel</a>
+        <a href="/homologacao/painel-logistico/operador#viagens">Viagens</a>
+        <a href="/homologacao/painel-logistico/emergencias">Ocorrencias</a>
+      </nav>
+    </header>
+
+    <main class="situation-shell">
+      <section class="status-strip" aria-label="Indicadores da operacao">
+        <article><span>Viagens ativas</span><strong id="metricTrips">0</strong></article>
+        <article><span>Veiculos em rota</span><strong id="metricVehicles">0</strong></article>
+        <article><span>Alertas ativos</span><strong id="metricAlerts">0</strong></article>
+        <article><span>GPS sem atualizacao</span><strong id="metricGps">0</strong></article>
+        <article><span>Ultima leitura</span><strong id="metricUpdated">--:--</strong></article>
+      </section>
+
+      <div class="command-grid">
+        <section class="map-zone" aria-label="Mapa operacional">
+          <div class="map-toolbar">
+            <div>
+              <p>OpenStreetMap operacional</p>
+              <h1>Frota, alertas e trajetos em tempo real</h1>
+            </div>
+            <div class="map-badges">
+              <span id="mapEngineBadge" class="badge neutral">OpenStreetMap</span>
+              <span id="mapBadge" class="badge neutral">Conectando</span>
+            </div>
+          </div>
+          <div id="liveMap"></div>
+          <div id="mapFallback" class="map-fallback" hidden>
+            <strong>Mapa indisponivel</strong>
+            <span>Os dados continuam atualizando na lateral.</span>
+          </div>
+        </section>
+
+        <aside class="command-panel" aria-label="Central de comando">
+          <section>
+            <div class="panel-title"><h2>Veiculos / apps online</h2><span id="tripCount">0</span></div>
+            <div class="tracking-filters" aria-label="Filtros do mapa">
+              <label>Motorista<select id="filterMotorista"><option value="">Todos</option></select></label>
+              <label>Veiculo<select id="filterVeiculo"><option value="">Todos</option></select></label>
+              <label>Status<select id="filterStatus"><option value="">Todos</option></select></label>
+              <label>Viagem/rota<input id="filterViagem" type="search" placeholder="Codigo, destino, placa"></label>
+              <button id="clearFiltersBtn" class="ghost-action" type="button">Limpar filtros</button>
+            </div>
+            <div id="selectedVehicle" class="selected-vehicle">Selecione um veiculo para acompanhar no mapa.</div>
+            <div class="tracking-actions">
+              <a id="wazeLink" class="ghost-action" href="#" target="_blank" rel="noopener noreferrer" hidden>Abrir no Waze</a>
+              <button id="downloadRouteReportBtn" class="ghost-action" type="button" disabled>Relatorio CSV</button>
+            </div>
+            <div id="activeTrips" class="stack"><article class="item gray"><strong>Sem dados</strong><span>Aguardando localizacoes reais.</span></article></div>
+          </section>
+          <section>
+            <div class="panel-title"><h2>Alertas</h2><span id="alertCount">0</span></div>
+            <div id="alertsList" class="stack compact"></div>
+          </section>
+          <section>
+            <div class="panel-title"><h2>Feed operacional</h2><span id="feedCount">0</span></div>
+            <ol id="feedList" class="feed"></ol>
+          </section>
+          <section>
+            <div class="panel-title"><h2>Historico da rota</h2><span id="historyCount">0</span></div>
+            <div id="routeSummary" class="route-summary"><div class="empty-history">Selecione um veiculo para ver a trilha salva.</div></div>
+            <div class="history-table"><table><thead><tr><th>Hora</th><th>Vel.</th><th>Lat.</th><th>Lon.</th></tr></thead><tbody id="historyList"><tr><td colspan="4">Sem historico.</td></tr></tbody></table></div>
+          </section>
+        </aside>
+      </div>
+    </main>
+
+    <script src="/homologacao/public/assets/js/api-config.js?v=h525"></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="/homologacao/public/assets/js/sala-situacao.js?v=h525"></script>
+      <script src="/homologacao/public/assets/js/theme.js?v=h525"></script>
+    <script src="/homologacao/public/assets/js/h520-force-ui.js?v=h525"></script>
+  <script src="/homologacao/public/assets/js/h521-force-ui.js?v=h525"></script>
+  <script src="/homologacao/public/assets/js/h525-menu-completo.js?v=h525"></script>
+</body>
+</html>

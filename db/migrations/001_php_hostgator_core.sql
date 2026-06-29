@@ -56,6 +56,20 @@ CREATE TABLE IF NOT EXISTS motorista_qr_tokens (
   CONSTRAINT fk_qr_motorista FOREIGN KEY (motorista_id) REFERENCES motoristas(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+CREATE TABLE IF NOT EXISTS qr_tokens (
+  id VARCHAR(64) PRIMARY KEY,
+  motorista_id VARCHAR(64) NOT NULL,
+  token_hash CHAR(64) NOT NULL UNIQUE,
+  tipo VARCHAR(40) NOT NULL DEFAULT 'LOGIN_MOTORISTA',
+  expira_em DATETIME NOT NULL,
+  usado_em DATETIME NULL,
+  revogado_em DATETIME NULL,
+  criado_em DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  INDEX idx_qr_tokens_motorista (motorista_id),
+  INDEX idx_qr_tokens_expira (expira_em),
+  CONSTRAINT fk_qr_tokens_motorista FOREIGN KEY (motorista_id) REFERENCES motoristas(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 CREATE TABLE IF NOT EXISTS veiculos (
   id VARCHAR(64) PRIMARY KEY,
   tipo VARCHAR(80) NULL,

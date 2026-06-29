@@ -6,9 +6,9 @@ final class Rbac
 {
     private array $rules = [
         'ADMIN' => ['*'],
-        'GESTOR' => ['gestao', 'indicadores', 'graficos', 'auditoria', 'lgpd', 'export', 'motoristas'],
-        'OPERADOR' => ['dashboard', 'indicadores', 'graficos', 'motoristas', 'viagens', 'passageiros', 'localizacoes', 'gps', 'live-map', 'alertas', 'mensagens', 'checklists', 'ocorrencias', 'despesas', 'sync', 'panico', 'emergencias', 'giroflex', 'watchdog', 'antifraude'],
-        'MOTORISTA' => ['driver'],
+        'GESTOR' => ['gestao', 'operadores', 'indicadores', 'graficos', 'auditoria', 'lgpd', 'export', 'motoristas', 'viagens', 'veiculos', 'pacientes', 'destinos', 'passageiros', 'trip-passengers', 'live-map', 'rastreamento', 'tracking', 'gps', 'ai'],
+        'OPERADOR' => ['dashboard', 'indicadores', 'graficos', 'motoristas', 'viagens', 'veiculos', 'pacientes', 'destinos', 'passageiros', 'trip-passengers', 'localizacoes', 'gps', 'live-map', 'rastreamento', 'tracking', 'alertas', 'mensagens', 'checklists', 'ocorrencias', 'despesas', 'sync', 'panico', 'emergencias', 'giroflex', 'watchdog', 'antifraude', 'ai'],
+        'MOTORISTA' => ['driver', 'gps', 'trip-passengers'],
         'CIDADAO' => ['status'],
     ];
 

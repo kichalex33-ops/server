@@ -1,0 +1,299 @@
+/* H5.13 - Correção global do modo escuro.
+   Este arquivo fica por último na ordem de CSS para corrigir páginas antigas com cores hardcoded. */
+html[data-theme="dark"],
+body[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #07111f;
+  --panel: #0f1b2d;
+  --panel-2: #132239;
+  --text: #e5edf8;
+  --muted: #9fb0c5;
+  --line: #26364f;
+  --surface: #0f1b2d;
+  --surface-2: #132239;
+  --soft: #07111f;
+  --ink: #e5edf8;
+  --navy-dark: #e5edf8;
+  --op-bg: #061426;
+  --op-panel: #0c2137;
+  --op-panel-2: #0a1b2f;
+  --op-text: #edf5ff;
+  --op-muted: #92a5bd;
+  --op-line: #203a55;
+}
+
+body[data-theme="dark"] {
+  background: var(--bg) !important;
+  color: var(--text) !important;
+}
+
+body[data-theme="dark"] .main-dashboard,
+body[data-theme="dark"] .dashboard-shell,
+body[data-theme="dark"] .operator-app,
+body[data-theme="dark"] .manager-app,
+body[data-theme="dark"] .access-shell,
+body[data-theme="dark"] .infra-shell,
+body[data-theme="dark"] .infra-main,
+body[data-theme="dark"] .emergency-shell,
+body[data-theme="dark"] .emergency-main,
+body[data-theme="dark"] .situation-shell,
+body[data-theme="dark"] .main,
+body[data-theme="dark"] .ls-body,
+body[data-theme="dark"] main {
+  background: var(--bg) !important;
+  color: var(--text) !important;
+}
+
+body[data-theme="dark"] .panel,
+body[data-theme="dark"] .kpi-card,
+body[data-theme="dark"] .quick-menu-card,
+body[data-theme="dark"] .access-card,
+body[data-theme="dark"] .infra-card,
+body[data-theme="dark"] .infra-panel,
+body[data-theme="dark"] .emergency-panel,
+body[data-theme="dark"] .map-zone,
+body[data-theme="dark"] .command-panel section,
+body[data-theme="dark"] .status-strip article,
+body[data-theme="dark"] .card,
+body[data-theme="dark"] .modal-card,
+body[data-theme="dark"] .table-wrap,
+body[data-theme="dark"] .ls-card,
+body[data-theme="dark"] .ls-panel,
+body[data-theme="dark"] .overview-card,
+body[data-theme="dark"] .overview-metrics article,
+body[data-theme="dark"] .day-table,
+body[data-theme="dark"] .floating-ai-panel,
+body[data-theme="dark"] .activation-code-card,
+body[data-theme="dark"] .date-card,
+body[data-theme="dark"] .mini-card,
+body[data-theme="dark"] .system-online,
+body[data-theme="dark"] .selected-vehicle,
+body[data-theme="dark"] .mapa-resumo article,
+body[data-theme="dark"] .mapa-operacional,
+body[data-theme="dark"] .mapa-gerencial {
+  background: var(--panel) !important;
+  color: var(--text) !important;
+  border-color: var(--line) !important;
+  box-shadow: 0 12px 28px rgba(0,0,0,.22) !important;
+}
+
+body[data-theme="dark"] .side-nav,
+body[data-theme="dark"] .sidebar,
+body[data-theme="dark"] .ls-sidebar {
+  background: #07182b !important;
+  color: #f8fafc !important;
+  border-color: var(--line) !important;
+}
+
+body[data-theme="dark"] .side-brand,
+body[data-theme="dark"] .topbar,
+body[data-theme="dark"] .command-header,
+body[data-theme="dark"] .floating-ai-header {
+  background: #0c2137 !important;
+  color: #f8fafc !important;
+  border-color: var(--line) !important;
+}
+
+body[data-theme="dark"] .access-brand,
+body[data-theme="dark"] .infra-header,
+body[data-theme="dark"] .emergency-hero {
+  background: linear-gradient(135deg, #08182b, #12375a) !important;
+  color: #fff !important;
+}
+
+body[data-theme="dark"] h1,
+body[data-theme="dark"] h2,
+body[data-theme="dark"] h3,
+body[data-theme="dark"] strong,
+body[data-theme="dark"] .top-title h1,
+body[data-theme="dark"] .panel-header h2,
+body[data-theme="dark"] .page-heading h2,
+body[data-theme="dark"] .access-card h2,
+body[data-theme="dark"] .infra-card strong,
+body[data-theme="dark"] .infra-panel h2,
+body[data-theme="dark"] .infra-panel dd,
+body[data-theme="dark"] .backup-item strong,
+body[data-theme="dark"] .emergency-card strong,
+body[data-theme="dark"] .emergency-detail strong,
+body[data-theme="dark"] .status-strip strong,
+body[data-theme="dark"] .map-toolbar h1,
+body[data-theme="dark"] .panel-title h2,
+body[data-theme="dark"] .brand strong,
+body[data-theme="dark"] .data-table td,
+body[data-theme="dark"] .data-table th,
+body[data-theme="dark"] .trip-data-row strong,
+body[data-theme="dark"] .overview-card h3,
+body[data-theme="dark"] .overview-table-wrap h3,
+body[data-theme="dark"] .overview-metrics strong,
+body[data-theme="dark"] .day-table th,
+body[data-theme="dark"] .day-table td {
+  color: var(--text) !important;
+}
+
+body[data-theme="dark"] span,
+body[data-theme="dark"] small,
+body[data-theme="dark"] p,
+body[data-theme="dark"] label,
+body[data-theme="dark"] dt,
+body[data-theme="dark"] .muted,
+body[data-theme="dark"] .top-title span,
+body[data-theme="dark"] .panel-header small,
+body[data-theme="dark"] .panel-header span,
+body[data-theme="dark"] .access-card span,
+body[data-theme="dark"] .infra-card span,
+body[data-theme="dark"] .infra-panel dt,
+body[data-theme="dark"] .backup-item span,
+body[data-theme="dark"] .emergency-card span,
+body[data-theme="dark"] .emergency-detail span,
+body[data-theme="dark"] .status-strip span,
+body[data-theme="dark"] .brand small,
+body[data-theme="dark"] .page-heading p,
+body[data-theme="dark"] .list-item span,
+body[data-theme="dark"] .route-digest-list .list-item small,
+body[data-theme="dark"] .trip-data-row span,
+body[data-theme="dark"] .trip-data-row small {
+  color: var(--muted) !important;
+}
+
+body[data-theme="dark"] input,
+body[data-theme="dark"] select,
+body[data-theme="dark"] textarea,
+body[data-theme="dark"] .quick-actions input,
+body[data-theme="dark"] .quick-actions select,
+body[data-theme="dark"] .protocol-form input,
+body[data-theme="dark"] .protocol-form select,
+body[data-theme="dark"] .protocol-form textarea,
+body[data-theme="dark"] .ai-field textarea,
+body[data-theme="dark"] .ai-field select,
+body[data-theme="dark"] .floating-ai-form textarea {
+  background: var(--panel-2) !important;
+  color: var(--text) !important;
+  border-color: var(--line) !important;
+}
+
+body[data-theme="dark"] input::placeholder,
+body[data-theme="dark"] textarea::placeholder { color: #7f91aa !important; }
+
+body[data-theme="dark"] table,
+body[data-theme="dark"] th,
+body[data-theme="dark"] td,
+body[data-theme="dark"] .data-table th,
+body[data-theme="dark"] .data-table td,
+body[data-theme="dark"] .day-table th,
+body[data-theme="dark"] .day-table td,
+body[data-theme="dark"] .ls-table th,
+body[data-theme="dark"] .ls-table td {
+  background: transparent !important;
+  border-color: var(--line) !important;
+}
+body[data-theme="dark"] thead,
+body[data-theme="dark"] th,
+body[data-theme="dark"] .data-table th,
+body[data-theme="dark"] .day-table th,
+body[data-theme="dark"] .ls-table th {
+  background: var(--panel-2) !important;
+  color: var(--muted) !important;
+}
+
+body[data-theme="dark"] .page-heading,
+body[data-theme="dark"] .panel-tag,
+body[data-theme="dark"] .optional-fields,
+body[data-theme="dark"] .live-grid div,
+body[data-theme="dark"] .info-grid div,
+body[data-theme="dark"] .trip-table div,
+body[data-theme="dark"] .report-grid div,
+body[data-theme="dark"] .status-grid div,
+body[data-theme="dark"] .system-list div,
+body[data-theme="dark"] .passenger-group,
+body[data-theme="dark"] .stack-item,
+body[data-theme="dark"] .check-item,
+body[data-theme="dark"] .message-list article,
+body[data-theme="dark"] .dispatch-list div,
+body[data-theme="dark"] .overview-card dl div,
+body[data-theme="dark"] .actions-card a,
+body[data-theme="dark"] .backup-item,
+body[data-theme="dark"] .emergency-card,
+body[data-theme="dark"] .vehicle-card,
+body[data-theme="dark"] .item,
+body[data-theme="dark"] .ai-output,
+body[data-theme="dark"] .floating-ai-messages,
+body[data-theme="dark"] .floating-ai-form {
+  background: var(--panel-2) !important;
+  color: var(--text) !important;
+  border-color: var(--line) !important;
+}
+
+body[data-theme="dark"] .operator-app .panel,
+body[data-theme="dark"] .operator-app .kpi-card,
+body[data-theme="dark"] .operator-app .quick-menu-card,
+body[data-theme="dark"] .manager-app .panel,
+body[data-theme="dark"] .manager-app .kpi-card,
+body[data-theme="dark"] .manager-app .quick-menu-card,
+body[data-theme="dark"] .dashboard-shell .panel,
+body[data-theme="dark"] .dashboard-shell .kpi-card,
+body[data-theme="dark"] .dashboard-shell .quick-menu-card {
+  background: var(--panel) !important;
+  color: var(--text) !important;
+  border-color: var(--line) !important;
+}
+body[data-theme="dark"] .operator-app .topbar,
+body[data-theme="dark"] .dashboard-shell .topbar {
+  background: #0c2137 !important;
+  color: #f8fafc !important;
+}
+body[data-theme="dark"] .operator-app .side-nav,
+body[data-theme="dark"] .dashboard-shell .side-nav {
+  background: #07182b !important;
+  color: #f8fafc !important;
+}
+body[data-theme="dark"] .operator-app .nav-section a,
+body[data-theme="dark"] .dashboard-shell .nav-section a { color: #dbeafe !important; }
+body[data-theme="dark"] .operator-app .nav-section a.active,
+body[data-theme="dark"] .dashboard-shell .nav-section a.active { background: #17365d !important; color: #fff !important; }
+
+body[data-theme="dark"] .theme-button,
+body[data-theme="dark"] .icon-button,
+body[data-theme="dark"] .filter-button,
+body[data-theme="dark"] .ghost-action,
+body[data-theme="dark"] .driver-action,
+body[data-theme="dark"] .subtab,
+body[data-theme="dark"] .panel-header a,
+body[data-theme="dark"] .panel-header button,
+body[data-theme="dark"] .command-header nav a,
+body[data-theme="dark"] .mode-toggle {
+  background: var(--panel-2) !important;
+  color: var(--text) !important;
+  border-color: var(--line) !important;
+}
+
+body[data-theme="dark"] .profile-avatar,
+body[data-theme="dark"] .access-icon,
+body[data-theme="dark"] .kpi-symbol,
+body[data-theme="dark"] .badge.neutral,
+body[data-theme="dark"] .panel-title span {
+  background: #1d3552 !important;
+  color: #e5edf8 !important;
+}
+
+body[data-theme="dark"] .qr-render,
+body[data-theme="dark"] .qr-box canvas { background: #fff !important; }
+body[data-theme="dark"] .map-fallback { background: #0a1b2f !important; color: var(--text) !important; }
+body[data-theme="dark"] .mapa-vazio { background: rgba(15,27,45,.94) !important; color: var(--text) !important; border-color: var(--line) !important; }
+body[data-theme="dark"] .leaflet-popup-content-wrapper,
+body[data-theme="dark"] .leaflet-popup-tip { background: #0f1b2d !important; color: #e5edf8 !important; }
+
+.floating-theme-toggle {
+  position: fixed;
+  right: 18px;
+  bottom: 18px;
+  z-index: 10000;
+  box-shadow: 0 10px 24px rgba(0,0,0,.28);
+}
+
+body[data-theme="dark"] .floating-ai-panel { background: var(--panel) !important; }
+body[data-theme="dark"] .ai-bubble.bot { background: var(--panel-2) !important; border-color: var(--line) !important; color: var(--text) !important; }
+body[data-theme="dark"] .ai-bubble.error { background: #31151a !important; color: #fecaca !important; border-color: #7f1d1d !important; }
+
+@media (max-width: 820px) {
+  .floating-theme-toggle { right: 12px; bottom: 12px; }
+}

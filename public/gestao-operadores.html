@@ -1,0 +1,272 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <title>Operadores Logísticos | Gestor</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+    <link rel="stylesheet" href="/homologacao/public/assets/css/painel-acesso.css?v=h525">
+    <link rel="stylesheet" href="/homologacao/public/assets/css/mapas.css?v=h525">
+      <link rel="stylesheet" href="/homologacao/public/assets/css/theme-dark-fix.css?v=h525">
+  <link rel="stylesheet" href="/homologacao/public/assets/css/h520-forcado.css?v=h525">
+  <link rel="stylesheet" href="/homologacao/public/assets/css/h521-visual-definitivo.css?v=h525">
+  <link rel="stylesheet" href="/homologacao/public/assets/css/h524-menu-router.css?v=h525">
+  <link rel="stylesheet" href="/homologacao/public/assets/css/h525-menu-layout-final.css?v=h525">
+</head>
+  <body data-theme="dark" data-manager-screen="operadores">
+    <div class="dashboard-shell manager-app">
+      <aside class="side-nav">
+        <div class="side-brand compact-brand">
+          <img class="brand-logo" src="/homologacao/public/assets/img/andrade-gestao-saude.jpeg" alt="Andrade Gestão em Saúde">
+          <div><strong>Painel Gestor</strong><small>Transporte de Pacientes</small></div>
+        </div>
+        <nav class="nav-section" aria-label="Menu gestor">
+          <p>Gestão</p>
+          <a href="/homologacao/public/gestao.html" data-manager-screen-link="dashboard"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/><path d="M9 20v-6h6v6"/></svg></span> Dashboard Gerencial</a>
+          <a href="/homologacao/public/gestao-indicadores.html" data-manager-screen-link="indicadores"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19V5"/><path d="M4 19h16"/><path d="M8 15l3-3 3 2 5-7"/></svg></span> Indicadores</a>
+          <a href="/homologacao/public/gestao-ia.html" data-manager-screen-link="ia"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l2.5 7.5L22 12l-7.5 2.5L12 22l-2.5-7.5L2 12l7.5-2.5L12 2Z"/></svg></span> IA Gerencial</a>
+          <a href="/homologacao/public/gestao-mapa.html" data-manager-screen-link="mapa"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l-6 3V6l6-3 6 3 6-3v15l-6 3-6-3Z"/><path d="M9 3v15M15 6v15"/></svg></span> Mapa Gerencial</a>
+          <a href="/homologacao/public/gestao-custos.html" data-manager-screen-link="custos"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1v22"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7H14a3.5 3.5 0 0 1 0 7H6"/></svg></span> Custos Operacionais</a>
+          <a href="/homologacao/public/gestao-combustivel.html" data-manager-screen-link="combustivel"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 20V5a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v15"/><path d="M3 20h14"/><path d="M16 8h2l2 2v7a2 2 0 0 1-2 2h-2"/></svg></span> Combustível</a>
+          <a href="/homologacao/public/gestao-frota.html" data-manager-screen-link="frota"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 13h13l3 4v3H3v-7Z"/><path d="M5 13V7h8v6"/><circle cx="7" cy="20" r="2"/><circle cx="17" cy="20" r="2"/></svg></span> Frota</a>
+          <a href="/homologacao/public/gestao-motoristas.html" data-manager-screen-link="motoristas"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 22c1.8-4 4.5-6 8-6s6.2 2 8 6"/></svg></span> Motoristas</a>
+          <a href="/homologacao/public/gestao-passageiros.html" data-manager-screen-link="passageiros"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"/><circle cx="9.5" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></span> Passageiros</a>
+          <a href="/homologacao/public/gestao-auditoria.html" data-manager-screen-link="auditoria"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/><path d="M9 12l2 2 4-4"/></svg></span> Auditoria</a>
+          <a href="/homologacao/public/gestao-relatorios.html" data-manager-screen-link="relatorios"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5V4a2 2 0 0 1 2-2h9l5 5v12.5a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2Z"/><path d="M14 2v6h6"/><path d="M8 13h8M8 17h5"/></svg></span> Relatórios</a>
+          <a href="/homologacao/public/gestao-exportacoes.html" data-manager-screen-link="exportacoes"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M5 21h14"/></svg></span> Exportações</a>
+          <a href="/homologacao/public/gestao-seguranca.html" data-manager-screen-link="seguranca"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/><path d="M9 12l2 2 4-4"/></svg></span> Segurança Operacional</a>
+          <p>Configurações</p>
+          <a href="/homologacao/public/gestao-operadores.html" data-manager-screen-link="operadores"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/><path d="M9 12l2 2 4-4"/></svg></span> Operadores Logísticos</a>
+          <a href="/homologacao/public/gestao-perfis.html" data-manager-screen-link="perfis"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 22c1.8-4 4.5-6 8-6s6.2 2 8 6"/></svg></span> Perfis de Acesso</a>
+          <a href="/homologacao/public/gestao-parametros.html" data-manager-screen-link="parametros"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"/><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.88l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06A1.7 1.7 0 0 0 15 19.4a1.7 1.7 0 0 0-1 .6V20a2 2 0 1 1-4 0v-.09a1.7 1.7 0 0 0-1-.6 1.7 1.7 0 0 0-1.88.34l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.7 1.7 0 0 0 4.6 15a1.7 1.7 0 0 0-.6-1H4a2 2 0 1 1 0-4h.09a1.7 1.7 0 0 0 .6-1 1.7 1.7 0 0 0-.34-1.88l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.7 1.7 0 0 0 9 4.6a1.7 1.7 0 0 0 1-.6V4a2 2 0 1 1 4 0v.09a1.7 1.7 0 0 0 1 .6 1.7 1.7 0 0 0 1.88-.34l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.7 1.7 0 0 0 19.4 9c.2.36.4.68.6 1H20a2 2 0 1 1 0 4h-.09a1.7 1.7 0 0 0-.51 1Z"/></svg></span> Parâmetros do Sistema</a>
+          <a href="#" data-logout="true" class="nav-logout"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/></svg></span> Sair</a>
+        </nav>
+        <div class="sync-box">
+          <strong>Sincronizacao</strong>
+          <span>Dados gerenciais atualizados pela API</span>
+          <small><i class="dot"></i> Online</small>
+        </div>
+      </aside>
+
+      <main class="main-dashboard">
+        <header class="topbar">
+          <div class="top-title">
+            <button class="menu-button" type="button">☰</button>
+            <div><span id="managerScreenEyebrow">Visão estratégica</span><h1 id="managerScreenTitle">Painel do Gestor</h1></div>
+          </div>
+          <div class="top-actions">
+            <select id="periodFilter" class="filter-button"><option value="">Periodo completo</option><option value="today">Hoje</option><option value="month">Mes</option></select>
+            <select id="driverFilter" class="filter-button"><option value="">Todos os Motoristas</option></select>
+            <select id="vehicleFilter" class="filter-button"><option value="">Todos os Veiculos</option></select>
+            <button id="filterBtn" class="filter-button" type="button">Filtrar</button>
+            <button id="themeToggle" class="theme-button" type="button" aria-label="Alternar tema">☀</button>
+            <button data-logout type="button" class="icon-button" title="Sair" aria-label="Sair do sistema"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/></svg></button>
+            <div class="profile-pill"><span class="profile-avatar">GE</span><div><strong>Gestor</strong><span>Perfil Gestor</span></div></div>
+          </div>
+        </header>
+
+        <section id="dashboard" class="manager-grid">
+          <article class="kpi-card"><div><span>Custo por KM</span><strong id="kpiCostKm">R$ 0,00</strong><small>vs periodo anterior</small></div><div class="kpi-icon green">$</div></article>
+          <article class="kpi-card"><div><span>Custo por Paciente</span><strong id="kpiCostPatient">R$ 0,00</strong><small>vs periodo anterior</small></div><div class="kpi-icon purple"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" ><path d="M12 21s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 11c0 5.6-7 10-7 10Z"/></svg></div></article>
+          <article class="kpi-card"><div><span>Total de Viagens</span><strong id="kpiTrips">0</strong><small>no periodo</small></div><div class="kpi-icon blue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" ><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M8 2v4M16 2v4M3 10h18"/></svg></div></article>
+          <article class="kpi-card"><div><span>Pacientes Transportados</span><strong id="kpiPatients">0</strong><small>dados reais</small></div><div class="kpi-icon green"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" ><path d="M16 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"/><circle cx="9.5" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div></article>
+          <article class="kpi-card"><div><span>Taxa de Ocupacao</span><strong id="kpiOccupation">0%</strong><small>media no periodo</small></div><div class="kpi-icon yellow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" ><path d="M19 5L5 19"/><circle cx="7" cy="7" r="2"/><circle cx="17" cy="17" r="2"/></svg></div></article>
+          <article class="kpi-card"><div><span>Absenteismo</span><strong id="kpiAbsence">0%</strong><small>ausencias e desistencias</small></div><div class="kpi-icon red"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" ><path d="M10.3 3.9 2.5 18a2 2 0 0 0 1.7 3h15.6a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"/><path d="M12 9v4M12 17h.01"/></svg></div></article>
+        </section>
+
+        <section id="gestaoResumoOperacional" class="ops-metric-strip manager-operational-strip" aria-label="Resumo operacional da frota">
+          <article><span>Veículos cadastrados</span><strong id="managerVehiclesTotal">0</strong><small>frota total</small></article>
+          <article><span>Motoristas cadastrados</span><strong id="managerDriversTotal">0</strong><small>equipe total</small></article>
+          <article><span>KM rodados no mês</span><strong id="managerKmMonth">0 km</strong><small>por viagens finalizadas</small></article>
+          <article><span>Viagens no mês</span><strong id="managerTripsMonth">0</strong><small>agenda e histórico</small></article>
+        </section>
+
+
+        <section id="ia-gerencial" class="manager-content ai-manager-section">
+          <article class="panel ai-command-card">
+            <div class="panel-header"><div><h2>IA Gerencial</h2><small>Relatórios e recomendações usando os dados atuais da plataforma</small></div><span id="managerAiStatus">Pronto</span></div>
+            <div class="ai-actions">
+              <button id="managerAiReportBtn" class="primary-action" type="button">Relatório gerencial</button>
+              <button id="managerAiOpsBtn" type="button">Resumo operacional</button>
+              <button id="managerAiHomologBtn" type="button">Pendências de homologação</button>
+              <button id="managerAiStatsBtn" type="button">Estatísticas executivas</button>
+              <button id="managerAiRoutesBtn" type="button">Rotas, clima e lentidão</button>
+            </div>
+            <label class="ai-field"><span>Pergunta opcional</span><textarea id="managerAiPrompt" rows="4" placeholder="Ex.: Quais são os principais gargalos da operação?"></textarea></label>
+            <div class="ai-submit-row"><button id="managerAiAskBtn" class="primary-action" type="button">Enviar pergunta</button><small>Use este botão para enviar texto livre para a IA.</small></div>
+          </article>
+          <article class="panel ai-result-card">
+            <div class="panel-header"><h2>Resposta da IA</h2><button id="managerAiCopyBtn" type="button">Copiar</button></div>
+            <div id="managerAiResult" class="ai-output">Clique em uma ação para gerar a análise gerencial.</div>
+          </article>
+        </section>
+
+        <section id="mapa-gerencial" class="panel mapa-secao">
+          <div class="panel-header"><h2>Mapa Gerencial da Frota</h2><a href="/homologacao/painel-logistico/sala-situacao">Abrir sala completa</a></div>
+          <div class="mapa-resumo" aria-label="Resumo gerencial do mapa">
+            <article><span>Veiculos localizados</span><strong data-live-map-stat="vehicles">0</strong></article>
+            <article><span>Motoristas em operacao</span><strong data-live-map-stat="drivers">0</strong></article>
+            <article><span>Alertas ativos</span><strong data-live-map-stat="alerts">0</strong></article>
+            <article><span>Ultima atualizacao</span><strong data-live-map-stat="updated">--</strong></article>
+          </div>
+          <div id="managementLiveMap" class="mapa-gerencial" aria-label="Visao consolidada da frota"></div>
+          <div class="mapa-legenda"><span class="online">Localizacao atual</span><span class="atencao">GPS desatualizado</span><span class="alerta">Alerta ativo</span></div>
+        </section>
+
+        <section class="manager-content">
+          <article id="custos" class="panel chart-card">
+            <div class="panel-header"><h2>Viagens por Mes</h2><span class="panel-tag" aria-label="Filtro informativo">Chart.js</span></div>
+            <div class="chart-box"><canvas id="managerTripsMonthChart"></canvas></div>
+          </article>
+          <article id="motoristas" class="panel">
+            <div class="panel-header"><h2>Viagens por Motorista</h2><span class="panel-tag" aria-label="Filtro informativo">Todos</span></div>
+            <div id="driverRanking" class="ranking"></div>
+          </article>
+          <article class="panel">
+            <div class="panel-header"><h2>Alertas e Pontos de Atencao</h2><a>Ver todos</a></div>
+            <div id="attentionList" class="list"></div>
+          </article>
+        </section>
+
+        <section class="manager-content">
+          <article id="frota" class="panel chart-card">
+            <div class="panel-header"><h2>Veiculos Mais Utilizados</h2><span class="panel-tag" aria-label="Filtro informativo">Todos os Veiculos</span></div>
+            <div class="chart-box"><canvas id="managerFleetChart"></canvas></div>
+          </article>
+          <article id="passageiros" class="panel chart-card">
+            <div class="panel-header"><h2>Custos por Categoria</h2><span class="panel-tag" aria-label="Filtro informativo">Financeiro</span></div>
+            <div class="chart-box"><canvas id="managerCostsChart"></canvas></div>
+          </article>
+          <article id="exportacoes" class="panel">
+            <div class="panel-header"><h2>Exportacoes Rapidas</h2></div>
+            <div class="export-list">
+              <a href="/homologacao/api/export/csv?tipo=viagens">Viagens Consolidado <span class="inline-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" ><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M5 21h14"/></svg></span></a>
+              <a href="/homologacao/api/export/csv?tipo=despesas">Custos Detalhados <span class="inline-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" ><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M5 21h14"/></svg></span></a>
+              <a href="/homologacao/api/export/csv?tipo=passageiros">Passageiros <span class="inline-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" ><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M5 21h14"/></svg></span></a>
+              <a href="/homologacao/api/export/csv?tipo=eventos">Auditoria <span class="inline-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" ><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M5 21h14"/></svg></span></a>
+            </div>
+          </article>
+        </section>
+
+        <section class="manager-content">
+          <article class="panel chart-card">
+            <div class="panel-header"><h2>Ocorrencias por Tipo</h2><span class="panel-tag" aria-label="Filtro informativo">Auditoria</span></div>
+            <div class="chart-box"><canvas id="managerOccurrencesChart"></canvas></div>
+          </article>
+          <article class="panel chart-card">
+            <div class="panel-header"><h2>Absenteismo</h2><span class="panel-tag" aria-label="Filtro informativo">Mensal</span></div>
+            <div class="chart-box"><canvas id="managerAbsenceChart"></canvas></div>
+          </article>
+          <article class="panel">
+            <div class="panel-header"><h2>Rankings Executivos</h2><span class="panel-tag" aria-label="Filtro informativo">Top 10</span></div>
+            <div id="passengerSummary" class="ranking"></div>
+            <div id="fleetRanking" class="ranking"></div>
+          </article>
+        </section>
+
+
+        <section id="operadores-logisticos" class="panel hierarchy-panel">
+          <div class="panel-header"><div><h2>Operadores Logísticos</h2><small>Somente o gestor cadastra, bloqueia ou exclui operadores do painel.</small></div><span id="operatorManagerStatus"></span></div>
+          <div class="hierarchy-grid">
+            <form id="operatorManagerForm" class="quick-actions hierarchy-form">
+              <input name="nome" required placeholder="Nome do operador">
+              <input name="senha" required type="password" autocomplete="new-password" placeholder="Senha do painel">
+              <details class="optional-fields">
+                <summary>Preencher CPF, login ou e-mail depois/opcional</summary>
+                <input name="cpf" placeholder="CPF opcional">
+                <input name="login" placeholder="Login opcional, se não quiser automático">
+                <input name="email" type="email" placeholder="E-mail opcional">
+              </details>
+              <button type="submit">Cadastrar operador</button>
+              <small>Na primeira criação, basta nome e senha. Se CPF/login ficar vazio, o sistema cria um login automático para o painel.</small>
+            </form>
+            <div class="hierarchy-result">
+              <strong>Última senha gerada para app</strong>
+              <div id="lastOperatorAppPassword" class="activation-code-card compact"><span>Nenhuma senha gerada ainda.</span></div>
+              <small>Anote a senha no momento da geração. Por segurança, ela não é exibida novamente.</small>
+            </div>
+          </div>
+          <div class="table-wrap">
+            <table class="data-table">
+              <thead><tr><th>Nome</th><th>Login</th><th>Status</th><th>App</th><th>Criado em</th><th>Ações</th></tr></thead>
+              <tbody id="operatorsTable"><tr><td colspan="6">Carregando operadores...</td></tr></tbody>
+            </table>
+          </div>
+        </section>
+
+        <section id="auditoria" class="panel">
+          <div class="panel-header"><h2>Auditoria Operacional</h2><a href="/homologacao/api/export/csv?tipo=eventos">Exportar CSV</a></div>
+          <div class="table-wrap">
+            <table class="data-table">
+              <thead><tr><th>Origem</th><th>Tipo</th><th>Viagem</th><th>Descricao</th><th>Data</th></tr></thead>
+              <tbody id="auditTable"></tbody>
+            </table>
+          </div>
+        </section>
+
+
+        <section id="combustivel" class="panel manager-single-panel">
+          <div class="panel-header"><div><h2>Combustível</h2><small>Resumo para controle de abastecimento, custo por quilômetro e consumo por veículo.</small></div><span class="panel-tag">Gestão</span></div>
+          <div class="manager-placeholder-grid">
+            <article><span>Custo estimado</span><strong id="fuelCostPreview">R$ 0,00</strong><small>por período filtrado</small></article>
+            <article><span>Consumo médio</span><strong>-- km/l</strong><small>preencher via lançamentos</small></article>
+            <article><span>Ação</span><strong>Conferir frota</strong><small>use relatórios e exportações</small></article>
+          </div>
+        </section>
+
+        <section id="relatorios" class="panel manager-single-panel">
+          <div class="panel-header"><div><h2>Relatórios</h2><small>Atalhos para relatórios gerenciais e operacionais.</small></div><span class="panel-tag">PDF/CSV</span></div>
+          <div class="export-list">
+            <a href="/homologacao/api/export/csv?tipo=viagens">Relatório de viagens</a>
+            <a href="/homologacao/api/export/csv?tipo=passageiros">Relatório de passageiros</a>
+            <a href="/homologacao/api/export/csv?tipo=despesas">Relatório de custos</a>
+            <a href="/homologacao/api/export/csv?tipo=eventos">Relatório de auditoria</a>
+          </div>
+        </section>
+
+        <section id="seguranca" class="panel manager-single-panel">
+          <div class="panel-header"><div><h2>Segurança Operacional</h2><small>Controle de acessos, alertas e auditoria do sistema.</small></div><span class="panel-tag">Gestor</span></div>
+          <div class="manager-placeholder-grid">
+            <article><span>Autenticação</span><strong>JWT ativo</strong><small>sessão protegida</small></article>
+            <article><span>Perfis</span><strong>Gestor / Operador</strong><small>acesso por função</small></article>
+            <article><span>Auditoria</span><strong>Eventos registrados</strong><small>acompanhe a tabela de auditoria</small></article>
+          </div>
+        </section>
+
+        <section id="perfis" class="panel manager-single-panel">
+          <div class="panel-header"><div><h2>Perfis de Acesso</h2><small>Resumo das permissões disponíveis na homologação.</small></div><span class="panel-tag">Configuração</span></div>
+          <div class="manager-placeholder-grid">
+            <article><span>Gestor</span><strong>Acesso total</strong><small>painel gerencial e operadores</small></article>
+            <article><span>Operador</span><strong>Operação diária</strong><small>viagens, pacientes, motoristas</small></article>
+            <article><span>Motorista</span><strong>App móvel</strong><small>viagens vinculadas</small></article>
+          </div>
+        </section>
+
+        <section id="parametros" class="panel manager-single-panel">
+          <div class="panel-header"><div><h2>Parâmetros do Sistema</h2><small>Configurações operacionais da homologação.</small></div><span class="panel-tag">Sistema</span></div>
+          <div class="manager-placeholder-grid">
+            <article><span>Ambiente</span><strong>Homologação</strong><small>/homologacao</small></article>
+            <article><span>Tema</span><strong>Claro / Escuro</strong><small>persistido no navegador</small></article>
+            <article><span>Menu</span><strong>Telas separadas</strong><small>cada item abre sua página</small></article>
+          </div>
+        </section>
+
+      </main>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="/homologacao/public/assets/js/api-config.js?v=h525"></script>
+    <script src="/homologacao/public/assets/js/auth-client.js?v=h525"></script>
+    <script src="/homologacao/public/assets/js/theme.js?v=h525"></script>
+    <script src="/homologacao/public/assets/js/charts/dashboard-charts.js?v=h525"></script>
+    <script src="/homologacao/public/assets/js/gestao.js?v=h525"></script>
+    <script src="/homologacao/public/assets/js/live-map.js?v=h525"></script>
+    <script src="/homologacao/public/assets/js/h520-force-ui.js?v=h525"></script>
+  <script src="/homologacao/public/assets/js/h521-force-ui.js?v=h525"></script>
+  <script src="/homologacao/public/assets/js/h524-menu-router.js?v=h525"></script>
+  <script src="/homologacao/public/assets/js/h525-menu-completo.js?v=h525"></script>
+</body>
+</html>

@@ -29,17 +29,23 @@ final class Auth
             $this->audit->failure('auth_login_missing', 'usuarios', null);
             throw new RuntimeException('Login e senha são obrigatórios.');
         }
+
+        $this->enforceLoginRateLimit($login);
+
         $user = $this->db->fetch(
-            'SELECT * FROM usuarios WHERE login = :login OR email = :login LIMIT 1',
-            ['login' => $login]
+            'SELECT * FROM usuarios WHERE login = :login OR email = :email LIMIT 1',
+            ['login' => $login, 'email' => $login]
         );
         if (!$user || !password_verify($password, (string) $user['senha_hash'])) {
+            $this->registerFailedLogin($login);
             $this->audit->failure('auth_login_failed', 'usuarios', $login);
             throw new RuntimeException('Login inválido.');
         }
         if (($user['status'] ?? 'ativo') !== 'ativo') {
+            $this->registerFailedLogin($login);
             throw new RuntimeException('Usuário inativo.');
         }
+        $this->clearLoginAttempts($login);
         $publicUser = $this->publicUser($user);
         $tokens = $this->issueTokens($publicUser);
         $this->audit->record('login', 'usuarios', (string) $user['id'], $publicUser);
@@ -114,6 +120,87 @@ final class Auth
             'tokenType' => 'Bearer',
             'expiresIn' => $this->config['jwt_access_ttl'],
         ];
+    }
+
+
+    private function ensureLoginAttemptsTable(): void
+    {
+        $this->db->execute(
+            "CREATE TABLE IF NOT EXISTS login_attempts (
+                id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+                login_key CHAR(64) NOT NULL,
+                ip VARCHAR(64) NOT NULL,
+                succeeded TINYINT(1) NOT NULL DEFAULT 0,
+                criado_em DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                INDEX idx_login_attempts_lookup (login_key, ip, criado_em),
+                INDEX idx_login_attempts_created (criado_em)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci"
+        );
+    }
+
+    private function enforceLoginRateLimit(string $login): void
+    {
+        $this->ensureLoginAttemptsTable();
+        $loginKey = $this->loginAttemptKey($login);
+        $ip = $this->clientIp();
+        $attempts = (int) (($this->db->fetch(
+            "SELECT COUNT(*) AS total
+             FROM login_attempts
+             WHERE login_key = :login_key
+               AND ip = :ip
+               AND succeeded = 0
+               AND criado_em >= (NOW() - INTERVAL 15 MINUTE)",
+            ['login_key' => $loginKey, 'ip' => $ip]
+        )['total'] ?? 0));
+
+        if ($attempts >= 8) {
+            $this->audit->failure('auth_login_rate_limited', 'usuarios', $login);
+            throw new RuntimeException('Muitas tentativas de login. Aguarde 15 minutos e tente novamente.');
+        }
+    }
+
+    private function registerFailedLogin(string $login): void
+    {
+        $this->ensureLoginAttemptsTable();
+        $this->db->execute(
+            'INSERT INTO login_attempts (login_key, ip, succeeded, criado_em) VALUES (:login_key, :ip, 0, NOW())',
+            ['login_key' => $this->loginAttemptKey($login), 'ip' => $this->clientIp()]
+        );
+        $this->cleanupLoginAttempts();
+    }
+
+    private function clearLoginAttempts(string $login): void
+    {
+        $this->ensureLoginAttemptsTable();
+        $this->db->execute(
+            'INSERT INTO login_attempts (login_key, ip, succeeded, criado_em) VALUES (:login_key, :ip, 1, NOW())',
+            ['login_key' => $this->loginAttemptKey($login), 'ip' => $this->clientIp()]
+        );
+        $this->db->execute(
+            'DELETE FROM login_attempts WHERE login_key = :login_key AND ip = :ip AND succeeded = 0',
+            ['login_key' => $this->loginAttemptKey($login), 'ip' => $this->clientIp()]
+        );
+        $this->cleanupLoginAttempts();
+    }
+
+    private function cleanupLoginAttempts(): void
+    {
+        $this->db->execute('DELETE FROM login_attempts WHERE criado_em < (NOW() - INTERVAL 7 DAY)');
+    }
+
+    private function loginAttemptKey(string $login): string
+    {
+        return hash('sha256', strtolower(trim($login)));
+    }
+
+    private function clientIp(): string
+    {
+        $forwarded = (string) ($_SERVER['HTTP_X_FORWARDED_FOR'] ?? '');
+        if ($forwarded !== '') {
+            $parts = explode(',', $forwarded);
+            return substr(trim($parts[0]), 0, 64);
+        }
+        return substr((string) ($_SERVER['REMOTE_ADDR'] ?? '0.0.0.0'), 0, 64);
     }
 
     private function publicUser(array $user): array

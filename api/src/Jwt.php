@@ -11,13 +11,11 @@ final class Jwt
     {
         $this->secret = $secret;
         $this->issuer = $issuer;
-        if ($this->secret === '') {
-            throw new RuntimeException('JWT_SECRET não configurado.');
-        }
     }
 
     public function sign(array $claims, int $ttl): string
     {
+        $this->assertConfigured();
         $now = time();
         $payload = array_merge($claims, [
             'iss' => $this->issuer,
@@ -25,27 +23,35 @@ final class Jwt
             'exp' => $now + $ttl,
         ]);
         $header = ['alg' => 'HS256', 'typ' => 'JWT'];
-        $segments = [$this->b64(json_encode($header)), $this->b64(json_encode($payload))];
+        $segments = [$this->b64(json_encode($header) ?: '{}'), $this->b64(json_encode($payload) ?: '{}')];
         $segments[] = $this->b64(hash_hmac('sha256', implode('.', $segments), $this->secret, true));
         return implode('.', $segments);
     }
 
     public function verify(string $token): array
     {
+        $this->assertConfigured();
         $parts = explode('.', $token);
         if (count($parts) !== 3) {
-            throw new RuntimeException('Token inválido.');
+            throw new RuntimeException('Token invalido.');
         }
         [$header, $payload, $signature] = $parts;
         $expected = $this->b64(hash_hmac('sha256', $header . '.' . $payload, $this->secret, true));
         if (!hash_equals($expected, $signature)) {
-            throw new RuntimeException('Assinatura inválida.');
+            throw new RuntimeException('Assinatura invalida.');
         }
         $claims = json_decode($this->unb64($payload), true);
         if (!is_array($claims) || ($claims['exp'] ?? 0) < time()) {
             throw new RuntimeException('Token expirado.');
         }
         return $claims;
+    }
+
+    private function assertConfigured(): void
+    {
+        if (trim($this->secret) === '') {
+            throw new RuntimeException('JWT_SECRET nao configurado.');
+        }
     }
 
     private function b64(string $value): string

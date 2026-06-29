@@ -26,12 +26,18 @@ return [
     'jwt_issuer' => getenv('JWT_ISSUER') ?: 'plataforma-logistica',
     'jwt_access_ttl' => (int) (getenv('JWT_ACCESS_TTL_SECONDS') ?: 900),
     'jwt_refresh_ttl' => (int) (getenv('JWT_REFRESH_TTL_SECONDS') ?: 604800),
+    'ai' => [
+        'provider' => getenv('AI_PROVIDER') ?: 'gemini',
+        'api_key' => (string) (getenv('GEMINI_API_KEY') ?: getenv('AI_API_KEY') ?: ''),
+        'model' => getenv('GEMINI_MODEL') ?: (getenv('AI_MODEL') ?: 'gemini-flash-latest'),
+        'timeout_seconds' => (int) (getenv('AI_TIMEOUT_SECONDS') ?: 20),
+    ],
     'db' => [
         'host' => getenv('DB_HOST') ?: 'localhost',
         'port' => (int) (getenv('DB_PORT') ?: 3306),
         'name' => getenv('DB_NAME') ?: '',
         'user' => getenv('DB_USER') ?: '',
-        'password' => getenv('DB_PASSWORD') ?: '',
+        'password' => getenv('DB_PASSWORD') ?: (getenv('DB_PASS') ?: ''),
         'charset' => getenv('DB_CHARSET') ?: 'utf8mb4',
     ],
     'paths' => [

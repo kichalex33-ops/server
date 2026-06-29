@@ -1,0 +1,344 @@
+:root {
+  --ls-primary: #0d9488;
+  --ls-primary-dark: #0f766e;
+  --ls-accent: #14b8a6;
+  --ls-bg: #f0fdfa;
+  --ls-surface: #ffffff;
+  --ls-text: #134e4a;
+  --ls-muted: #5b7c78;
+  --ls-line: #99f6e4;
+  --ls-warn: #f59e0b;
+  --ls-danger: #ef4444;
+  --ls-ok: #10b981;
+}
+
+.ls-body {
+  margin: 0;
+  font-family: Inter, 'Segoe UI', Arial, sans-serif;
+  background: var(--ls-bg);
+  color: var(--ls-text);
+}
+
+.ls-shell {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 260px 1fr;
+}
+
+.ls-sidebar {
+  background: linear-gradient(180deg, var(--ls-primary-dark), #115e59);
+  color: #fff;
+  padding: 24px 18px;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+}
+
+.ls-brand {
+  font-weight: 900;
+  font-size: 1.35rem;
+  margin-bottom: 4px;
+}
+
+.ls-brand-sub {
+  font-size: 0.8rem;
+  opacity: 0.85;
+  margin-bottom: 24px;
+}
+
+.ls-nav {
+  display: grid;
+  gap: 6px;
+}
+
+.ls-nav a {
+  display: block;
+  padding: 10px 12px;
+  border-radius: 8px;
+  color: rgba(255, 255, 255, 0.88);
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.92rem;
+}
+
+.ls-nav a:hover,
+.ls-nav a.active {
+  background: rgba(255, 255, 255, 0.15);
+  color: #fff;
+}
+
+.ls-nav .ls-back {
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+  font-size: 0.85rem;
+}
+
+.ls-main {
+  padding: 28px 32px 48px;
+  max-width: 1200px;
+}
+
+.ls-header h1 {
+  margin: 0 0 6px;
+  font-size: 1.75rem;
+}
+
+.ls-header p {
+  margin: 0 0 24px;
+  color: var(--ls-muted);
+}
+
+.ls-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 16px;
+  margin-bottom: 28px;
+}
+
+.ls-card {
+  background: var(--ls-surface);
+  border: 1px solid var(--ls-line);
+  border-radius: 12px;
+  padding: 18px;
+  box-shadow: 0 2px 8px rgba(13, 148, 136, 0.06);
+}
+
+.ls-card .label {
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--ls-muted);
+  margin-bottom: 6px;
+}
+
+.ls-card .value {
+  font-size: 1.75rem;
+  font-weight: 800;
+  color: var(--ls-primary-dark);
+}
+
+.ls-panel {
+  background: var(--ls-surface);
+  border: 1px solid var(--ls-line);
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 24px;
+}
+
+.ls-panel h2 {
+  margin: 0 0 16px;
+  font-size: 1.1rem;
+}
+
+.ls-table-wrap {
+  overflow-x: auto;
+}
+
+table.ls-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.ls-table th,
+.ls-table td {
+  padding: 10px 12px;
+  text-align: left;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.ls-table th {
+  background: #f8fafc;
+  font-weight: 700;
+  color: var(--ls-muted);
+  font-size: 0.78rem;
+  text-transform: uppercase;
+}
+
+.ls-badge {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.ls-badge.agendada { background: #dbeafe; color: #1d4ed8; }
+.ls-badge.em_andamento { background: #fef3c7; color: #b45309; }
+.ls-badge.despachada { background: #e0e7ff; color: #4338ca; }
+.ls-badge.concluida { background: #d1fae5; color: #047857; }
+.ls-badge.cancelada { background: #fee2e2; color: #b91c1c; }
+
+.ls-form {
+  display: grid;
+  gap: 12px;
+  max-width: 520px;
+}
+
+.ls-form label {
+  display: grid;
+  gap: 4px;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.ls-form input,
+.ls-form select,
+.ls-form textarea {
+  padding: 10px 12px;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  font: inherit;
+}
+
+.ls-btn {
+  display: inline-block;
+  padding: 10px 16px;
+  border: 0;
+  border-radius: 8px;
+  font-weight: 700;
+  cursor: pointer;
+  font-size: 0.88rem;
+  text-decoration: none;
+  text-align: center;
+}
+
+.ls-btn-primary {
+  background: var(--ls-primary);
+  color: #fff;
+}
+
+.ls-btn-primary:hover {
+  background: var(--ls-primary-dark);
+}
+
+.ls-btn-ghost {
+  background: #fff;
+  color: var(--ls-primary-dark);
+  border: 1px solid var(--ls-line);
+}
+
+.ls-btn-warn { background: var(--ls-warn); color: #fff; }
+.ls-btn-danger { background: var(--ls-danger); color: #fff; }
+.ls-btn-ok { background: var(--ls-ok); color: #fff; }
+
+.ls-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.ls-actions form {
+  display: inline;
+}
+
+.ls-map-placeholder {
+  background: linear-gradient(135deg, #ccfbf1, #99f6e4);
+  border: 2px dashed var(--ls-primary);
+  border-radius: 12px;
+  min-height: 220px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--ls-primary-dark);
+  font-weight: 600;
+  margin-bottom: 20px;
+}
+
+.ls-debug pre {
+  background: #1e293b;
+  color: #e2e8f0;
+  padding: 16px;
+  border-radius: 8px;
+  overflow: auto;
+  font-size: 0.8rem;
+  max-height: 400px;
+}
+
+.ls-flash {
+  padding: 12px 16px;
+  background: #d1fae5;
+  border-radius: 8px;
+  margin-bottom: 16px;
+  color: #065f46;
+}
+
+@media (max-width: 768px) {
+  .ls-shell {
+    grid-template-columns: 1fr;
+  }
+  .ls-sidebar {
+    position: relative;
+    height: auto;
+  }
+  .ls-main {
+    padding: 20px 16px;
+  }
+}
+
+/* Portal raiz */
+.portal-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 24px;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.portal-card {
+  border-radius: 16px;
+  padding: 32px;
+  color: #fff;
+  text-decoration: none;
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+
+.portal-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.15);
+}
+
+.portal-card.ace {
+  background: linear-gradient(145deg, #0b3d5c, #0f5c91);
+}
+
+.portal-card.logisaude {
+  background: linear-gradient(145deg, #0f766e, #14b8a6);
+}
+
+.portal-card h2 {
+  margin: 0 0 8px;
+  font-size: 1.5rem;
+}
+
+.portal-card p {
+  margin: 0;
+  opacity: 0.9;
+  font-size: 0.95rem;
+}
+
+.portal-landing {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  background: #f3f7fa;
+}
+
+.portal-landing .hero {
+  text-align: center;
+  max-width: 960px;
+}
+
+.portal-landing h1 {
+  margin: 0 0 12px;
+  color: #102a3a;
+}
+
+.portal-landing .subtitle {
+  color: #5f6e7a;
+  margin-bottom: 36px;
+}
