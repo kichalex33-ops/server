@@ -10,6 +10,7 @@ require __DIR__ . '/src/Auth.php';
 require __DIR__ . '/src/Rbac.php';
 require __DIR__ . '/src/ApiService.php';
 require __DIR__ . '/src/AiService.php';
+require __DIR__ . '/src/RegulationService.php';
 
 $config = require __DIR__ . '/config/env.php';
 
@@ -40,6 +41,7 @@ $auth = new Auth($db, $jwt, $config, $audit);
 $rbac = new Rbac();
 $service = new ApiService($db, $config, $audit);
 $ai = new AiService($db, $config, $audit);
+$regulation = new RegulationService($db, $audit);
 
 $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
 $uri = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?: '/';
@@ -117,6 +119,28 @@ if ($routeKey === 'GET /dashboard/resumo-dia') {
     Response::ok($service->dashboardSummary());
     return;
 }
+
+if ($routeKey === 'GET /solicitacoes-transporte') {
+    Response::ok($regulation->listSolicitacoes($_GET));
+    return;
+}
+if ($routeKey === 'POST /solicitacoes-transporte') {
+    Response::ok($regulation->createSolicitacao($body, $user), 201);
+    return;
+}
+if ($method === 'GET' && preg_match('#^/solicitacoes-transporte/([^/]+)$#', $path, $m)) {
+    Response::ok($regulation->findSolicitacao(rawurldecode($m[1])));
+    return;
+}
+if ($method === 'POST' && preg_match('#^/solicitacoes-transporte/([^/]+)/cancelar$#', $path, $m)) {
+    Response::ok($regulation->cancelSolicitacao(rawurldecode($m[1]), $body, $user));
+    return;
+}
+if ($routeKey === 'GET /regulacao/eventos') {
+    Response::ok($regulation->listRegulationEvents($_GET));
+    return;
+}
+
 if ($routeKey === 'POST /auth/login') {
     Response::ok($auth->login($body));
     return;
