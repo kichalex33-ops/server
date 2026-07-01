@@ -25,7 +25,7 @@ html body[data-manager-screen] .dashboard-shell.manager-app .main-dashboard,
 html body .dashboard-shell.manager-app .main-dashboard {
   background: var(--h539-gestor-bg) !important;
   color: var(--h539-text) !important;
-  overflow-x: hidden !important;
+  overflow-x: hidden;
 }
 
 /* Topbar escura com letras claras, exceto controles brancos. */
@@ -98,7 +98,7 @@ html body .dashboard-shell.manager-app main.main-dashboard > section#dashboard.m
   min-width: 0 !important;
   margin: 0 !important;
   padding: 18px 24px 8px !important;
-  overflow: visible !important;
+  overflow: visible;
 }
 
 /* Card KPI: neutraliza h531/h533/h536 e usa a estrutura real do HTML. */
@@ -107,7 +107,7 @@ html body .dashboard-shell.manager-app main.main-dashboard > section#dashboard.m
   position: relative !important;
   display: grid !important;
   grid-template-columns: minmax(0, 1fr) 52px !important;
-  grid-template-rows: auto !important;
+  grid-template-rows: auto;
   align-items: stretch !important;
   gap: 10px !important;
   min-width: 0 !important;
@@ -115,29 +115,29 @@ html body .dashboard-shell.manager-app main.main-dashboard > section#dashboard.m
   height: auto !important;
   padding: 18px !important;
   border-radius: 10px !important;
-  overflow: hidden !important;
+  overflow: hidden;
   background: var(--h539-card) !important;
   color: var(--h539-text) !important;
   border: 1px solid var(--h539-card-border) !important;
   box-shadow: 0 8px 20px rgba(15, 23, 42, .08) !important;
-  writing-mode: horizontal-tb !important;
-  text-orientation: mixed !important;
-  word-break: normal !important;
-  overflow-wrap: normal !important;
-  white-space: normal !important;
+  writing-mode: horizontal-tb;
+  text-orientation: mixed;
+  word-break: normal;
+  overflow-wrap: normal;
+  white-space: normal;
 }
 
 /* Bloco de texto: este é o div real que contém span, strong e small. */
 html body[data-manager-screen] .dashboard-shell.manager-app main.main-dashboard > section#dashboard.manager-grid > article.kpi-card > div:first-child,
 html body .dashboard-shell.manager-app main.main-dashboard > section#dashboard.manager-grid > article.kpi-card > div:first-child {
-  grid-column: 1 / 2 !important;
-  grid-row: 1 !important;
+  grid-column: 1 / 2;
+  grid-row: 1;
   position: static !important;
-  z-index: 2 !important;
+  z-index: 2;
   display: flex !important;
-  flex-direction: column !important;
+  flex-direction: column;
   align-items: flex-start !important;
-  justify-content: space-between !important;
+  justify-content: space-between;
   gap: 8px !important;
   min-width: 0 !important;
   width: 100% !important;
@@ -146,17 +146,17 @@ html body .dashboard-shell.manager-app main.main-dashboard > section#dashboard.m
   padding: 0 !important;
   margin: 0 !important;
   transform: none !important;
-  writing-mode: horizontal-tb !important;
-  text-orientation: mixed !important;
-  word-break: normal !important;
-  overflow-wrap: normal !important;
-  white-space: normal !important;
+  writing-mode: horizontal-tb;
+  text-orientation: mixed;
+  word-break: normal;
+  overflow-wrap: normal;
+  white-space: normal;
 }
 
 html body[data-manager-screen] .dashboard-shell.manager-app main.main-dashboard > section#dashboard.manager-grid > article.kpi-card > div:first-child > span,
 html body .dashboard-shell.manager-app main.main-dashboard > section#dashboard.manager-grid > article.kpi-card > div:first-child > span {
   display: block !important;
-  flex: 0 0 auto !important;
+  flex: 0 0 auto;
   width: 100% !important;
   max-width: 142px !important;
   min-width: 0 !important;
@@ -168,19 +168,19 @@ html body .dashboard-shell.manager-app main.main-dashboard > section#dashboard.m
   font-weight: 900 !important;
   letter-spacing: .025em !important;
   text-transform: uppercase !important;
-  text-align: left !important;
-  white-space: normal !important;
-  word-break: normal !important;
-  overflow-wrap: normal !important;
-  writing-mode: horizontal-tb !important;
-  text-orientation: mixed !important;
+  text-align: left;
+  white-space: normal;
+  word-break: normal;
+  overflow-wrap: normal;
+  writing-mode: horizontal-tb;
+  text-orientation: mixed;
 }
 
 html body[data-manager-screen] .dashboard-shell.manager-app main.main-dashboard > section#dashboard.manager-grid > article.kpi-card > div:first-child > strong,
 html body .dashboard-shell.manager-app main.main-dashboard > section#dashboard.manager-grid > article.kpi-card > div:first-child > strong {
   display: block !important;
-  flex: 1 1 auto !important;
-  align-self: stretch !important;
+  flex: 1 1 auto;
+  align-self: stretch;
   min-width: 0 !important;
   max-width: 100% !important;
   margin: 4px 0 0 !important;
@@ -190,20 +190,20 @@ html body .dashboard-shell.manager-app main.main-dashboard > section#dashboard.m
   line-height: 1.04 !important;
   font-weight: 900 !important;
   letter-spacing: -.045em !important;
-  text-align: left !important;
-  white-space: nowrap !important;
-  overflow: hidden !important;
-  text-overflow: ellipsis !important;
-  word-break: normal !important;
-  overflow-wrap: normal !important;
-  writing-mode: horizontal-tb !important;
-  text-orientation: mixed !important;
+  text-align: left;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  word-break: normal;
+  overflow-wrap: normal;
+  writing-mode: horizontal-tb;
+  text-orientation: mixed;
 }
 
 html body[data-manager-screen] .dashboard-shell.manager-app main.main-dashboard > section#dashboard.manager-grid > article.kpi-card > div:first-child > small,
 html body .dashboard-shell.manager-app main.main-dashboard > section#dashboard.manager-grid > article.kpi-card > div:first-child > small {
   display: block !important;
-  flex: 0 0 auto !important;
+  flex: 0 0 auto;
   width: 100% !important;
   max-width: 150px !important;
   min-width: 0 !important;
@@ -213,22 +213,22 @@ html body .dashboard-shell.manager-app main.main-dashboard > section#dashboard.m
   font-size: 11px !important;
   line-height: 1.25 !important;
   font-weight: 700 !important;
-  text-align: left !important;
-  white-space: normal !important;
-  word-break: normal !important;
-  overflow-wrap: normal !important;
-  writing-mode: horizontal-tb !important;
-  text-orientation: mixed !important;
+  text-align: left;
+  white-space: normal;
+  word-break: normal;
+  overflow-wrap: normal;
+  writing-mode: horizontal-tb;
+  text-orientation: mixed;
 }
 
 /* Ícone: coluna própria, sem esmagar texto. */
 html body[data-manager-screen] .dashboard-shell.manager-app main.main-dashboard > section#dashboard.manager-grid > article.kpi-card > div.kpi-icon,
 html body .dashboard-shell.manager-app main.main-dashboard > section#dashboard.manager-grid > article.kpi-card > div.kpi-icon {
-  grid-column: 2 / 3 !important;
-  grid-row: 1 !important;
+  grid-column: 2 / 3;
+  grid-row: 1;
   position: static !important;
   transform: none !important;
-  place-self: center end !important;
+  place-self: center end;
   display: grid !important;
   place-items: center !important;
   width: 48px !important;
@@ -241,7 +241,7 @@ html body .dashboard-shell.manager-app main.main-dashboard > section#dashboard.m
   margin: 0 !important;
   border-radius: 999px !important;
   opacity: 1 !important;
-  z-index: 1 !important;
+  z-index: 1;
 }
 
 html body[data-manager-screen] .dashboard-shell.manager-app main.main-dashboard > section#dashboard.manager-grid > article.kpi-card > div.kpi-icon svg,
@@ -279,9 +279,9 @@ html body .dashboard-shell.manager-app .ops-metric-strip > article,
 html body[data-manager-screen] .dashboard-shell.manager-app .manager-placeholder-grid > article,
 html body .dashboard-shell.manager-app .manager-placeholder-grid > article {
   display: flex !important;
-  flex-direction: column !important;
+  flex-direction: column;
   align-items: flex-start !important;
-  justify-content: center !important;
+  justify-content: center;
   gap: 6px !important;
   min-height: 96px !important;
   padding: 16px !important;
@@ -290,7 +290,7 @@ html body .dashboard-shell.manager-app .manager-placeholder-grid > article {
   border: 1px solid var(--h539-card-border) !important;
   border-radius: 10px !important;
   box-shadow: 0 8px 20px rgba(15, 23, 42, .06) !important;
-  writing-mode: horizontal-tb !important;
+  writing-mode: horizontal-tb;
 }
 
 html body[data-manager-screen] .dashboard-shell.manager-app .ops-metric-strip > article :is(span,strong,small),
@@ -299,11 +299,11 @@ html body[data-manager-screen] .dashboard-shell.manager-app .manager-placeholder
 html body .dashboard-shell.manager-app .manager-placeholder-grid > article :is(span,strong,small) {
   display: block !important;
   width: 100% !important;
-  text-align: left !important;
-  writing-mode: horizontal-tb !important;
-  word-break: normal !important;
-  overflow-wrap: normal !important;
-  white-space: normal !important;
+  text-align: left;
+  writing-mode: horizontal-tb;
+  word-break: normal;
+  overflow-wrap: normal;
+  white-space: normal;
 }
 
 html body[data-manager-screen] .dashboard-shell.manager-app .ops-metric-strip > article strong,
