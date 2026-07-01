@@ -1,0 +1,186 @@
+
+/* H5.36 — contraste unificado por superficie
+   Regra desejada:
+   - modo escuro: texto claro por padrao; em superficies claras, texto escuro.
+   - modo claro: texto escuro por padrao; em superficies escuras, texto claro.
+   Carregar por ultimo. */
+:root {
+  --h536-text-light: #f8fafc;
+  --h536-text-light-soft: #e2e8f0;
+  --h536-text-dark: #0f172a;
+  --h536-text-dark-soft: #334155;
+  --h536-text-dark-muted: #475569;
+  --h536-surface-light: #ffffff;
+  --h536-surface-light-soft: #f8fafc;
+  --h536-surface-dark: #0b1220;
+  --h536-surface-dark-soft: #111827;
+  --h536-surface-dark-alt: #1e293b;
+  --h536-border-light: #cbd5e1;
+  --h536-border-dark: rgba(255,255,255,.16);
+}
+
+/* =========================
+   MODO CLARO: base escura
+   ========================= */
+html:not([data-theme="dark"]) body:not(.theme-dark),
+body[data-theme="light"],
+body.theme-light,
+body[data-theme=""]:not(.theme-dark) {
+  color: var(--h536-text-dark) !important;
+}
+
+html:not([data-theme="dark"]) body:not(.theme-dark) :where(body, main, section, article, aside, header, footer, .app-shell, .main-dashboard, .main-content, .manager-content, .operator-content, .dashboard-shell, .topbar, .page-heading, .panel, .card, .metric-card, .kpi-card, .overview-card, .summary-card, .filter-card, .search-box, .clock-panel, .table-wrap, .data-table, .white-card, .light-card, .card-light, .panel-light, .h534-card-light, .h534-table-wrap, .mini-card, .messages-card, .driver-hero),
+body[data-theme="light"] :where(body, main, section, article, aside, header, footer, .app-shell, .main-dashboard, .main-content, .manager-content, .operator-content, .dashboard-shell, .topbar, .page-heading, .panel, .card, .metric-card, .kpi-card, .overview-card, .summary-card, .filter-card, .search-box, .clock-panel, .table-wrap, .data-table, .white-card, .light-card, .card-light, .panel-light, .h534-card-light, .h534-table-wrap, .mini-card, .messages-card, .driver-hero),
+body.theme-light :where(body, main, section, article, aside, header, footer, .app-shell, .main-dashboard, .main-content, .manager-content, .operator-content, .dashboard-shell, .topbar, .page-heading, .panel, .card, .metric-card, .kpi-card, .overview-card, .summary-card, .filter-card, .search-box, .clock-panel, .table-wrap, .data-table, .white-card, .light-card, .card-light, .panel-light, .h534-card-light, .h534-table-wrap, .mini-card, .messages-card, .driver-hero),
+body[data-theme=""]:not(.theme-dark) :where(body, main, section, article, aside, header, footer, .app-shell, .main-dashboard, .main-content, .manager-content, .operator-content, .dashboard-shell, .topbar, .page-heading, .panel, .card, .metric-card, .kpi-card, .overview-card, .summary-card, .filter-card, .search-box, .clock-panel, .table-wrap, .data-table, .white-card, .light-card, .card-light, .panel-light, .h534-card-light, .h534-table-wrap, .mini-card, .messages-card, .driver-hero) {
+  color: var(--h536-text-dark) !important;
+}
+
+html:not([data-theme="dark"]) body:not(.theme-dark) :where(h1,h2,h3,h4,h5,h6,strong,b,p,label,li,dt,dd,td,th,a,input,textarea,select,option,div,span,small,em),
+body[data-theme="light"] :where(h1,h2,h3,h4,h5,h6,strong,b,p,label,li,dt,dd,td,th,a,input,textarea,select,option,div,span,small,em),
+body.theme-light :where(h1,h2,h3,h4,h5,h6,strong,b,p,label,li,dt,dd,td,th,a,input,textarea,select,option,div,span,small,em),
+body[data-theme=""]:not(.theme-dark) :where(h1,h2,h3,h4,h5,h6,strong,b,p,label,li,dt,dd,td,th,a,input,textarea,select,option,div,span,small,em) {
+  color: inherit;
+}
+
+html:not([data-theme="dark"]) body:not(.theme-dark) :where(small, .muted, .text-muted, .subtitle, .hint, .description, .help-text, .page-heading p, .kpi-card small, .metric-card small, .metric-card span, .topbar span, .profile-pill small, .profile-pill span, .data-table small, .table-wrap small, .message, .status-note),
+body[data-theme="light"] :where(small, .muted, .text-muted, .subtitle, .hint, .description, .help-text, .page-heading p, .kpi-card small, .metric-card small, .metric-card span, .topbar span, .profile-pill small, .profile-pill span, .data-table small, .table-wrap small, .message, .status-note),
+body.theme-light :where(small, .muted, .text-muted, .subtitle, .hint, .description, .help-text, .page-heading p, .kpi-card small, .metric-card small, .metric-card span, .topbar span, .profile-pill small, .profile-pill span, .data-table small, .table-wrap small, .message, .status-note),
+body[data-theme=""]:not(.theme-dark) :where(small, .muted, .text-muted, .subtitle, .hint, .description, .help-text, .page-heading p, .kpi-card small, .metric-card small, .metric-card span, .topbar span, .profile-pill small, .profile-pill span, .data-table small, .table-wrap small, .message, .status-note) {
+  color: var(--h536-text-dark-soft) !important;
+}
+
+/* Modo claro com superficies escuras: letras claras */
+html:not([data-theme="dark"]) body:not(.theme-dark) :where(.h536-dark-surface, .side-nav, .sidebar, .nav-section, .side-brand, .sync-box, .institution-strip, .app-header, .app-footer),
+body[data-theme="light"] :where(.h536-dark-surface, .side-nav, .sidebar, .nav-section, .side-brand, .sync-box, .institution-strip, .app-header, .app-footer),
+body.theme-light :where(.h536-dark-surface, .side-nav, .sidebar, .nav-section, .side-brand, .sync-box, .institution-strip, .app-header, .app-footer),
+body[data-theme=""]:not(.theme-dark) :where(.h536-dark-surface, .side-nav, .sidebar, .nav-section, .side-brand, .sync-box, .institution-strip, .app-header, .app-footer) {
+  color: var(--h536-text-light) !important;
+  border-color: var(--h536-border-dark) !important;
+}
+
+html:not([data-theme="dark"]) body:not(.theme-dark) :where(.h536-dark-surface, .side-nav, .sidebar, .nav-section, .side-brand, .sync-box, .institution-strip, .app-header, .app-footer) :where(h1,h2,h3,h4,h5,h6,strong,b,p,label,li,dt,dd,td,th,a,input,textarea,select,option,div,span,small,em,svg,path),
+body[data-theme="light"] :where(.h536-dark-surface, .side-nav, .sidebar, .nav-section, .side-brand, .sync-box, .institution-strip, .app-header, .app-footer) :where(h1,h2,h3,h4,h5,h6,strong,b,p,label,li,dt,dd,td,th,a,input,textarea,select,option,div,span,small,em,svg,path),
+body.theme-light :where(.h536-dark-surface, .side-nav, .sidebar, .nav-section, .side-brand, .sync-box, .institution-strip, .app-header, .app-footer) :where(h1,h2,h3,h4,h5,h6,strong,b,p,label,li,dt,dd,td,th,a,input,textarea,select,option,div,span,small,em,svg,path),
+body[data-theme=""]:not(.theme-dark) :where(.h536-dark-surface, .side-nav, .sidebar, .nav-section, .side-brand, .sync-box, .institution-strip, .app-header, .app-footer) :where(h1,h2,h3,h4,h5,h6,strong,b,p,label,li,dt,dd,td,th,a,input,textarea,select,option,div,span,small,em,svg,path) {
+  color: var(--h536-text-light) !important;
+}
+
+html:not([data-theme="dark"]) body:not(.theme-dark) :where(.h536-dark-surface, .side-nav, .sidebar, .nav-section, .side-brand, .sync-box, .institution-strip, .app-header, .app-footer) :where(small, .muted, .text-muted, .subtitle, .hint, .description),
+body[data-theme="light"] :where(.h536-dark-surface, .side-nav, .sidebar, .nav-section, .side-brand, .sync-box, .institution-strip, .app-header, .app-footer) :where(small, .muted, .text-muted, .subtitle, .hint, .description),
+body.theme-light :where(.h536-dark-surface, .side-nav, .sidebar, .nav-section, .side-brand, .sync-box, .institution-strip, .app-header, .app-footer) :where(small, .muted, .text-muted, .subtitle, .hint, .description),
+body[data-theme=""]:not(.theme-dark) :where(.h536-dark-surface, .side-nav, .sidebar, .nav-section, .side-brand, .sync-box, .institution-strip, .app-header, .app-footer) :where(small, .muted, .text-muted, .subtitle, .hint, .description) {
+  color: var(--h536-text-light-soft) !important;
+}
+
+/* =========================
+   MODO ESCURO: base clara
+   ========================= */
+body[data-theme="dark"],
+body.theme-dark,
+html[data-theme="dark"] body {
+  color: var(--h536-text-light) !important;
+}
+
+body[data-theme="dark"] :where(body, main, section, article, aside, header, footer, .app-shell, .main-dashboard, .main-content, .manager-content, .operator-content, .dashboard-shell, .topbar, .page-heading, .panel, .card, .metric-card, .kpi-card, .overview-card, .summary-card, .filter-card, .search-box, .clock-panel, .mini-card, .messages-card, .driver-hero),
+body.theme-dark :where(body, main, section, article, aside, header, footer, .app-shell, .main-dashboard, .main-content, .manager-content, .operator-content, .dashboard-shell, .topbar, .page-heading, .panel, .card, .metric-card, .kpi-card, .overview-card, .summary-card, .filter-card, .search-box, .clock-panel, .mini-card, .messages-card, .driver-hero),
+html[data-theme="dark"] :where(body, main, section, article, aside, header, footer, .app-shell, .main-dashboard, .main-content, .manager-content, .operator-content, .dashboard-shell, .topbar, .page-heading, .panel, .card, .metric-card, .kpi-card, .overview-card, .summary-card, .filter-card, .search-box, .clock-panel, .mini-card, .messages-card, .driver-hero) {
+  color: var(--h536-text-light) !important;
+}
+
+body[data-theme="dark"] :where(small, .muted, .text-muted, .subtitle, .hint, .description, .help-text, .page-heading p, .kpi-card small, .metric-card small, .metric-card span, .topbar span, .message, .status-note),
+body.theme-dark :where(small, .muted, .text-muted, .subtitle, .hint, .description, .help-text, .page-heading p, .kpi-card small, .metric-card small, .metric-card span, .topbar span, .message, .status-note),
+html[data-theme="dark"] :where(small, .muted, .text-muted, .subtitle, .hint, .description, .help-text, .page-heading p, .kpi-card small, .metric-card small, .metric-card span, .topbar span, .message, .status-note) {
+  color: var(--h536-text-light-soft) !important;
+}
+
+/* Modo escuro com superficies claras: letras escuras */
+body[data-theme="dark"] :where(.h536-light-surface, .white-card, .light-card, .card-light, .panel-light, .profile-pill, .system-online, .theme-button, .theme-toggle, .icon-button, .filter-button, .search-box, .clock-panel, .table-wrap, .data-table, .security-panel, .lgpd-panel, .h534-card-light, .h534-table-wrap, .profile-avatar, .qr-render, .activation-code-card, .dropdown-menu, .toast, .toast-card, .leaflet-popup-content-wrapper, .leaflet-popup-tip),
+body.theme-dark :where(.h536-light-surface, .white-card, .light-card, .card-light, .panel-light, .profile-pill, .system-online, .theme-button, .theme-toggle, .icon-button, .filter-button, .search-box, .clock-panel, .table-wrap, .data-table, .security-panel, .lgpd-panel, .h534-card-light, .h534-table-wrap, .profile-avatar, .qr-render, .activation-code-card, .dropdown-menu, .toast, .toast-card, .leaflet-popup-content-wrapper, .leaflet-popup-tip),
+html[data-theme="dark"] :where(.h536-light-surface, .white-card, .light-card, .card-light, .panel-light, .profile-pill, .system-online, .theme-button, .theme-toggle, .icon-button, .filter-button, .search-box, .clock-panel, .table-wrap, .data-table, .security-panel, .lgpd-panel, .h534-card-light, .h534-table-wrap, .profile-avatar, .qr-render, .activation-code-card, .dropdown-menu, .toast, .toast-card, .leaflet-popup-content-wrapper, .leaflet-popup-tip) {
+  color: var(--h536-text-dark) !important;
+  background-color: var(--h536-surface-light-soft) !important;
+  border-color: var(--h536-border-light) !important;
+}
+
+body[data-theme="dark"] :where(.h536-light-surface, .white-card, .light-card, .card-light, .panel-light, .profile-pill, .system-online, .theme-button, .theme-toggle, .icon-button, .filter-button, .search-box, .clock-panel, .table-wrap, .data-table, .security-panel, .lgpd-panel, .h534-card-light, .h534-table-wrap, .profile-avatar, .qr-render, .activation-code-card, .dropdown-menu, .toast, .toast-card, .leaflet-popup-content-wrapper, .leaflet-popup-tip) :where(h1,h2,h3,h4,h5,h6,strong,b,p,label,li,dt,dd,td,th,a,input,textarea,select,option,div,span,small,em,svg,path),
+body.theme-dark :where(.h536-light-surface, .white-card, .light-card, .card-light, .panel-light, .profile-pill, .system-online, .theme-button, .theme-toggle, .icon-button, .filter-button, .search-box, .clock-panel, .table-wrap, .data-table, .security-panel, .lgpd-panel, .h534-card-light, .h534-table-wrap, .profile-avatar, .qr-render, .activation-code-card, .dropdown-menu, .toast, .toast-card, .leaflet-popup-content-wrapper, .leaflet-popup-tip) :where(h1,h2,h3,h4,h5,h6,strong,b,p,label,li,dt,dd,td,th,a,input,textarea,select,option,div,span,small,em,svg,path),
+html[data-theme="dark"] :where(.h536-light-surface, .white-card, .light-card, .card-light, .panel-light, .profile-pill, .system-online, .theme-button, .theme-toggle, .icon-button, .filter-button, .search-box, .clock-panel, .table-wrap, .data-table, .security-panel, .lgpd-panel, .h534-card-light, .h534-table-wrap, .profile-avatar, .qr-render, .activation-code-card, .dropdown-menu, .toast, .toast-card, .leaflet-popup-content-wrapper, .leaflet-popup-tip) :where(h1,h2,h3,h4,h5,h6,strong,b,p,label,li,dt,dd,td,th,a,input,textarea,select,option,div,span,small,em,svg,path) {
+  color: var(--h536-text-dark) !important;
+}
+
+body[data-theme="dark"] :where(.h536-light-surface, .white-card, .light-card, .card-light, .panel-light, .profile-pill, .system-online, .theme-button, .theme-toggle, .icon-button, .filter-button, .search-box, .clock-panel, .table-wrap, .data-table, .security-panel, .lgpd-panel, .h534-card-light, .h534-table-wrap, .profile-avatar, .qr-render, .activation-code-card, .dropdown-menu, .toast, .toast-card, .leaflet-popup-content-wrapper, .leaflet-popup-tip) :where(small, .muted, .text-muted, .subtitle, .hint, .description),
+body.theme-dark :where(.h536-light-surface, .white-card, .light-card, .card-light, .panel-light, .profile-pill, .system-online, .theme-button, .theme-toggle, .icon-button, .filter-button, .search-box, .clock-panel, .table-wrap, .data-table, .security-panel, .lgpd-panel, .h534-card-light, .h534-table-wrap, .profile-avatar, .qr-render, .activation-code-card, .dropdown-menu, .toast, .toast-card, .leaflet-popup-content-wrapper, .leaflet-popup-tip) :where(small, .muted, .text-muted, .subtitle, .hint, .description),
+html[data-theme="dark"] :where(.h536-light-surface, .white-card, .light-card, .card-light, .panel-light, .profile-pill, .system-online, .theme-button, .theme-toggle, .icon-button, .filter-button, .search-box, .clock-panel, .table-wrap, .data-table, .security-panel, .lgpd-panel, .h534-card-light, .h534-table-wrap, .profile-avatar, .qr-render, .activation-code-card, .dropdown-menu, .toast, .toast-card, .leaflet-popup-content-wrapper, .leaflet-popup-tip) :where(small, .muted, .text-muted, .subtitle, .hint, .description) {
+  color: var(--h536-text-dark-soft) !important;
+}
+
+/* Form fields */
+:where(body[data-theme="dark"], body.theme-dark, html[data-theme="dark"] body) :where(.h536-light-surface, .white-card, .light-card, .card-light, .panel-light, .table-wrap, .data-table, .security-panel, .lgpd-panel) :where(input, textarea, select) {
+  background: var(--h536-surface-light) !important;
+  color: var(--h536-text-dark) !important;
+  border-color: var(--h536-border-light) !important;
+}
+:where(html:not([data-theme="dark"]) body:not(.theme-dark), body[data-theme="light"], body.theme-light, body[data-theme=""]:not(.theme-dark)) :where(input, textarea, select) {
+  background: var(--h536-surface-light) !important;
+  color: var(--h536-text-dark) !important;
+  border-color: var(--h536-border-light) !important;
+}
+:where(body[data-theme="dark"], body.theme-dark, html[data-theme="dark"] body) :where(input, textarea, select)::placeholder,
+:where(html:not([data-theme="dark"]) body:not(.theme-dark), body[data-theme="light"], body.theme-light, body[data-theme=""]:not(.theme-dark)) :where(input, textarea, select)::placeholder,
+:where(html:not([data-theme="dark"]) body:not(.theme-dark), body[data-theme="light"], body.theme-light, body[data-theme=""]:not(.theme-dark)) :where(textarea)::placeholder {
+  color: var(--h536-text-dark-muted) !important;
+  opacity: 1 !important;
+}
+
+/* Superficies inline claras e escuras */
+body[data-theme="dark"] [style*="background: white"],
+body[data-theme="dark"] [style*="background:white"],
+body[data-theme="dark"] [style*="background: #fff"],
+body[data-theme="dark"] [style*="background:#fff"],
+body[data-theme="dark"] [style*="background-color: white"],
+body[data-theme="dark"] [style*="background-color:white"],
+body[data-theme="dark"] [style*="background-color: #fff"],
+body[data-theme="dark"] [style*="background-color:#fff"] {
+  color: var(--h536-text-dark) !important;
+}
+body[data-theme="dark"] [style*="background: white"] *,
+body[data-theme="dark"] [style*="background:white"] *,
+body[data-theme="dark"] [style*="background: #fff"] *,
+body[data-theme="dark"] [style*="background:#fff"] *,
+body[data-theme="dark"] [style*="background-color: white"] *,
+body[data-theme="dark"] [style*="background-color:white"] *,
+body[data-theme="dark"] [style*="background-color: #fff"] *,
+body[data-theme="dark"] [style*="background-color:#fff"] * {
+  color: var(--h536-text-dark) !important;
+}
+
+html:not([data-theme="dark"]) body:not(.theme-dark) [style*="background: rgb(7"],
+html:not([data-theme="dark"]) body:not(.theme-dark) [style*="background-color: rgb(7"],
+body[data-theme="light"] [style*="background: rgb(7"],
+body[data-theme="light"] [style*="background-color: rgb(7"] {
+  color: var(--h536-text-light) !important;
+}
+
+/* Componentes que devem manter contraste especifico */
+:where(.primary-button, .primary-action, .primary-link, .panic-button, .nav-logout, .menu-button, .h534-action) {
+  color: #ffffff !important;
+}
+:where(.primary-button, .primary-action, .primary-link, .panic-button, .nav-logout, .menu-button, .h534-action) :where(span,strong,small,svg,path) {
+  color: inherit !important;
+}
+:where(.badge.neutral) { color:#1e293b !important; background:#e2e8f0 !important; }
+:where(.badge.success) { color:#065f46 !important; background:#d1fae5 !important; }
+:where(.badge.warning) { color:#78350f !important; background:#fef3c7 !important; }
+:where(.badge.danger) { color:#7f1d1d !important; background:#fee2e2 !important; }
+
+/* Motorista: botoes dourados ficam com texto escuro. */
+:where(.primary-button):not(.panic-button),
+:where(.primary-link) {
+  color: var(--h536-text-dark) !important;
+}
+
+/* Garantia extra para elementos marcados dinamicamente */
+.h536-light-surface, .h536-dark-surface {
+  transition: color .15s ease, background-color .15s ease, border-color .15s ease;
+}

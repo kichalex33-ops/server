@@ -1,0 +1,14 @@
+CREATE TABLE IF NOT EXISTS destinos (
+  id VARCHAR(64) PRIMARY KEY,
+  nome VARCHAR(180) NOT NULL,
+  tipo VARCHAR(40) NOT NULL DEFAULT 'outro',
+  endereco VARCHAR(255) NOT NULL,
+  cidade VARCHAR(120) NULL,
+  telefone VARCHAR(40) NULL,
+  observacoes TEXT NULL,
+  metadados TEXT NULL,
+  criado_em DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  atualizado_em DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  INDEX idx_destinos_nome (nome),
+  INDEX idx_destinos_cidade (cidade)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

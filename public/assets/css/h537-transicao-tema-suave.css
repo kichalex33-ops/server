@@ -1,0 +1,71 @@
+/* H5.37 — transição suave entre modo claro e escuro
+   Objetivo: evitar troca seca, piscada e reclassificação visual brusca. */
+
+:root {
+  --h537-theme-duration: 260ms;
+  --h537-theme-ease: cubic-bezier(.22, .61, .36, 1);
+}
+
+/* Aplica transição apenas durante a troca de tema.
+   Evita deixar a plataforma lenta em interações normais. */
+html.theme-transitioning,
+html.theme-transitioning body,
+html.theme-transitioning body *,
+html.theme-transitioning body *::before,
+html.theme-transitioning body *::after {
+  transition-property: background-color, color, border-color, box-shadow, fill, stroke, opacity, filter;
+  transition-duration: var(--h537-theme-duration);
+  transition-timing-function: var(--h537-theme-ease);
+}
+
+html.theme-transitioning svg,
+html.theme-transitioning path,
+html.theme-transitioning circle,
+html.theme-transitioning rect,
+html.theme-transitioning line,
+html.theme-transitioning polyline,
+html.theme-transitioning polygon {
+  transition: stroke var(--h537-theme-duration) var(--h537-theme-ease),
+              fill var(--h537-theme-duration) var(--h537-theme-ease),
+              color var(--h537-theme-duration) var(--h537-theme-ease);
+}
+
+html.theme-transitioning .leaflet-container,
+html.theme-transitioning .leaflet-container *,
+html.theme-transitioning canvas,
+html.theme-transitioning img,
+html.theme-transitioning video,
+html.theme-transitioning iframe {
+  transition: none !important;
+}
+
+html.theme-transitioning .side-nav,
+html.theme-transitioning .topbar,
+html.theme-transitioning .card,
+html.theme-transitioning .panel,
+html.theme-transitioning .kpi-card,
+html.theme-transitioning .metric-card,
+html.theme-transitioning .table-wrap,
+html.theme-transitioning .data-table,
+html.theme-transitioning .profile-pill,
+html.theme-transitioning .system-online,
+html.theme-transitioning .theme-button,
+html.theme-transitioning .icon-button,
+html.theme-transitioning .filter-button {
+  will-change: background-color, color, border-color, box-shadow;
+}
+
+html.theme-transitioning .main-dashboard,
+html.theme-transitioning .main-content {
+  backface-visibility: hidden;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html.theme-transitioning,
+  html.theme-transitioning body,
+  html.theme-transitioning body *,
+  html.theme-transitioning body *::before,
+  html.theme-transitioning body *::after {
+    transition: none !important;
+  }
+}

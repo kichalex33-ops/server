@@ -1,0 +1,231 @@
+
+/* H5.25 - correção final de menu: operador completo + gestor no mesmo padrão */
+:root {
+  --h525-menu-bg-1:#0c2440;
+  --h525-menu-bg-2:#061422;
+  --h525-menu-border:rgba(148, 197, 253, .26);
+  --h525-menu-text:#e8f2ff;
+  --h525-menu-muted:#9fbfe3;
+  --h525-menu-active:#1f497a;
+}
+
+html, body { min-height:100%; }
+body .dashboard-shell.operator-app,
+body .dashboard-shell.manager-app,
+body .dashboard-shell:has(.side-nav):has(.topbar) {
+  display:grid !important;
+  grid-template-columns:minmax(0,1fr) !important;
+  min-height:100vh !important;
+}
+
+body .dashboard-shell > .side-nav,
+body .dashboard-shell.operator-app > .side-nav,
+body .dashboard-shell.manager-app > .side-nav {
+  position:fixed !important;
+  inset:0 auto 0 0 !important;
+  width:min(326px, 90vw) !important;
+  height:100vh !important;
+  max-height:100vh !important;
+  display:block !important;
+  overflow-y:auto !important;
+  overflow-x:hidden !important;
+  transform:translateX(-108%) !important;
+  transition:transform .22s ease, box-shadow .22s ease !important;
+  z-index:10020 !important;
+  padding:0 14px 18px !important;
+  background:linear-gradient(180deg, var(--h525-menu-bg-1) 0%, var(--h525-menu-bg-2) 100%) !important;
+  border-right:1px solid var(--h525-menu-border) !important;
+  color:var(--h525-menu-text) !important;
+  visibility:visible !important;
+  opacity:1 !important;
+  scrollbar-width:thin !important;
+  scrollbar-color:rgba(151,192,239,.6) rgba(255,255,255,.06) !important;
+}
+body .dashboard-shell > .side-nav::-webkit-scrollbar { width:8px !important; }
+body .dashboard-shell > .side-nav::-webkit-scrollbar-track { background:rgba(255,255,255,.04) !important; }
+body .dashboard-shell > .side-nav::-webkit-scrollbar-thumb { background:rgba(151,192,239,.56) !important; border-radius:999px !important; }
+
+body.operator-menu-open .dashboard-shell > .side-nav,
+body.manager-menu-open .dashboard-shell > .side-nav {
+  transform:translateX(0) !important;
+  box-shadow:0 24px 70px rgba(0,0,0,.52) !important;
+}
+
+/* Sem overlay escuro: o painel continua visível enquanto o menu está aberto. */
+body.operator-menu-open::after,
+body.manager-menu-open::after {
+  display:none !important;
+  content:none !important;
+  background:transparent !important;
+  backdrop-filter:none !important;
+}
+
+body .side-nav .side-brand {
+  display:flex !important;
+  align-items:center !important;
+  gap:12px !important;
+  margin:0 -14px 14px !important;
+  padding:16px 20px !important;
+  min-height:126px !important;
+  background:linear-gradient(135deg,#123457,#0b2138) !important;
+  border-bottom:1px solid var(--h525-menu-border) !important;
+  color:#fff !important;
+}
+body .side-nav .side-brand img,
+body .side-nav .brand-logo {
+  display:block !important;
+  width:96px !important;
+  max-width:96px !important;
+  max-height:58px !important;
+  object-fit:contain !important;
+}
+body .side-nav .side-brand strong {
+  display:block !important;
+  color:#fff !important;
+  font-size:18px !important;
+  font-weight:850 !important;
+  line-height:1.12 !important;
+}
+body .side-nav .side-brand small {
+  display:block !important;
+  color:#c9ddf4 !important;
+  font-size:13px !important;
+  margin-top:4px !important;
+}
+
+body .side-nav .nav-section,
+body .operator-app .nav-section,
+body .manager-app .nav-section {
+  display:grid !important;
+  grid-template-columns:1fr !important;
+  align-content:start !important;
+  gap:5px !important;
+  padding:8px 0 6px !important;
+  overflow:visible !important;
+  max-height:none !important;
+  min-height:auto !important;
+  scrollbar-width:auto !important;
+}
+body .side-nav .nav-section p,
+body .operator-app .nav-section p,
+body .manager-app .nav-section p {
+  display:block !important;
+  margin:18px 8px 8px !important;
+  color:var(--h525-menu-muted) !important;
+  font-size:11px !important;
+  font-weight:850 !important;
+  letter-spacing:.12em !important;
+  text-transform:uppercase !important;
+  line-height:1.2 !important;
+}
+body .side-nav .nav-section a,
+body .operator-app .nav-section a,
+body .manager-app .nav-section a {
+  display:flex !important;
+  align-items:center !important;
+  gap:11px !important;
+  min-height:42px !important;
+  padding:10px 12px !important;
+  border-radius:11px !important;
+  border:1px solid transparent !important;
+  background:transparent !important;
+  color:var(--h525-menu-text) !important;
+  text-decoration:none !important;
+  font-size:14px !important;
+  font-weight:800 !important;
+  line-height:1.25 !important;
+  white-space:normal !important;
+  opacity:1 !important;
+  visibility:visible !important;
+}
+body .side-nav .nav-section a:hover,
+body .side-nav .nav-section a.active,
+body .operator-app .nav-section a:hover,
+body .operator-app .nav-section a.active,
+body .manager-app .nav-section a:hover,
+body .manager-app .nav-section a.active {
+  background:linear-gradient(90deg, rgba(72,139,225,.36), rgba(25,64,105,.74)) !important;
+  border-color:rgba(147,197,253,.38) !important;
+  color:#fff !important;
+}
+body .side-nav .nav-icon,
+body .operator-app .nav-icon,
+body .manager-app .nav-icon {
+  flex:0 0 20px !important;
+  width:20px !important;
+  min-width:20px !important;
+  height:20px !important;
+  display:inline-grid !important;
+  place-items:center !important;
+  color:#a8c9ef !important;
+  opacity:1 !important;
+  visibility:visible !important;
+}
+body .side-nav .nav-icon svg,
+body .operator-app .nav-icon svg,
+body .manager-app .nav-icon svg,
+body .side-nav svg {
+  width:20px !important;
+  min-width:20px !important;
+  height:20px !important;
+  display:block !important;
+  stroke:currentColor !important;
+  fill:none !important;
+  opacity:1 !important;
+  visibility:visible !important;
+  overflow:visible !important;
+}
+body .side-nav .nav-label { display:inline !important; overflow:visible !important; white-space:normal !important; }
+body .side-nav .nav-logout { color:#fecaca !important; margin-top:12px !important; }
+
+body .side-nav .sync-box {
+  display:grid !important;
+  gap:8px !important;
+  margin:16px 0 0 !important;
+  padding:16px !important;
+  border-radius:13px !important;
+  background:rgba(16,40,66,.92) !important;
+  border:1px solid var(--h525-menu-border) !important;
+  color:#dcecff !important;
+}
+body .side-nav .sync-box * { color:inherit !important; opacity:1 !important; visibility:visible !important; }
+body .side-nav .sync-box .dot,
+body .side-nav .sync-box i.dot { color:#22c55e !important; background:#22c55e !important; }
+
+body .menu-button {
+  display:inline-grid !important;
+  place-items:center !important;
+  width:42px !important;
+  height:42px !important;
+  border-radius:10px !important;
+  color:#fff !important;
+  background:rgba(255,255,255,.07) !important;
+  border:1px solid rgba(148,197,253,.24) !important;
+  cursor:pointer !important;
+}
+
+body .manager-app .topbar,
+body .operator-app .topbar {
+  background:linear-gradient(90deg, rgba(8,28,48,.98), rgba(11,35,59,.98)) !important;
+  color:#fff !important;
+  border-bottom:1px solid rgba(148,197,253,.22) !important;
+}
+body .manager-app .topbar *,
+body .operator-app .topbar * { opacity:1 !important; visibility:visible !important; }
+
+body .app-screen[hidden],
+body .driver-subpanel[hidden],
+body main.main-dashboard > section[hidden],
+body .manager-single-panel[hidden],
+body .manager-content > article[hidden] { display:none !important; }
+
+body .manager-app .leaflet-container,
+body .operator-app .leaflet-container { z-index:1 !important; }
+body .floating-ai-chat { z-index:20 !important; }
+body.operator-menu-open .floating-ai-chat,
+body.manager-menu-open .floating-ai-chat { display:none !important; }
+
+@media (max-width: 760px) {
+  body .dashboard-shell > .side-nav { width:min(318px, 94vw) !important; }
+  body .side-nav .nav-section a { min-height:44px !important; }
+}

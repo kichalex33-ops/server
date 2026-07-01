@@ -1,0 +1,307 @@
+CREATE TABLE IF NOT EXISTS usuarios (
+  id VARCHAR(64) PRIMARY KEY,
+  nome VARCHAR(160) NOT NULL,
+  login VARCHAR(120) NOT NULL UNIQUE,
+  email VARCHAR(180) NULL UNIQUE,
+  senha_hash VARCHAR(255) NOT NULL,
+  perfil ENUM('ADMIN','GESTOR','OPERADOR','MOTORISTA','CIDADAO') NOT NULL DEFAULT 'CIDADAO',
+  status VARCHAR(32) NOT NULL DEFAULT 'ativo',
+  ultimo_login_em DATETIME NULL,
+  criado_em DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  atualizado_em DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS refresh_tokens (
+  id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  usuario_id VARCHAR(64) NOT NULL,
+  token_hash CHAR(64) NOT NULL UNIQUE,
+  ip VARCHAR(64) NULL,
+  user_agent VARCHAR(255) NULL,
+  expira_em DATETIME NOT NULL,
+  revogado_em DATETIME NULL,
+  criado_em DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  INDEX idx_refresh_usuario (usuario_id),
+  INDEX idx_refresh_expira (expira_em),
+  CONSTRAINT fk_refresh_usuario FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS motoristas (
+  id VARCHAR(64) PRIMARY KEY,
+  nome VARCHAR(160) NOT NULL,
+  cpf VARCHAR(32) NULL,
+  matricula VARCHAR(80) NULL,
+  telefone VARCHAR(60) NULL,
+  email VARCHAR(180) NULL,
+  senha_hash VARCHAR(255) NULL,
+  status VARCHAR(32) NOT NULL DEFAULT 'ativo',
+  metadados TEXT NULL,
+  criado_em DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  atualizado_em DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  INDEX idx_motoristas_status (status),
+  INDEX idx_motoristas_cpf (cpf),
+  INDEX idx_motoristas_matricula (matricula)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS motorista_qr_tokens (
+  id VARCHAR(64) PRIMARY KEY,
+  motorista_id VARCHAR(64) NOT NULL,
+  token_hash CHAR(64) NOT NULL UNIQUE,
+  origem VARCHAR(80) NULL,
+  ip VARCHAR(64) NULL,
+  expira_em DATETIME NOT NULL,
+  usado_em DATETIME NULL,
+  criado_em DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  INDEX idx_qr_motorista (motorista_id),
+  INDEX idx_qr_expira (expira_em),
+  CONSTRAINT fk_qr_motorista FOREIGN KEY (motorista_id) REFERENCES motoristas(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS qr_tokens (
+  id VARCHAR(64) PRIMARY KEY,
+  motorista_id VARCHAR(64) NOT NULL,
+  token_hash CHAR(64) NOT NULL UNIQUE,
+  tipo VARCHAR(40) NOT NULL DEFAULT 'LOGIN_MOTORISTA',
+  expira_em DATETIME NOT NULL,
+  usado_em DATETIME NULL,
+  revogado_em DATETIME NULL,
+  criado_em DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  INDEX idx_qr_tokens_motorista (motorista_id),
+  INDEX idx_qr_tokens_expira (expira_em),
+  CONSTRAINT fk_qr_tokens_motorista FOREIGN KEY (motorista_id) REFERENCES motoristas(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS veiculos (
+  id VARCHAR(64) PRIMARY KEY,
+  tipo VARCHAR(80) NULL,
+  nome VARCHAR(160) NULL,
+  prefixo VARCHAR(80) NULL,
+  placa VARCHAR(32) NULL,
+  capacidade INT NULL,
+  status VARCHAR(32) NOT NULL DEFAULT 'operacional',
+  km_rodados DECIMAL(12,2) NOT NULL DEFAULT 0,
+  metadados TEXT NULL,
+  criado_em DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  atualizado_em DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS pacientes (
+  id VARCHAR(64) PRIMARY KEY,
+  nome VARCHAR(160) NULL,
+  tipo VARCHAR(60) NULL,
+  cpf VARCHAR(32) NULL,
+  telefone VARCHAR(60) NULL,
+  metadados TEXT NULL,
+  criado_em DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  atualizado_em DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS viagens (
+  id VARCHAR(64) PRIMARY KEY,
+  codigo VARCHAR(80) NULL,
+  origem VARCHAR(180) NULL,
+  destino VARCHAR(180) NULL,
+  motorista_id VARCHAR(64) NULL,
+  veiculo_id VARCHAR(64) NULL,
+  status VARCHAR(40) NOT NULL DEFAULT 'AGUARDANDO',
+  prioridade VARCHAR(40) NULL,
+  data_viagem DATE NULL,
+  km_saida DECIMAL(12,2) NULL,
+  km_retorno DECIMAL(12,2) NULL,
+  hora_saida DATETIME NULL,
+  hora_retorno DATETIME NULL,
+  observacoes TEXT NULL,
+  metadados TEXT NULL,
+  criado_em DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  atualizado_em DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  INDEX idx_viagens_status (status),
+  INDEX idx_viagens_motorista (motorista_id),
+  INDEX idx_viagens_data (data_viagem)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS passageiros (
+  id VARCHAR(64) PRIMARY KEY,
+  viagem_id VARCHAR(64) NULL,
+  paciente_id VARCHAR(64) NULL,
+  nome VARCHAR(160) NULL,
+  tipo VARCHAR(60) NULL,
+  cpf VARCHAR(32) NULL,
+  telefone VARCHAR(60) NULL,
+  status VARCHAR(40) NOT NULL DEFAULT 'AGUARDANDO',
+  metadados TEXT NULL,
+  criado_em DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  atualizado_em DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  INDEX idx_passageiros_viagem (viagem_id),
+  INDEX idx_passageiros_status (status)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS despesas (
+  id VARCHAR(64) PRIMARY KEY,
+  viagem_id VARCHAR(64) NULL,
+  tipo VARCHAR(80) NULL,
+  descricao VARCHAR(255) NULL,
+  valor DECIMAL(12,2) NOT NULL DEFAULT 0,
+  metadados TEXT NULL,
+  criado_em DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  atualizado_em DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS eventos (
+  id VARCHAR(64) PRIMARY KEY,
+  viagem_id VARCHAR(64) NULL,
+  tipo VARCHAR(80) NULL,
+  descricao TEXT NULL,
+  data_hora DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  metadados TEXT NULL,
+  criado_em DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  atualizado_em DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS alertas (
+  id VARCHAR(64) PRIMARY KEY,
+  tipo VARCHAR(80) NULL,
+  descricao TEXT NULL,
+  status VARCHAR(40) NOT NULL DEFAULT 'aberto',
+  metadados TEXT NULL,
+  criado_em DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  atualizado_em DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS ocorrencias (
+  id VARCHAR(64) PRIMARY KEY,
+  viagem_id VARCHAR(64) NULL,
+  tipo VARCHAR(80) NULL,
+  descricao TEXT NULL,
+  status VARCHAR(40) NOT NULL DEFAULT 'aberta',
+  metadados TEXT NULL,
+  criado_em DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  atualizado_em DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS mensagens (
+  id VARCHAR(64) PRIMARY KEY,
+  viagem_id VARCHAR(64) NULL,
+  origem VARCHAR(80) NULL,
+  mensagem TEXT NULL,
+  metadados TEXT NULL,
+  criado_em DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  atualizado_em DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS avisos (
+  id VARCHAR(64) PRIMARY KEY,
+  motorista_id VARCHAR(64) NULL,
+  titulo VARCHAR(160) NULL,
+  mensagem TEXT NULL,
+  status VARCHAR(40) NOT NULL DEFAULT 'ativo',
+  metadados TEXT NULL,
+  criado_em DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  atualizado_em DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  INDEX idx_avisos_motorista (motorista_id),
+  INDEX idx_avisos_status (status)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS comprovantes (
+  id VARCHAR(64) PRIMARY KEY,
+  viagem_id VARCHAR(64) NULL,
+  passageiro_id VARCHAR(64) NULL,
+  tipo VARCHAR(80) NULL,
+  arquivo_nome VARCHAR(255) NULL,
+  metadados TEXT NULL,
+  criado_em DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  atualizado_em DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  INDEX idx_comprovantes_viagem (viagem_id),
+  INDEX idx_comprovantes_passageiro (passageiro_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS checklists (
+  id VARCHAR(64) PRIMARY KEY,
+  viagem_id VARCHAR(64) NULL,
+  motorista_id VARCHAR(64) NULL,
+  metadados TEXT NULL,
+  criado_em DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  atualizado_em DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS localizacoes (
+  id VARCHAR(64) PRIMARY KEY,
+  viagem_id VARCHAR(64) NULL,
+  veiculo_id VARCHAR(64) NULL,
+  motorista_id VARCHAR(64) NULL,
+  latitude DECIMAL(10,7) NULL,
+  longitude DECIMAL(10,7) NULL,
+  velocidade DECIMAL(8,2) NULL,
+  metadados TEXT NULL,
+  criado_em DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  atualizado_em DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS audit_logs (
+  id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  usuario_id VARCHAR(64) NULL,
+  usuario_nome VARCHAR(160) NULL,
+  perfil VARCHAR(40) NULL,
+  ip VARCHAR(64) NULL,
+  user_agent VARCHAR(255) NULL,
+  acao VARCHAR(120) NOT NULL,
+  entidade VARCHAR(120) NULL,
+  entidade_id VARCHAR(120) NULL,
+  metodo VARCHAR(16) NULL,
+  rota VARCHAR(255) NULL,
+  metadados TEXT NULL,
+  criado_em DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  INDEX idx_audit_usuario (usuario_id),
+  INDEX idx_audit_entidade (entidade, entidade_id),
+  INDEX idx_audit_acao (acao),
+  INDEX idx_audit_criado (criado_em)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS operational_logs (
+  id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  nivel VARCHAR(40) NOT NULL,
+  mensagem TEXT NOT NULL,
+  ip VARCHAR(64) NULL,
+  rota VARCHAR(255) NULL,
+  metadados TEXT NULL,
+  criado_em DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  INDEX idx_operational_nivel (nivel),
+  INDEX idx_operational_criado (criado_em)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS lgpd_consents (
+  id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  titular_tipo VARCHAR(60) NOT NULL,
+  titular_id VARCHAR(64) NOT NULL,
+  finalidade VARCHAR(160) NOT NULL,
+  consentido TINYINT(1) NOT NULL DEFAULT 1,
+  ip VARCHAR(64) NULL,
+  user_agent VARCHAR(255) NULL,
+  registrado_em DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  INDEX idx_lgpd_titular (titular_tipo, titular_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS data_access_logs (
+  id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  usuario_id VARCHAR(64) NULL,
+  perfil VARCHAR(40) NULL,
+  entidade VARCHAR(120) NOT NULL,
+  entidade_id VARCHAR(120) NULL,
+  finalidade VARCHAR(160) NULL,
+  ip VARCHAR(64) NULL,
+  rota VARCHAR(255) NULL,
+  criado_em DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  INDEX idx_data_access_entidade (entidade, entidade_id),
+  INDEX idx_data_access_usuario (usuario_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS data_privacy_requests (
+  id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  titular_tipo VARCHAR(60) NOT NULL,
+  titular_id VARCHAR(64) NOT NULL,
+  tipo VARCHAR(80) NOT NULL,
+  status VARCHAR(40) NOT NULL DEFAULT 'pendente',
+  solicitado_por VARCHAR(64) NULL,
+  criado_em DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  atualizado_em DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  INDEX idx_privacy_titular (titular_tipo, titular_id),
+  INDEX idx_privacy_status (status)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
