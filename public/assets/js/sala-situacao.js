@@ -1,4 +1,4 @@
-const apiRoot = (window.PAINEL_API_ROOT || "/homologacao/api").replace(/\/$/, "");
+const apiRoot = (window.PAINEL_API_ROOT || (window.apiUrl ? window.apiUrl("") : "/api")).replace(/\/$/, "");
 const pollMs = 20000;
 const $ = (selector) => document.querySelector(selector);
 const state = {
@@ -32,8 +32,10 @@ function initMap() {
 
 async function fetchLiveMap() {
   try {
-    const response = await fetch(`${apiRoot}/live-map`, { headers: { Accept: "application/json" } });
+    const request = window.authFetch || window.fetch;
+    const response = await request(`${apiRoot}/live-map`, { headers: { Accept: "application/json" } });
     const body = await response.json();
+    if (response.status === 401 || response.status === 403) throw new Error(body.error || "Token inválido ou expirado.");
     if (!response.ok || body.ok !== true) throw new Error(body.error || "Falha ao carregar o mapa.");
     applyPayload(body.data || {});
     setBadge("Dados reais", "real");
@@ -232,10 +234,12 @@ async function fetchTrackingForSelected(vehicles) {
   }
   const seq = ++state.trackingSeq;
   try {
-    const response = await fetch(`${apiRoot}/rastreamento?viagem_id=${encodeURIComponent(selected.viagem_id)}&limit=500`, { headers: { Accept: "application/json" } });
+    const request = window.authFetch || window.fetch;
+    const response = await request(`${apiRoot}/rastreamento?viagem_id=${encodeURIComponent(selected.viagem_id)}&limit=500`, { headers: { Accept: "application/json" } });
     const body = await response.json();
     if (seq !== state.trackingSeq) return;
-    if (!response.ok || body.ok !== true) throw new Error(body.error || "Falha ao carregar historico.");
+    if (response.status === 401 || response.status === 403) throw new Error(body.error || "Token inválido ou expirado.");
+    if (!response.ok || body.ok !== true) throw new Error(body.error || "Falha ao carregar histórico.");
     state.tracking = body.data || null;
     renderTracking(state.tracking);
     drawTrail(state.tracking?.pontos || []);
@@ -319,7 +323,7 @@ function downloadRouteReport() {
 
 function csvCell(value) { return `"${String(value ?? "").replace(/"/g, '""')}"`; }
 function markerIcon(vehicle) { return L.divIcon({ className: "", html: `<div class="vehicle-marker marker-${escapeHtml(vehicle.cor_status || "CINZA")}">${escapeHtml(vehicle.prefixo || "V")}</div>`, iconSize: [34, 34], iconAnchor: [17, 17], popupAnchor: [0, -18] }); }
-function popupHtml(vehicle) { const url = vehicle.waze_url || wazeUrl(vehicle.latitude, vehicle.longitude); return `<strong>${escapeHtml(vehicleTitle(vehicle))}</strong><br>Motorista: ${escapeHtml(vehicle.motorista_nome || vehicle.motorista || "--")}<br>Viagem: ${escapeHtml(vehicle.codigo || vehicle.viagem_id || "--")}<br>Status: ${escapeHtml(formatStatus(vehicle.status_viagem || vehicle.status))}<br>Estado: ${escapeHtml(formatStatus(vehicle.estado_rota || vehicle.tipo_alerta || vehicle.status))}<br>Velocidade: ${formatVelocity(vehicle.velocidade)}<br>Ultimo GPS: ${formatTime(vehicle.ultima_atualizacao)}${url ? `<br><a href="${escapeHtml(url)}" target="_blank" rel="noopener noreferrer">Abrir no Waze</a>` : ""}`; }
+function popupHtml(vehicle) { const url = vehicle.waze_url || wazeUrl(vehicle.latitude, vehicle.longitude); return `<strong>${escapeHtml(vehicleTitle(vehicle))}</strong><br>Motorista: ${escapeHtml(vehicle.motorista_nome || vehicle.motorista || "--")}<br>Viagem: ${escapeHtml(vehicle.codigo || vehicle.viagem_id || "--")}<br>Status: ${escapeHtml(formatStatus(vehicle.status_viagem || vehicle.status))}<br>Estado: ${escapeHtml(formatStatus(vehicle.estado_rota || vehicle.tipo_alerta || vehicle.status))}<br>Velocidade: ${formatVelocity(vehicle.velocidade)}<br>Último GPS: ${formatTime(vehicle.ultima_atualizacao)}${url ? `<br><a href="${escapeHtml(url)}" target="_blank" rel="noopener noreferrer">Abrir no Waze</a>` : ""}`; }
 function vehicleId(vehicle) { return String(vehicle.viagem_id || vehicle.veiculo_id || vehicle.id || ""); }
 function vehicleTitle(vehicle) { return [vehicle.prefixo || vehicle.veiculo_nome || "Veiculo", vehicle.placa].filter(Boolean).join(" - "); }
 function routeLabel(item) { return [item.codigo || item.viagem_id || "Viagem", item.origem, item.destino].filter(Boolean).join(" | "); }
@@ -330,7 +334,7 @@ function formatStatus(value) { return String(value || "sem status").replace(/_/g
 function formatVelocity(value) { const speed = Number(value); return Number.isFinite(speed) ? `${speed.toFixed(speed % 1 ? 1 : 0)} km/h` : "-- km/h"; }
 function formatTime(value) { const date = value ? new Date(value) : null; return date && !Number.isNaN(date.getTime()) ? date.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit", second: "2-digit" }) : "--:--"; }
 function wazeUrl(latitude, longitude) { const lat = Number(latitude); const lon = Number(longitude); return Number.isFinite(lat) && Number.isFinite(lon) ? `https://www.waze.com/ul?ll=${encodeURIComponent(`${lat},${lon}`)}&navigate=yes&zoom=17` : null; }
-function escapeHtml(value) { return String(value ?? "").replace(/[&<>"']/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;" })[char]); }
+function escapeHtml(value) { if (window.App?.Sanitize?.escapeHtml) return window.App.Sanitize.escapeHtml(value); return String(value ?? "").replace(/[&<>"'`]/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;", "`": "&#096;" })[char]); }
 function setBadge(text, style) { $("#mapBadge").textContent = text; $("#mapBadge").className = `badge ${style}`; }
 
 bindEvents();

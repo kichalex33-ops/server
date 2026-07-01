@@ -16,7 +16,7 @@ function requireOperatorSession() {
     return false;
   }
   const profile = String(session.usuario?.perfil || "").toUpperCase();
-  if (!["OPERADOR", "ADMIN"].includes(profile)) {
+  if (!["OPERADOR", "GESTOR", "ADMIN"].includes(profile)) {
     redirectToLogin("Este acesso é exclusivo do Painel Operador.");
     return false;
   }
@@ -31,7 +31,7 @@ function redirectToLogin(message) {
   } catch (error) {
     // ignora falha de storage
   }
-  window.location.href = "/homologacao/";
+  window.location.href = window.appUrl ? window.appUrl("/") : "/";
 }
 
 async function loadOperatorDashboard() {
@@ -159,7 +159,7 @@ async function refreshOperatorData() {
   try {
     const [indicadores, viagensResponse, alertasResponse, checklistsResponse, ocorrenciasResponse, mapaResponse, motoristasResponse, veiculosResponse, pacientesResponse, passageirosResponse, destinosResponse, charts] = await Promise.all([
       safeApiJson("/indicadores/operador", {}, controller.signal),
-      safeApiJson("/viagens", { viagens: [], items: [] }, controller.signal),
+      safeApiJson("/viagens?page=1&per_page=50", { viagens: [], items: [], pagination: {} }, controller.signal),
       safeApiJson("/alertas", { alertas: [], items: [] }, controller.signal),
       safeApiJson("/checklists", { checklists: [], items: [] }, controller.signal),
       safeApiJson("/ocorrencias", { ocorrencias: [], items: [] }, controller.signal),
@@ -237,7 +237,7 @@ async function safeApiJson(path, fallback, signal) {
   try {
     return await apiJson(path, signal);
   } catch (error) {
-    if (/Token inválido|Autentica|Acesso negado/i.test(error.message)) throw error;
+    if (/Token inv[áa]lido|Autentica|Acesso negado/i.test(error.message)) throw error;
     showSmallError(path, error.message);
     return fallback;
   }
@@ -268,14 +268,25 @@ function renderTrips(trips, drivers, vehicles) {
   const vehicleNames = new Map(vehicles.map((vehicle) => [String(vehicle.id), vehicle.prefixo || vehicle.placa || vehicle.nome || vehicle.id]));
   const target = document.querySelector("#operatorTrips");
   if (!target) return;
-  target.innerHTML = trips.length ? trips.slice(0, 50).map((trip) => `<tr>
-    <td><strong>${escapeText(trip.codigo || trip.id)}</strong></td>
-    <td>${escapeText(formatTripDate(trip.data_viagem || trip.dataViagem))}</td>
-    <td>${escapeText(formatTripTime(getTripField(trip, 'hora_consulta') || getTripField(trip, 'horario_consulta') || trip.hora_saida || trip.hora_retorno))}</td>
-    <td>${escapeText(trip.origem || "--")}</td><td>${escapeText(trip.destino || "--")}</td>
-    <td>${escapeText(driverNames.get(String(trip.motorista_id)) || "A definir")}</td><td>${escapeText(vehicleNames.get(String(trip.veiculo_id)) || trip.veiculo_id || "A definir")}</td>
-    <td><span class="status info">${escapeText(trip.status || "AGUARDANDO")}</span></td>
-  </tr>`).join("") : emptyTableRow(8, "Nenhuma viagem cadastrada", "Crie uma viagem pela aba de cadastro.");
+  target.innerHTML = trips.length ? trips.slice(0, 50).map((trip) => {
+    const status = trip.status || "AGUARDANDO";
+    const tripId = trip.id || trip.codigo || "";
+    return `<tr data-trip-id="${escapeAttr(tripId)}" data-trip-status="${escapeAttr(status)}">
+      <td><strong>${escapeText(trip.codigo || trip.id)}</strong></td>
+      <td>${escapeText(formatTripDate(trip.data_viagem || trip.dataViagem))}</td>
+      <td>${escapeText(formatTripTime(getTripField(trip, 'hora_consulta') || getTripField(trip, 'horario_consulta') || trip.hora_saida || trip.hora_retorno))}</td>
+      <td>${escapeText(trip.origem || "--")}</td><td>${escapeText(trip.destino || "--")}</td>
+      <td>${escapeText(driverNames.get(String(trip.motorista_id)) || "A definir")}</td><td>${escapeText(vehicleNames.get(String(trip.veiculo_id)) || trip.veiculo_id || "A definir")}</td>
+      <td><span class="status info">${escapeText(status)}</span></td>
+      <td class="h546-actions"><div class="h546-inline-actions" aria-label="Ações da viagem ${escapeAttr(trip.codigo || trip.id)}">
+        <button type="button" data-h546-action="view" data-trip-id="${escapeAttr(tripId)}">Ver</button>
+        <button type="button" data-h546-action="complete" data-trip-id="${escapeAttr(tripId)}">Concluir</button>
+        <button type="button" data-h546-action="cancel" data-trip-id="${escapeAttr(tripId)}" data-h545-confirmed="1">Cancelar</button>
+        <button type="button" data-h546-action="edit" data-trip-id="${escapeAttr(tripId)}">Editar</button>
+      </div></td>
+    </tr>`;
+  }).join("") : emptyTableRow(9, "Nenhuma viagem cadastrada", "Crie uma viagem pela aba de cadastro.");
+  window.dispatchEvent(new CustomEvent("operator:trips-rendered", { detail: { total: trips.length } }));
 }
 
 function renderTripAgenda(trips, drivers, vehicles) {
@@ -410,7 +421,7 @@ function bindDriverSecretReveal() {
     if (!button || button.dataset.loading === "true") return;
     const driverId = button.dataset.driverSecretReveal;
     if (!driverId) return;
-    const ok = window.confirm("Mostrar a senha do app deste motorista? Use apenas no momento do pareamento.");
+    const ok = window.confirm("Gerar um novo código de ativação? A senha antiga não será revelada e o novo código expira em 24 horas.");
     if (!ok) return;
     button.dataset.loading = "true";
     const oldText = button.textContent;
@@ -420,15 +431,15 @@ function bindDriverSecretReveal() {
       const secret = body.senha_app || body.codigo_ativacao || body.codigo || "";
       const target = document.querySelector(`[data-driver-secret-target="${cssEscape(driverId)}"]`);
       if (target && secret) target.textContent = secret;
-      button.textContent = "Ocultar";
+      button.textContent = "Gerado";
       button.onclick = () => {
         if (target) target.textContent = maskSecret(body.hint || secret);
-        button.textContent = oldText || "Mostrar";
+        button.textContent = oldText || "Gerar novo código";
         button.onclick = null;
       };
     } catch (error) {
       showDriverError(error);
-      button.textContent = oldText || "Mostrar";
+      button.textContent = oldText || "Gerar novo código";
     } finally {
       button.dataset.loading = "false";
     }
@@ -605,16 +616,37 @@ function renderPatients(patients) {
   const count = document.querySelector("#patientCount");
   if (count) count.textContent = `${patients.length} ${patients.length === 1 ? "cadastro" : "cadastros"}`;
   if (!target) return;
-  target.innerHTML = patients.length ? patients.map((patient) => `<tr>
-    <td>${escapeText(patient.nome || "--")}</td>
-    <td>${escapeText(patient.tipo || "paciente")}</td>
-    <td>${escapeText(patient.cpf || "--")}</td>
-    <td>${escapeText(patient.telefone || "--")}</td>
-    <td><button class="driver-action danger" type="button" data-patient-delete-id="${escapeAttr(patient.id)}" data-patient-name="${escapeAttr(patient.nome || patient.id)}">Excluir</button></td>
-  </tr>`).join("") : emptyTableRow(5, "Nenhum paciente ou acompanhante cadastrado", "Cadastre pacientes/acompanhantes para montar viagens.");
-  target.querySelectorAll("[data-patient-delete-id]").forEach((button) => {
+  if (!patients.length) {
+    target.innerHTML = emptyTableRow(5, "Nenhum paciente ou acompanhante cadastrado", "Cadastre pacientes/acompanhantes para montar viagens.");
+    return;
+  }
+  const fragment = document.createDocumentFragment();
+  patients.forEach((patient) => {
+    const tr = document.createElement("tr");
+    const values = [
+      window.App?.Sanitize?.maskName(patient.nome || "--") || patient.nome || "--",
+      patient.tipo || "paciente",
+      window.App?.Sanitize?.maskCpf(patient.cpf || "") || "--",
+      window.App?.Sanitize?.maskPhone(patient.telefone || "") || "--"
+    ];
+    values.forEach((value) => {
+      const td = document.createElement("td");
+      td.textContent = String(value || "--");
+      tr.appendChild(td);
+    });
+    const actionTd = document.createElement("td");
+    const button = document.createElement("button");
+    button.className = "driver-action danger";
+    button.type = "button";
+    button.dataset.patientDeleteId = String(patient.id || "");
+    button.dataset.patientName = String(patient.nome || patient.id || "");
+    button.textContent = "Excluir";
     button.addEventListener("click", () => deleteOperationalRecord("pacientes", button.dataset.patientDeleteId, button.dataset.patientName, "paciente/acompanhante").catch(showDeleteError));
+    actionTd.appendChild(button);
+    tr.appendChild(actionTd);
+    fragment.appendChild(tr);
   });
+  target.replaceChildren(fragment);
 }
 
 function renderPassengers(passengers, trips) {
@@ -623,16 +655,41 @@ function renderPassengers(passengers, trips) {
   const tripNames = new Map(trips.map((trip) => [String(trip.id), trip.codigo || trip.id]));
   if (count) count.textContent = `${passengers.length} ${passengers.length === 1 ? "passageiro" : "passageiros"}`;
   if (!target) return;
-  target.innerHTML = passengers.length ? passengers.map((passenger) => `<tr>
-    <td>${escapeText(passenger.nome || "--")}</td>
-    <td>${escapeText(passenger.tipo || "PACIENTE")}</td>
-    <td>${escapeText(tripNames.get(String(passenger.viagem_id)) || passenger.viagem_id || "--")}</td>
-    <td><span class="status info">${escapeText(passenger.status || "AGUARDANDO")}</span></td>
-    <td><button class="driver-action danger" type="button" data-passenger-delete-id="${escapeAttr(passenger.id)}" data-passenger-name="${escapeAttr(passenger.nome || passenger.id)}">Excluir</button></td>
-  </tr>`).join("") : emptyTableRow(5, "Nenhum passageiro vinculado", "Vincule passageiros depois de criar uma viagem.");
-  target.querySelectorAll("[data-passenger-delete-id]").forEach((button) => {
+  if (!passengers.length) {
+    target.innerHTML = emptyTableRow(5, "Nenhum passageiro vinculado", "Vincule passageiros depois de criar uma viagem.");
+    return;
+  }
+  const fragment = document.createDocumentFragment();
+  passengers.forEach((passenger) => {
+    const tr = document.createElement("tr");
+    [
+      window.App?.Sanitize?.maskName(passenger.nome || "--") || passenger.nome || "--",
+      passenger.tipo || "PACIENTE",
+      tripNames.get(String(passenger.viagem_id)) || passenger.viagem_id || "--"
+    ].forEach((value) => {
+      const td = document.createElement("td");
+      td.textContent = String(value || "--");
+      tr.appendChild(td);
+    });
+    const statusTd = document.createElement("td");
+    const status = document.createElement("span");
+    status.className = "status info";
+    status.textContent = String(passenger.status || "AGUARDANDO");
+    statusTd.appendChild(status);
+    tr.appendChild(statusTd);
+    const actionTd = document.createElement("td");
+    const button = document.createElement("button");
+    button.className = "driver-action danger";
+    button.type = "button";
+    button.dataset.passengerDeleteId = String(passenger.id || "");
+    button.dataset.passengerName = String(passenger.nome || passenger.id || "");
+    button.textContent = "Excluir";
     button.addEventListener("click", () => deleteOperationalRecord("passageiros", button.dataset.passengerDeleteId, button.dataset.passengerName, "passageiro da viagem").catch(showDeleteError));
+    actionTd.appendChild(button);
+    tr.appendChild(actionTd);
+    fragment.appendChild(tr);
   });
+  target.replaceChildren(fragment);
 }
 
 function renderDestinations(destinations) {
@@ -683,7 +740,7 @@ function renderDrivers(drivers) {
     <div class="ranking-row driver-card-row">
       <strong>${escapeText(driver.status || "ativo")}</strong>
       <span>${escapeText(driver.nome || driver.id)}<br><small>${escapeText(driver.matricula || driver.cpf || "")}</small></span>
-      <span>${driver.tem_senha_app || driver.app_senha_hint ? `<small>Senha app salva</small><br><strong class="activation-inline-code" data-driver-secret-target="${escapeAttr(driver.id)}">${escapeText(maskSecret(driver.app_senha_hint || appPassword))}</strong>${generatedAt}<br><button class="driver-action small-action" type="button" data-driver-secret-reveal="${escapeAttr(driver.id)}">Mostrar</button>` : `<small>Sem senha do app salva</small>`}</span>
+      <span>${driver.tem_senha_app || driver.app_senha_hint ? `<small>Código/senha protegida</small><br><strong class="activation-inline-code" data-driver-secret-target="${escapeAttr(driver.id)}">${escapeText(maskSecret(driver.app_senha_hint || appPassword))}</strong>${generatedAt}<br><button class="driver-action small-action" type="button" data-driver-secret-reveal="${escapeAttr(driver.id)}">Gerar novo código</button>` : `<small>Sem senha do app salva</small>`}</span>
       <span class="driver-actions-inline"><button class="driver-action" type="button" data-driver-id="${escapeAttr(driver.id)}">Gerar nova senha</button><button class="driver-action danger" type="button" data-driver-delete-id="${escapeAttr(driver.id)}" data-driver-name="${escapeAttr(driver.nome || driver.id)}">Excluir</button></span>
     </div>`;
   }).join("") : emptyDriverList();
@@ -897,10 +954,10 @@ async function runOperatorAi(mode, overridePrompt = null) {
   const response = await postAiJson(path, body);
   if (result) {
     result.className = "ai-output";
-    result.textContent = response.resposta || "A IA retornou sem texto.";
+    result.textContent = normalizeAiText(response.resposta || "A IA retornou sem texto.");
   }
   if (status) status.textContent = "Concluído";
-  updateFloatingAiAnswer(response.resposta || "A IA retornou sem texto.");
+  updateFloatingAiAnswer(normalizeAiText(response.resposta || "A IA retornou sem texto."));
 }
 
 
@@ -1081,6 +1138,27 @@ function appendFloatingAiMessage(text, type = "bot", loading = false) {
   messages.scrollTop = messages.scrollHeight;
 }
 
+
+function normalizeAiText(text) {
+  let value = String(text || '').trim();
+  if (!value) return 'A IA retornou sem texto.';
+  value = value.replace(/\r\n/g, '\n');
+  value = value.split('\n').filter((line) => !/^\s*[*-]?\s*State clearly\b/i.test(line)).join('\n');
+  value = value.replace(/clear\/partly cloudy/gi, 'céu claro/parcialmente nublado');
+  value = value.replace(/partly cloudy/gi, 'parcialmente nublado');
+  value = value.replace(/clear sky/gi, 'céu claro');
+  value = value.replace(/light rain\/drizzle/gi, 'chuva fraca/garoa');
+  value = value.replace(/light rain/gi, 'chuva fraca');
+  value = value.replace(/drizzle/gi, 'garoa');
+  value = value.replace(/forecast of/gi, 'previsão de');
+  value = value.replace(/starting around/gi, 'começando por volta de');
+  value = value.replace(/midnight/gi, 'meia-noite');
+  value = value.replace(/no active/gi, 'sem registros ativos');
+  value = value.replace(/^\s*,\s*/, '');
+  value = value.replace(/\n{3,}/g, '\n\n').trim();
+  return value || 'A IA retornou sem texto.';
+}
+
 function updateFloatingAiAnswer(text, isError = false) {
   const messages = document.querySelector("#floatingAiMessages");
   if (!messages) return;
@@ -1090,7 +1168,7 @@ function updateFloatingAiAnswer(text, isError = false) {
     messages.appendChild(node);
   }
   node.className = `ai-bubble bot${isError ? " error" : ""}`;
-  node.textContent = text;
+  node.textContent = normalizeAiText(text);
   messages.scrollTop = messages.scrollHeight;
 }
 
@@ -1160,7 +1238,8 @@ function maskSecret(value) {
 }
 
 function escapeText(value) {
-  return String(value ?? "").replace(/[&<>"']/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;" }[char]));
+  if (window.App?.Sanitize?.escapeHtml) return window.App.Sanitize.escapeHtml(value);
+  return String(value ?? "").replace(/[&<>"'`]/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;", "`": "&#096;" }[char]));
 }
 
 function escapeAttr(value) {

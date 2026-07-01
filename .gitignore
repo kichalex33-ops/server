@@ -6,3 +6,5 @@ storage/uploads/*
 node_modules/
 *.log
 *.zip
+.env.staging
+storage/logs/migration-test-*.json

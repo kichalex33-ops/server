@@ -255,27 +255,27 @@ body .manager-app .subtab {
 }
 
 /* Dark mode: selectors intentionally repeat html/body/class to beat older !important rules. */
-html[data-theme="dark"] body,
-body[data-theme="dark"],
+html[data-theme=""] body,
+body[data-theme=""],
 body.theme-dark {
   background: var(--h518-bg) !important;
   color: var(--h518-text) !important;
 }
 
-html[data-theme="dark"] body .operator-app .main-dashboard,
-html[data-theme="dark"] body .manager-app .main-dashboard,
-body[data-theme="dark"] .operator-app .main-dashboard,
-body[data-theme="dark"] .manager-app .main-dashboard,
+html[data-theme=""] body .operator-app .main-dashboard,
+html[data-theme=""] body .manager-app .main-dashboard,
+body[data-theme=""] .operator-app .main-dashboard,
+body[data-theme=""] .manager-app .main-dashboard,
 body.theme-dark .operator-app .main-dashboard,
 body.theme-dark .manager-app .main-dashboard {
   background: radial-gradient(circle at 22% 0%, rgba(45, 95, 151, .30), transparent 32%), linear-gradient(180deg, #081624 0%, #06101c 100%) !important;
   color: var(--h518-text) !important;
 }
 
-html[data-theme="dark"] body .operator-app .topbar,
-html[data-theme="dark"] body .manager-app .topbar,
-body[data-theme="dark"] .operator-app .topbar,
-body[data-theme="dark"] .manager-app .topbar,
+html[data-theme=""] body .operator-app .topbar,
+html[data-theme=""] body .manager-app .topbar,
+body[data-theme=""] .operator-app .topbar,
+body[data-theme=""] .manager-app .topbar,
 body.theme-dark .operator-app .topbar,
 body.theme-dark .manager-app .topbar {
   background: linear-gradient(90deg, #0b2036, #0e2a47) !important;
@@ -284,10 +284,10 @@ body.theme-dark .manager-app .topbar {
   color: #fff !important;
 }
 
-html[data-theme="dark"] body .operator-app .side-nav,
-html[data-theme="dark"] body .manager-app .side-nav,
-body[data-theme="dark"] .operator-app .side-nav,
-body[data-theme="dark"] .manager-app .side-nav,
+html[data-theme=""] body .operator-app .side-nav,
+html[data-theme=""] body .manager-app .side-nav,
+body[data-theme=""] .operator-app .side-nav,
+body[data-theme=""] .manager-app .side-nav,
 body.theme-dark .operator-app .side-nav,
 body.theme-dark .manager-app .side-nav {
   background: linear-gradient(180deg, #08192b 0%, #06101c 100%) !important;
@@ -295,16 +295,16 @@ body.theme-dark .manager-app .side-nav {
   color: #eaf4ff !important;
 }
 
-html[data-theme="dark"] body .operator-app .page-heading,
-html[data-theme="dark"] body .manager-app .page-heading,
-body[data-theme="dark"] .operator-app .page-heading,
-body[data-theme="dark"] .manager-app .page-heading,
+html[data-theme=""] body .operator-app .page-heading,
+html[data-theme=""] body .manager-app .page-heading,
+body[data-theme=""] .operator-app .page-heading,
+body[data-theme=""] .manager-app .page-heading,
 body.theme-dark .operator-app .page-heading,
 body.theme-dark .manager-app .page-heading,
-html[data-theme="dark"] body .operator-app .date-card,
-html[data-theme="dark"] body .manager-app .date-card,
-body[data-theme="dark"] .operator-app .date-card,
-body[data-theme="dark"] .manager-app .date-card,
+html[data-theme=""] body .operator-app .date-card,
+html[data-theme=""] body .manager-app .date-card,
+body[data-theme=""] .operator-app .date-card,
+body[data-theme=""] .manager-app .date-card,
 body.theme-dark .operator-app .date-card,
 body.theme-dark .manager-app .date-card {
   background: linear-gradient(180deg, #102842 0%, #0b1e33 100%) !important;
@@ -313,34 +313,34 @@ body.theme-dark .manager-app .date-card {
   box-shadow: var(--h518-shadow) !important;
 }
 
-html[data-theme="dark"] body .operator-app .panel,
-html[data-theme="dark"] body .manager-app .panel,
-body[data-theme="dark"] .operator-app .panel,
-body[data-theme="dark"] .manager-app .panel,
+html[data-theme=""] body .operator-app .panel,
+html[data-theme=""] body .manager-app .panel,
+body[data-theme=""] .operator-app .panel,
+body[data-theme=""] .manager-app .panel,
 body.theme-dark .operator-app .panel,
 body.theme-dark .manager-app .panel,
-html[data-theme="dark"] body .operator-app .kpi-card,
-html[data-theme="dark"] body .manager-app .kpi-card,
-body[data-theme="dark"] .operator-app .kpi-card,
-body[data-theme="dark"] .manager-app .kpi-card,
+html[data-theme=""] body .operator-app .kpi-card,
+html[data-theme=""] body .manager-app .kpi-card,
+body[data-theme=""] .operator-app .kpi-card,
+body[data-theme=""] .manager-app .kpi-card,
 body.theme-dark .operator-app .kpi-card,
 body.theme-dark .manager-app .kpi-card,
-html[data-theme="dark"] body .operator-app .quick-menu-card,
-html[data-theme="dark"] body .manager-app .quick-menu-card,
-body[data-theme="dark"] .operator-app .quick-menu-card,
-body[data-theme="dark"] .manager-app .quick-menu-card,
+html[data-theme=""] body .operator-app .quick-menu-card,
+html[data-theme=""] body .manager-app .quick-menu-card,
+body[data-theme=""] .operator-app .quick-menu-card,
+body[data-theme=""] .manager-app .quick-menu-card,
 body.theme-dark .operator-app .quick-menu-card,
 body.theme-dark .manager-app .quick-menu-card,
-html[data-theme="dark"] body .operator-app .ops-metric-strip article,
-html[data-theme="dark"] body .manager-app .ops-metric-strip article,
-body[data-theme="dark"] .operator-app .ops-metric-strip article,
-body[data-theme="dark"] .manager-app .ops-metric-strip article,
+html[data-theme=""] body .operator-app .ops-metric-strip article,
+html[data-theme=""] body .manager-app .ops-metric-strip article,
+body[data-theme=""] .operator-app .ops-metric-strip article,
+body[data-theme=""] .manager-app .ops-metric-strip article,
 body.theme-dark .operator-app .ops-metric-strip article,
 body.theme-dark .manager-app .ops-metric-strip article,
-html[data-theme="dark"] body .operator-app .compact-stats article,
-html[data-theme="dark"] body .manager-app .compact-stats article,
-body[data-theme="dark"] .operator-app .compact-stats article,
-body[data-theme="dark"] .manager-app .compact-stats article,
+html[data-theme=""] body .operator-app .compact-stats article,
+html[data-theme=""] body .manager-app .compact-stats article,
+body[data-theme=""] .operator-app .compact-stats article,
+body[data-theme=""] .manager-app .compact-stats article,
 body.theme-dark .operator-app .compact-stats article,
 body.theme-dark .manager-app .compact-stats article {
   background: linear-gradient(180deg, #122b47 0%, #0b1d31 100%) !important;
@@ -350,37 +350,37 @@ body.theme-dark .manager-app .compact-stats article {
   box-shadow: var(--h518-shadow) !important;
 }
 
-html[data-theme="dark"] body .operator-app .ops-metric-strip article,
-body[data-theme="dark"] .operator-app .ops-metric-strip article,
+html[data-theme=""] body .operator-app .ops-metric-strip article,
+body[data-theme=""] .operator-app .ops-metric-strip article,
 body.theme-dark .operator-app .ops-metric-strip article,
-html[data-theme="dark"] body .manager-app .ops-metric-strip article,
-body[data-theme="dark"] .manager-app .ops-metric-strip article,
+html[data-theme=""] body .manager-app .ops-metric-strip article,
+body[data-theme=""] .manager-app .ops-metric-strip article,
 body.theme-dark .manager-app .ops-metric-strip article,
-html[data-theme="dark"] body .operator-app .compact-stats article,
-body[data-theme="dark"] .operator-app .compact-stats article,
+html[data-theme=""] body .operator-app .compact-stats article,
+body[data-theme=""] .operator-app .compact-stats article,
 body.theme-dark .operator-app .compact-stats article,
-html[data-theme="dark"] body .manager-app .compact-stats article,
-body[data-theme="dark"] .manager-app .compact-stats article,
+html[data-theme=""] body .manager-app .compact-stats article,
+body[data-theme=""] .manager-app .compact-stats article,
 body.theme-dark .manager-app .compact-stats article {
   border-left: 5px solid var(--h518-blue) !important;
 }
 
-html[data-theme="dark"] body .operator-app h1,
-html[data-theme="dark"] body .operator-app h2,
-html[data-theme="dark"] body .operator-app h3,
-html[data-theme="dark"] body .operator-app strong,
-html[data-theme="dark"] body .manager-app h1,
-html[data-theme="dark"] body .manager-app h2,
-html[data-theme="dark"] body .manager-app h3,
-html[data-theme="dark"] body .manager-app strong,
-body[data-theme="dark"] .operator-app h1,
-body[data-theme="dark"] .operator-app h2,
-body[data-theme="dark"] .operator-app h3,
-body[data-theme="dark"] .operator-app strong,
-body[data-theme="dark"] .manager-app h1,
-body[data-theme="dark"] .manager-app h2,
-body[data-theme="dark"] .manager-app h3,
-body[data-theme="dark"] .manager-app strong,
+html[data-theme=""] body .operator-app h1,
+html[data-theme=""] body .operator-app h2,
+html[data-theme=""] body .operator-app h3,
+html[data-theme=""] body .operator-app strong,
+html[data-theme=""] body .manager-app h1,
+html[data-theme=""] body .manager-app h2,
+html[data-theme=""] body .manager-app h3,
+html[data-theme=""] body .manager-app strong,
+body[data-theme=""] .operator-app h1,
+body[data-theme=""] .operator-app h2,
+body[data-theme=""] .operator-app h3,
+body[data-theme=""] .operator-app strong,
+body[data-theme=""] .manager-app h1,
+body[data-theme=""] .manager-app h2,
+body[data-theme=""] .manager-app h3,
+body[data-theme=""] .manager-app strong,
 body.theme-dark .operator-app h1,
 body.theme-dark .operator-app h2,
 body.theme-dark .operator-app h3,
@@ -392,18 +392,18 @@ body.theme-dark .manager-app strong {
   color: #ffffff !important;
 }
 
-html[data-theme="dark"] body .operator-app span,
-html[data-theme="dark"] body .operator-app small,
-html[data-theme="dark"] body .operator-app p,
-html[data-theme="dark"] body .manager-app span,
-html[data-theme="dark"] body .manager-app small,
-html[data-theme="dark"] body .manager-app p,
-body[data-theme="dark"] .operator-app span,
-body[data-theme="dark"] .operator-app small,
-body[data-theme="dark"] .operator-app p,
-body[data-theme="dark"] .manager-app span,
-body[data-theme="dark"] .manager-app small,
-body[data-theme="dark"] .manager-app p,
+html[data-theme=""] body .operator-app span,
+html[data-theme=""] body .operator-app small,
+html[data-theme=""] body .operator-app p,
+html[data-theme=""] body .manager-app span,
+html[data-theme=""] body .manager-app small,
+html[data-theme=""] body .manager-app p,
+body[data-theme=""] .operator-app span,
+body[data-theme=""] .operator-app small,
+body[data-theme=""] .operator-app p,
+body[data-theme=""] .manager-app span,
+body[data-theme=""] .manager-app small,
+body[data-theme=""] .manager-app p,
 body.theme-dark .operator-app span,
 body.theme-dark .operator-app small,
 body.theme-dark .operator-app p,
@@ -413,14 +413,14 @@ body.theme-dark .manager-app p {
   color: var(--h518-muted) !important;
 }
 
-html[data-theme="dark"] body .operator-app .topbar span,
-html[data-theme="dark"] body .operator-app .topbar strong,
-html[data-theme="dark"] body .manager-app .topbar span,
-html[data-theme="dark"] body .manager-app .topbar strong,
-body[data-theme="dark"] .operator-app .topbar span,
-body[data-theme="dark"] .operator-app .topbar strong,
-body[data-theme="dark"] .manager-app .topbar span,
-body[data-theme="dark"] .manager-app .topbar strong,
+html[data-theme=""] body .operator-app .topbar span,
+html[data-theme=""] body .operator-app .topbar strong,
+html[data-theme=""] body .manager-app .topbar span,
+html[data-theme=""] body .manager-app .topbar strong,
+body[data-theme=""] .operator-app .topbar span,
+body[data-theme=""] .operator-app .topbar strong,
+body[data-theme=""] .manager-app .topbar span,
+body[data-theme=""] .manager-app .topbar strong,
 body.theme-dark .operator-app .topbar span,
 body.theme-dark .operator-app .topbar strong,
 body.theme-dark .manager-app .topbar span,
@@ -428,10 +428,10 @@ body.theme-dark .manager-app .topbar strong {
   color: #ffffff !important;
 }
 
-html[data-theme="dark"] body .operator-app .data-table th,
-html[data-theme="dark"] body .manager-app .data-table th,
-body[data-theme="dark"] .operator-app .data-table th,
-body[data-theme="dark"] .manager-app .data-table th,
+html[data-theme=""] body .operator-app .data-table th,
+html[data-theme=""] body .manager-app .data-table th,
+body[data-theme=""] .operator-app .data-table th,
+body[data-theme=""] .manager-app .data-table th,
 body.theme-dark .operator-app .data-table th,
 body.theme-dark .manager-app .data-table th {
   background: rgba(255,255,255,.045) !important;
@@ -439,10 +439,10 @@ body.theme-dark .manager-app .data-table th {
   border-color: var(--h518-border-soft) !important;
 }
 
-html[data-theme="dark"] body .operator-app .data-table td,
-html[data-theme="dark"] body .manager-app .data-table td,
-body[data-theme="dark"] .operator-app .data-table td,
-body[data-theme="dark"] .manager-app .data-table td,
+html[data-theme=""] body .operator-app .data-table td,
+html[data-theme=""] body .manager-app .data-table td,
+body[data-theme=""] .operator-app .data-table td,
+body[data-theme=""] .manager-app .data-table td,
 body.theme-dark .operator-app .data-table td,
 body.theme-dark .manager-app .data-table td {
   background: transparent !important;
@@ -450,18 +450,18 @@ body.theme-dark .manager-app .data-table td {
   border-color: var(--h518-border-soft) !important;
 }
 
-html[data-theme="dark"] body .operator-app input,
-html[data-theme="dark"] body .operator-app select,
-html[data-theme="dark"] body .operator-app textarea,
-html[data-theme="dark"] body .manager-app input,
-html[data-theme="dark"] body .manager-app select,
-html[data-theme="dark"] body .manager-app textarea,
-body[data-theme="dark"] .operator-app input,
-body[data-theme="dark"] .operator-app select,
-body[data-theme="dark"] .operator-app textarea,
-body[data-theme="dark"] .manager-app input,
-body[data-theme="dark"] .manager-app select,
-body[data-theme="dark"] .manager-app textarea,
+html[data-theme=""] body .operator-app input,
+html[data-theme=""] body .operator-app select,
+html[data-theme=""] body .operator-app textarea,
+html[data-theme=""] body .manager-app input,
+html[data-theme=""] body .manager-app select,
+html[data-theme=""] body .manager-app textarea,
+body[data-theme=""] .operator-app input,
+body[data-theme=""] .operator-app select,
+body[data-theme=""] .operator-app textarea,
+body[data-theme=""] .manager-app input,
+body[data-theme=""] .manager-app select,
+body[data-theme=""] .manager-app textarea,
 body.theme-dark .operator-app input,
 body.theme-dark .operator-app select,
 body.theme-dark .operator-app textarea,
@@ -478,9 +478,9 @@ body .nav-section .nav-logout {
   color: #fecaca !important;
 }
 
-body[data-theme="dark"] .nav-section .nav-logout,
+body[data-theme=""] .nav-section .nav-logout,
 body.theme-dark .nav-section .nav-logout,
-html[data-theme="dark"] body .nav-section .nav-logout {
+html[data-theme=""] body .nav-section .nav-logout {
   background: rgba(127,29,29,.18) !important;
   border-color: rgba(248,113,113,.22) !important;
   color: #fecaca !important;

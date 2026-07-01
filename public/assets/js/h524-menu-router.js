@@ -2,7 +2,7 @@
 (function () {
   'use strict';
 
-  const HOME = '/homologacao/public/';
+  const HOME = (window.appUrl ? window.appUrl('/public/') : ((window.PAINEL_BASE_PATH || '') + '/public/'));
   const icon = {
     home:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/><path d="M9 20v-6h6v6"/></svg>',
     calendar:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M8 2v4M16 2v4M3 10h18"/></svg>',
@@ -67,9 +67,9 @@
     { label:'Sincronização', href:'operador-sincronizacao.html', icon:'sync' },
     { section:'Apoio Operacional' },
     { label:'IA Operacional', href:'operador-ia.html', screen:'ai', icon:'spark' },
-    { label:'Sala de Situação', href:'/homologacao/painel-logistico/sala-situacao', icon:'gear' },
-    { label:'Ocorrências', href:'/homologacao/painel-logistico/emergencias', icon:'alert' },
-    { label:'App Motorista', href:'/homologacao/public/motorista/', icon:'phone' },
+    { label:'Sala de Situação', href:(window.appUrl?window.appUrl('/painel-logistico/sala-situacao'):'/painel-logistico/sala-situacao'), icon:'gear' },
+    { label:'Ocorrências', href:(window.appUrl?window.appUrl('/painel-logistico/emergencias'):'/painel-logistico/emergencias'), icon:'alert' },
+    { label:'App Motorista', href:(window.appUrl?window.appUrl('/public/motorista/'):'/public/motorista/'), icon:'phone' },
     { label:'Sair', href:'#', icon:'logout', logout:true }
   ];
 
@@ -86,7 +86,7 @@
     auditoria:['#auditoria'],
     relatorios:['#relatorios'],
     exportacoes:['#exportacoes'],
-    seguranca:['#seguranca','#auditoria'],
+    seguranca:['#seguranca','#auditoria'],lgpd:['#lgpd'],
     operadores:['#operadores-logisticos'],
     perfis:['#perfis'],
     parametros:['#parametros']
@@ -104,7 +104,7 @@
     auditoria:['Auditoria','Eventos e rastreabilidade'],
     relatorios:['Relatórios','Exportações e documentos gerenciais'],
     exportacoes:['Exportações','Arquivos CSV e bases de dados'],
-    seguranca:['Segurança Operacional','Perfis, auditoria e controle'],
+    seguranca:['Segurança Operacional','Perfis, auditoria e controle'],lgpd:['Privacidade / LGPD','Consentimentos e solicitações'],
     operadores:['Operadores Logísticos','Cadastro e controle de operadores'],
     perfis:['Perfis de Acesso','Papéis e permissões'],
     parametros:['Parâmetros do Sistema','Configuração do ambiente']
@@ -230,7 +230,7 @@
         event.preventDefault();
         try { sessionStorage.removeItem('painel-logistico-auth'); localStorage.removeItem('painel-logistico-auth'); } catch (_) {}
         if (window.clearAuthSession) window.clearAuthSession();
-        location.href = window.appUrl ? window.appUrl('/') : '/homologacao/';
+        location.href = window.appUrl ? window.appUrl('/') : '/';
       }, true);
     });
   }

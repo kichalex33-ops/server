@@ -33,9 +33,13 @@ final class Jwt
         $this->assertConfigured();
         $parts = explode('.', $token);
         if (count($parts) !== 3) {
-            throw new RuntimeException('Token invalido.');
+            throw new RuntimeException('Token inválido.');
         }
         [$header, $payload, $signature] = $parts;
+        $decodedHeader = json_decode($this->unb64($header), true);
+        if (!is_array($decodedHeader) || ($decodedHeader['alg'] ?? '') !== 'HS256' || ($decodedHeader['typ'] ?? '') !== 'JWT') {
+            throw new RuntimeException('Token inválido.');
+        }
         $expected = $this->b64(hash_hmac('sha256', $header . '.' . $payload, $this->secret, true));
         if (!hash_equals($expected, $signature)) {
             throw new RuntimeException('Assinatura invalida.');
@@ -43,6 +47,10 @@ final class Jwt
         $claims = json_decode($this->unb64($payload), true);
         if (!is_array($claims) || ($claims['exp'] ?? 0) < time()) {
             throw new RuntimeException('Token expirado.');
+        }
+        // H526: validar claim iss - rejeita tokens de ambientes diferentes
+        if (($claims['iss'] ?? '') !== $this->issuer) {
+            throw new RuntimeException('Token de emissor invalido.');
         }
         return $claims;
     }
@@ -61,6 +69,8 @@ final class Jwt
 
     private function unb64(string $value): string
     {
-        return base64_decode(strtr($value, '-_', '+/')) ?: '';
+        $padded = strtr($value, '-_', '+/');
+        $padded .= str_repeat('=', (4 - strlen($padded) % 4) % 4);
+        return base64_decode($padded, true) ?: '';
     }
 }

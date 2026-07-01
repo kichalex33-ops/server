@@ -24,18 +24,7 @@
   font-weight: 700;
 }
 
-.app-message[data-type="success"] {
-  background: #065f46;
-}
-
-.app-message[data-type="error"] {
-  background: #991b1b;
-}
-
-.modal[aria-hidden="true"] {
-  display: none;
-}
-
-.modal[aria-hidden="false"] {
-  display: flex;
-}
+.app-message[data-type="success"] { background: #065f46; }
+.app-message[data-type="error"] { background: #991b1b; }
+.modal[aria-hidden="true"] { display: none; }
+.modal[aria-hidden="false"] { display: flex; }

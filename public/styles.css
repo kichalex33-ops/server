@@ -368,4 +368,4 @@ th {
 
 
 /* H5.13 dark variables */
-body[data-theme="dark"] { --bg:#07111f; --surface:#0f1b2d; --surface-2:#132239; --text:#e5edf8; --muted:#9fb0c5; --line:#26364f; }
+body[data-theme=""] { --bg:#07111f; --surface:#0f1b2d; --surface-2:#132239; --text:#e5edf8; --muted:#9fb0c5; --line:#26364f; }

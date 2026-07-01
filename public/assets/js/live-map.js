@@ -21,7 +21,7 @@
 
   const message = document.createElement("div");
   message.className = "mapa-mensagem mapa-vazio";
-  message.textContent = "Aguardando localizacoes reais dos veiculos.";
+  message.textContent = "Aguardando localizações reais dos veículos.";
   target.parentElement.appendChild(message);
 
   addLocateControl();
@@ -31,26 +31,28 @@
 
   async function update() {
     try {
-      const response = await fetch(window.apiUrl("/live-map"), { headers: { Accept: "application/json" } });
+      const request = window.authFetch || window.fetch;
+      const response = await request(window.apiUrl("/live-map"), { headers: { Accept: "application/json" } });
       const body = await response.json();
-      if (!response.ok || body.ok !== true) throw new Error(body.error || "Mapa indisponivel.");
+      if (response.status === 401 || response.status === 403) throw new Error(body.error || "Token inválido ou expirado.");
+      if (!response.ok || body.ok !== true) throw new Error(body.error || "Mapa indisponível.");
       const data = body.data || {};
       const source = Array.isArray(data.items) ? data.items : (Array.isArray(data.veiculos) ? data.veiculos : []);
       const items = source.map(normalizeItem).filter((item) => Number.isFinite(item.latitude) && Number.isFinite(item.longitude));
       render(items);
       updateStats(items, data);
-      showMessage(items.length ? "" : "Nenhum veiculo possui localizacao registrada.", "empty");
+      showMessage(items.length ? "" : "Nenhum veículo possui localização registrada.", "empty");
     } catch (error) {
-      showMessage(error.message || "Nao foi possivel atualizar o mapa.", "error");
-      updateTime(null);
+      showMessage(error.message || "Não foi possível atualizar o mapa.", "error");
+      setStat("updated", "Erro");
     }
   }
 
   function normalizeItem(item) {
     return {
       id: String(item.id || item.veiculo_id || item.viagem_id || ""),
-      nome: item.nome || item.prefixo || item.placa || item.veiculo_nome || "Veiculo",
-      motorista: item.motorista || item.motorista_nome || "Motorista nao informado",
+      nome: item.nome || item.prefixo || item.placa || item.veiculo_nome || "Veículo",
+      motorista: item.motorista || item.motorista_nome || "Motorista não informado",
       status: item.status || item.status_viagem || "sem_status",
       viagemId: item.viagem_id || "",
       latitude: Number(item.latitude),
@@ -119,8 +121,9 @@
     appendLine(content, `Velocidade: ${formatVelocity(item.velocidade)}`);
     if (item.viagemId) appendLine(content, `Viagem: ${item.viagemId}`);
     if (item.tipoAlerta) appendLine(content, `Alerta: ${formatStatus(item.tipoAlerta)}`);
-    appendLine(content, `Ultimo GPS: ${formatDate(item.atualizadoEm)}`);
+    appendLine(content, `Último GPS: ${formatDate(item.atualizadoEm)}`);
     appendWazeLink(content, item.wazeUrl);
+    appendTripDetailsButton(content, item.viagemId);
     return content;
   }
 
@@ -139,6 +142,18 @@
     link.className = "mapa-popup-link";
     link.textContent = "Abrir no Waze";
     parent.appendChild(link);
+  }
+
+  function appendTripDetailsButton(parent, viagemId) {
+    if (!viagemId || !window.App || !window.App.OperatorWorkflow) return;
+    const actions = document.createElement("div");
+    actions.className = "h546-map-popup-actions";
+    const button = document.createElement("button");
+    button.type = "button";
+    button.textContent = "Ver detalhes da viagem";
+    button.addEventListener("click", () => window.App.OperatorWorkflow.openTripById(String(viagemId)));
+    actions.appendChild(button);
+    parent.appendChild(actions);
   }
 
   function addLocateControl() {
@@ -288,7 +303,7 @@
   }
 
   function updateTime(value) {
-    setStat("updated", value ? formatDate(value) : "Falha na atualizacao");
+    setStat("updated", value ? formatDate(value) : "Sem atualização");
   }
 
   function setStat(name, value) {
@@ -303,9 +318,9 @@
 
   function formatStatus(value) { return String(value || "sem status").replace(/_/g, " ").toLowerCase(); }
   function formatVelocity(value) { const speed = Number(value); return Number.isFinite(speed) ? `${speed.toFixed(speed % 1 ? 1 : 0)} km/h` : "-- km/h"; }
-  function formatDate(value) { const date = value ? new Date(value) : null; return date && !Number.isNaN(date.getTime()) ? date.toLocaleString("pt-BR") : "nao informado"; }
+  function formatDate(value) { const date = value ? new Date(value) : null; return date && !Number.isNaN(date.getTime()) ? date.toLocaleString("pt-BR") : "Sem atualização"; }
   function wazeUrl(latitude, longitude) { const lat = Number(latitude); const lon = Number(longitude); return Number.isFinite(lat) && Number.isFinite(lon) ? `https://www.waze.com/ul?ll=${encodeURIComponent(`${lat},${lon}`)}&navigate=yes&zoom=17` : null; }
-  function escapeHtml(value) { return String(value ?? "").replace(/[&<>"']/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;" })[char]); }
+  function escapeHtml(value) { if (window.App?.Sanitize?.escapeHtml) return window.App.Sanitize.escapeHtml(value); return String(value ?? "").replace(/[&<>"'`]/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;", "`": "&#096;" })[char]); }
 
   update();
   window.setInterval(update, refreshMs);

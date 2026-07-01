@@ -34,7 +34,7 @@ document.querySelectorAll(".login-form").forEach((form) => {
     event.preventDefault();
     const data = new FormData(form);
     const login = String(data.get("login") || "").trim();
-    const password = String(data.get("password") || "");
+    let password = String(data.get("password") || "");
     const feedback = form.querySelector(".login-feedback");
     const button = form.querySelector("button[type=submit]");
     const originalLabel = button?.dataset.label || button?.textContent || "Entrar";
@@ -47,24 +47,31 @@ document.querySelectorAll(".login-form").forEach((form) => {
     feedback.textContent = "";
 
     try {
-      const response = await fetch(window.apiUrl("/auth/login"), {
-        method: "POST",
-        headers: { "Content-Type": "application/json", Accept: "application/json" },
-        body: JSON.stringify({ login, password })
-      });
-      const body = await response.json();
-      if (!response.ok || !body.ok) throw new Error(body.error || "Login inválido.");
-      const usuario = body.data.usuario || {};
+      const loginResult = window.App?.Auth?.login
+        ? await window.App.Auth.login({ login, password }, form)
+        : window.saveAuthSession((await (async () => {
+            const response = await fetch(window.apiUrl("/auth/login"), {
+              method: "POST",
+              headers: { "Content-Type": "application/json", Accept: "application/json" },
+              body: JSON.stringify({ login, password })
+            });
+            const body = await response.json();
+            if (!response.ok || !body.ok) throw new Error(body.error || "Login inválido.");
+            return body.data;
+          })()));
+      const usuario = loginResult.usuario || {};
       if (!validProfileForForm(form.dataset.profile, usuario.perfil)) {
+        window.App?.Http?.clearSession?.("Este usuário não tem permissão para este painel.");
         throw new Error("Este usuário não tem permissão para este painel.");
       }
-      window.saveAuthSession(body.data);
       sessionStorage.setItem("painel-logistico-profile", form.dataset.profile);
       window.location.href = window.appUrl ? window.appUrl(form.dataset.target) : form.dataset.target;
       return;
     } catch (error) {
       feedback.textContent = error.message || "Login ou senha inválidos.";
     } finally {
+      password = "";
+      window.App?.Auth?.cleanPasswordFields?.(form);
       if (button) {
         button.disabled = false;
         button.textContent = originalLabel;

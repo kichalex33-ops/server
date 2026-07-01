@@ -20,7 +20,7 @@ function bindManagerMenu() {
   sideNav.querySelectorAll('a').forEach((link) => link.addEventListener('click', closeMenu));
 }
 
-const apiRoot = window.PAINEL_API_ROOT || "/homologacao/api";
+const apiRoot = (window.PAINEL_API_ROOT || (window.apiUrl ? window.apiUrl("") : "/api")).replace(/\/$/, "");
 const brl = new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" });
 
 const managerSession = window.loadAuthSession ? window.loadAuthSession() : null;
@@ -28,7 +28,7 @@ const managerProfile = String(managerSession?.usuario?.perfil || "").toUpperCase
 if (!managerSession?.accessToken || !["GESTOR", "ADMIN"].includes(managerProfile)) {
   if (window.clearAuthSession) window.clearAuthSession();
   sessionStorage.setItem("painel-logistico-login-message", "Este acesso é exclusivo do Painel Gestor.");
-  window.location.href = "/homologacao/";
+  window.location.href = window.appUrl ? window.appUrl("/") : "/";
   throw new Error("Acesso ao Painel Gestor negado para este perfil.");
 }
 
@@ -54,6 +54,7 @@ async function loadGestao() {
   ]);
 
   fillDashboard(dashboard, custos);
+  fillFuelSummary(custos);
   loadManagerOperationalSummary().catch(() => {});
   fillRankings(frota, motoristas);
   fillPassengers(passageiros);
@@ -333,6 +334,31 @@ function fillDashboard(dashboard, custos) {
   text("#kpiAbsence", `${dashboard.absenteismo}%`);
 }
 
+
+function fillFuelSummary(custos) {
+  const section = document.querySelector("#combustivel");
+  if (!section) return;
+  const cards = section.querySelectorAll("article");
+  if (cards[0]) {
+    const strong = cards[0].querySelector("strong");
+    const small = cards[0].querySelector("small");
+    if (strong) strong.textContent = brl.format(custos.combustivel || 0);
+    if (small) small.textContent = `${Number(custos.lancamentosCombustivel || 0)} lançamentos de abastecimento`;
+  }
+  if (cards[1]) {
+    const strong = cards[1].querySelector("strong");
+    const small = cards[1].querySelector("small");
+    if (strong) strong.textContent = custos.consumoMedio ? `${Number(custos.consumoMedio).toFixed(2)} km/l` : "Sem litros informados";
+    if (small) small.textContent = custos.litros ? `${Number(custos.litros).toFixed(2)} litros informados` : "informe litros nos lançamentos";
+  }
+  if (cards[2]) {
+    const strong = cards[2].querySelector("strong");
+    const small = cards[2].querySelector("small");
+    if (strong) strong.textContent = brl.format(custos.custoPorKm || 0);
+    if (small) small.textContent = `${Number(custos.kmRodados || 0).toFixed(1)} km considerados`;
+  }
+}
+
 function fillRankings(frota, motoristas) {
   document.querySelector("#driverRanking").innerHTML = (motoristas.ranking || []).slice(0, 5).map((item, index) => `
     <div class="ranking-row"><strong>${index + 1}</strong><span>${escapeHtml(item.nome)}</span><b>${item.viagens}</b></div>
@@ -415,7 +441,8 @@ function formatDate(value) {
 }
 
 function escapeHtml(value) {
-  return String(value).replace(/[&<>"']/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;" }[char]));
+  if (window.App?.Sanitize?.escapeHtml) return window.App.Sanitize.escapeHtml(value);
+  return String(value ?? "").replace(/[&<>"'`]/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;", "`": "&#096;" }[char]));
 }
 
 function bindAuthenticatedExports() {

@@ -4,14 +4,25 @@ declare(strict_types=1);
 
 require __DIR__ . '/src/Response.php';
 require __DIR__ . '/src/Database.php';
+require __DIR__ . '/src/StructuredLogger.php';
+require __DIR__ . '/src/ErrorHandler.php';
+require __DIR__ . '/src/Validator.php';
+require __DIR__ . '/src/FileCache.php';
+require __DIR__ . '/src/RateLimiter.php';
 require __DIR__ . '/src/Jwt.php';
 require __DIR__ . '/src/AuditLogger.php';
 require __DIR__ . '/src/Auth.php';
 require __DIR__ . '/src/Rbac.php';
+require __DIR__ . '/src/RealtimePublisher.php';
 require __DIR__ . '/src/ApiService.php';
 require __DIR__ . '/src/AiService.php';
+require __DIR__ . '/src/Router.php';
+require __DIR__ . '/src/ApiMiddleware.php';
+require __DIR__ . '/controllers/BaseController.php';
+require __DIR__ . '/controllers/LegacyController.php';
 
 $config = require __DIR__ . '/config/env.php';
+ApiMiddleware::cors($config);
 
 foreach ($config['paths'] as $path) {
     if (!is_dir($path)) {
@@ -19,19 +30,7 @@ foreach ($config['paths'] as $path) {
     }
 }
 
-set_exception_handler(function (Throwable $error) use ($config): void {
-    $dir = $config['paths']['logs'];
-    @file_put_contents($dir . '/api.log', '[' . date('c') . '] exception method=' . ($_SERVER['REQUEST_METHOD'] ?? '-') . ' uri=' . ($_SERVER['REQUEST_URI'] ?? '-') . ' message=' . $error->getMessage() . "\n", FILE_APPEND);
-    $message = $error->getMessage();
-    $status = $error instanceof DomainException ? 403 : 400;
-    if ($error instanceof PDOException) {
-        $status = 500;
-        $message = 'Erro interno de banco de dados.';
-    } elseif (preg_match('/(credenciais|login inv|token inv|token expir|qr code expir)/i', $message)) {
-        $status = 401;
-    }
-    Response::error($message, $status);
-});
+ErrorHandler::register($config);
 
 $db = new Database($config);
 $audit = new AuditLogger($db, $config);
@@ -40,428 +39,160 @@ $auth = new Auth($db, $jwt, $config, $audit);
 $rbac = new Rbac();
 $service = new ApiService($db, $config, $audit);
 $ai = new AiService($db, $config, $audit);
+$cache = new FileCache((string) ($config['paths']['cache'] ?? dirname(__DIR__) . '/../storage/cache'));
 
-$method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
-$uri = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?: '/';
-$path = internalApiPath($uri);
-$body = json_decode(file_get_contents('php://input') ?: '[]', true);
-if (!is_array($body)) {
-    $body = [];
-}
+$request = ApiMiddleware::request();
+$method = $request['method'];
+$path = $request['path'];
+$routeKey = $request['routeKey'];
+$body = $request['body'];
+ApiMiddleware::rejectLegacyPasswordHeader($method, $path);
+$body = Validator::validateRoute($routeKey, $body);
+$authorizationHeader = ApiMiddleware::authorizationHeader();
+$user = ApiMiddleware::authenticate($method, $path, $routeKey, $auth, $service, $rbac, $audit);
+$controller = new LegacyController($auth, $service, $ai, $user);
+$router = new Router();
 
-$publicRoutes = [
-    'GET /status',
-    'GET /system/health',
-    'GET /watchdog',
-    'POST /auth/login',
-    'POST /auth/refresh',
-    'POST /driver/qr-login',
-    'POST /driver/pairing/confirm',
-    'POST /driver/activate',
-    'POST /driver/login',
-];
+$router->get('/status', fn () => $controller->respond($cache->remember('status', 30, fn () => $service->status())));
+$router->get('/system/health', fn () => $controller->respond($cache->remember('system-health', 30, fn () => $service->systemHealth())));
+$router->get('/watchdog', fn () => $controller->respond($cache->remember('watchdog', 30, fn () => $service->watchdog())));
+$router->get('/pwa/config', fn () => $controller->respond($service->pwaConfig()));
+$router->get('/infra/status', fn () => $controller->respond($cache->remember('infra-status', 60, fn () => $service->infraStatus())));
+$router->post('/infra/backup', fn () => $controller->respond($service->runBackup($user), 201));
+$router->get('/dashboard/resumo-dia', fn () => $controller->respond($service->dashboardSummary()));
+$router->get('/relatorios/viagens-historico', fn () => $controller->respond($service->tripsHistoryReport($_GET)));
 
-$routeKey = $method . ' ' . $path;
-$user = null;
-if (!isPublicRoute($method, $path, $routeKey, $publicRoutes)) {
-    $authError = null;
-    try {
-        $user = $auth->userFromBearer($_SERVER['HTTP_AUTHORIZATION'] ?? null);
-    } catch (Throwable $error) {
-        $authError = $error;
-    }
+$router->post('/auth/login', fn () => $controller->respond($auth->login($body)));
+$router->post('/auth/refresh', fn () => $controller->respond($auth->refresh((string) ($body['refreshToken'] ?? $body['refresh_token'] ?? ''))));
+$router->post('/auth/logout', fn () => $controller->respond($auth->logout((string) ($body['refreshToken'] ?? $body['refresh_token'] ?? ''), $user)));
+$router->post('/auth/revoke-all', fn () => $controller->respond($auth->revokeAllTokens($user)));
+$router->get('/auth/sessions', fn () => $controller->respond($auth->sessions($user)));
+$router->post('/auth/sessions/{id}/revoke', fn (string $id) => $controller->respond($auth->revokeSession($id, $user)));
 
-    if (isProtectedDriverRoute($method, $path, $routeKey)) {
-        $driverUser = $service->driverUserFromBearer($_SERVER['HTTP_AUTHORIZATION'] ?? null);
-        if ($user && strtoupper((string) ($user['perfil'] ?? '')) === 'MOTORISTA') {
-            $user = $driverUser;
-        } elseif (!$user) {
-            $user = $driverUser;
-        }
-    }
+$router->post('/notifications/subscribe', fn () => $controller->respond($service->savePushSubscription($body, $user), 201));
+$router->get('/notifications', fn () => $controller->respond($service->notifications($_GET, $user)));
+$router->post('/notifications/test', fn () => $controller->respond($service->createNotification($body, $user), 201));
+$router->post('/presenca', fn () => $controller->respond($service->heartbeatPresence($body, $user)));
+$router->get('/presenca', fn () => $controller->respond($service->presenceList($_GET, $user)));
+$router->get('/users/preferences', fn () => $controller->respond($service->getPreferences($user)));
+$router->put('/users/preferences', fn () => $controller->respond($service->savePreferences($body, $user)));
+$router->post('/analytics/events', fn () => $controller->respond($service->recordAnalytics($body, $user), 202));
 
-    if (!$user) {
-        $audit->failure($authError ? 'auth_invalid' : 'auth_required', null, null);
-        $message = isProtectedDriverRoute($method, $path, $routeKey)
-            ? 'Token de motorista obrigatório.'
-            : 'Token invalido ou expirado.';
-        Response::error($message, 401);
+$router->get('/gestao/operadores', fn () => $controller->respond($service->listOperadores($user)));
+$router->post('/gestao/operadores', fn () => $controller->respond($service->createOperador($body, $user), 201));
+$router->delete('/gestao/operadores/{id}', fn (string $id) => $controller->respond($service->deleteOperador($id, $user)));
+
+$router->get('/motoristas', fn () => $controller->respond($service->listMotoristas()));
+$router->post('/motoristas', fn () => $controller->respond($service->createMotorista($body, $user), 201));
+$router->delete('/motoristas/{id}', fn (string $id) => $controller->respond($service->deleteMotorista($id, $user)));
+$router->post('/motoristas/{id}/qrcode', fn (string $id) => $controller->respond($service->driverQr($id, $body, $user), 201));
+$router->post('/operator/drivers/{id}/pairing', fn (string $id) => $controller->respond($service->driverQr($id, $body, $user), 201));
+$router->post('/motoristas/{id}/activation-code', fn (string $id) => $controller->respond($service->driverActivationCode($id, $body, $user), 201));
+$router->post('/operator/drivers/{id}/activation-code', fn (string $id) => $controller->respond($service->driverActivationCode($id, $body, $user), 201));
+$router->post('/motoristas/{id}/reveal-app-password', fn (string $id) => $controller->respond($service->revealMotoristaAppPassword($id, $user)));
+
+$router->post('/driver/qr-login', fn () => $controller->respond($service->driverQrLogin($body)));
+$router->post('/driver/pairing/confirm', fn () => $controller->respond($service->driverQrLogin($body)));
+$router->post('/driver/activate', fn () => $controller->respond($service->driverActivate($body)));
+$router->post('/driver/login', fn () => $controller->respond($service->driverLogin($body)));
+$router->get('/driver/trips', fn () => $controller->respond($service->driverTrips($_GET['motorista_id'] ?? $_GET['id'] ?? null, $user)));
+$router->get('/driver/trips/active', fn () => $controller->respond($service->activeDriverTrip($_GET['motorista_id'] ?? $_GET['id'] ?? null, $user)));
+$router->get('/driver/notices', fn () => $controller->respond($service->driverNotices($_GET['motorista_id'] ?? null, $user)));
+$router->get('/driver/events', fn () => $controller->respond($service->driverEvents($user)));
+$router->post('/driver/events', fn () => $controller->respond($service->genericCreate('eventos', $controller->scoped($body), $user), 201));
+$router->get('/driver/locations', fn () => $controller->respond($service->driverLocations($user)));
+$router->post('/driver/locations', function () use ($controller, $service, $body, $user): void {
+    $scoped = $controller->scoped($body);
+    if (!empty($body['viagem_id']) || !empty($body['viagemId'])) {
+        $controller->respond($service->addGps($scoped, $user), 201);
         return;
     }
+    $controller->respond($service->genericCreate('localizacoes', $scoped, $user), 201);
+});
+$router->get('/driver/trips/status', fn () => $controller->respond($service->listTripStatuses($user)));
+$router->post('/driver/trips/status', fn () => $controller->respond($service->driverTripStatus($controller->scoped($body), $user), 201));
+$router->post('/driver/sync', fn () => $controller->respond($service->driverSync($controller->scoped($body), $user), 201));
+$router->post('/driver/change-password', fn () => $controller->respond($service->driverChangePassword($authorizationHeader, $body)));
+$router->post('/driver/trips/{id}/checklist', fn (string $id) => $controller->respond($service->driverChecklist($id, $controller->scoped($body), $user), 201));
+$router->post('/driver/trips/{id}/km-inicial', fn (string $id) => $controller->respond($service->driverInitialKm($id, $controller->scoped($body), $user)));
+$router->post('/driver/trips/{id}/flow', fn (string $id) => $controller->respond($service->driverFlow($id, $controller->scoped($body), $user)));
+$router->post('/driver/trips/{id}/finalizar', fn (string $id) => $controller->respond($service->driverFinalizeTrip($id, $controller->scoped($body), $user)));
+$router->post('/driver/panic', fn () => $controller->respond($service->driverPanic($controller->scoped($body), $user), 201));
+$router->post('/driver/occurrences', fn () => $controller->respond($service->genericCreate('ocorrencias', $controller->scoped($body), $user), 201));
+$router->post('/driver/messages', fn () => $controller->respond($service->genericCreate('mensagens', $controller->scoped($body), $user), 201));
+$router->post('/driver/proofs', fn () => $controller->respond($service->driverProof($controller->scoped($body), $user), 201));
+$router->post('/driver/passengers/{id}/{action}', fn (string $id, string $action) => $controller->respond($service->driverPassengerAction($id, $action, $controller->scoped($body), $user)));
 
-    $resource = routeResource($path, $routeKey);
-    $rbac->require($user, $resource);
-}
+$router->post('/gps', fn () => $controller->respond($service->addGps($controller->scoped($body), $user), 201));
+$router->get('/live-map', fn () => $controller->respond($service->liveMap()));
+$router->get('/rastreamento', fn () => $controller->respond($service->tracking($_GET)));
+$router->get('/tracking', fn () => $controller->respond($service->tracking($_GET)));
 
-if ($routeKey === 'GET /status') {
-    Response::ok($service->status());
-    return;
-}
-if ($routeKey === 'GET /system/health') {
-    Response::ok($service->systemHealth());
-    return;
-}
-if ($routeKey === 'GET /watchdog') {
-    Response::ok($service->watchdog());
-    return;
-}
-if ($routeKey === 'GET /infra/status') {
-    Response::ok($service->infraStatus());
-    return;
-}
-if ($routeKey === 'POST /infra/backup') {
-    Response::error('Backup deve ser executado por CLI no HostGator.', 403);
-    return;
-}
-if ($routeKey === 'GET /dashboard/resumo-dia') {
-    Response::ok($service->dashboardSummary());
-    return;
-}
-if ($routeKey === 'POST /auth/login') {
-    Response::ok($auth->login($body));
-    return;
-}
-if ($routeKey === 'POST /auth/refresh') {
-    Response::ok($auth->refresh((string) ($body['refreshToken'] ?? $body['refresh_token'] ?? '')));
-    return;
-}
-if ($routeKey === 'POST /auth/logout') {
-    Response::ok($auth->logout((string) ($body['refreshToken'] ?? $body['refresh_token'] ?? ''), $user));
-    return;
-}
+$router->get('/emergencias', fn () => $controller->respond($service->emergencies()));
+$router->post('/emergencias/{id}/atender', fn (string $id) => $controller->respond($service->updateEmergency($id, 'em_atendimento', $user)));
+$router->post('/emergencias/{id}/finalizar', fn (string $id) => $controller->respond($service->updateEmergency($id, 'finalizada', $user)));
 
-if ($routeKey === 'GET /gestao/operadores') {
-    Response::ok($service->listOperadores($user));
-    return;
-}
-if ($routeKey === 'POST /gestao/operadores') {
-    Response::ok($service->createOperador($body, $user), 201);
-    return;
-}
-if ($method === 'DELETE' && preg_match('#^/gestao/operadores/([^/]+)$#', $path, $m)) {
-    Response::ok($service->deleteOperador($m[1], $user));
-    return;
-}
-if ($routeKey === 'GET /motoristas') {
-    Response::ok($service->listMotoristas());
-    return;
-}
-if ($routeKey === 'POST /motoristas') {
-    Response::ok($service->createMotorista($body, $user), 201);
-    return;
-}
-if ($method === 'DELETE' && preg_match('#^/motoristas/([^/]+)$#', $path, $m)) {
-    Response::ok($service->deleteMotorista($m[1], $user));
-    return;
-}
-if ($method === 'POST' && preg_match('#^/motoristas/([^/]+)/qrcode$#', $path, $m)) {
-    Response::ok($service->driverQr($m[1], $body, $user), 201);
-    return;
-}
-if ($method === 'POST' && preg_match('#^/operator/drivers/([^/]+)/pairing$#', $path, $m)) {
-    Response::ok($service->driverQr($m[1], $body, $user), 201);
-    return;
-}
-if ($method === 'POST' && preg_match('#^/motoristas/([^/]+)/activation-code$#', $path, $m)) {
-    Response::ok($service->driverActivationCode($m[1], $body, $user), 201);
-    return;
-}
-if ($method === 'POST' && preg_match('#^/operator/drivers/([^/]+)/activation-code$#', $path, $m)) {
-    Response::ok($service->driverActivationCode($m[1], $body, $user), 201);
-    return;
-}
-if ($method === 'POST' && preg_match('#^/motoristas/([^/]+)/reveal-app-password$#', $path, $m)) {
-    Response::ok($service->revealMotoristaAppPassword($m[1], $user));
-    return;
-}
-if ($routeKey === 'POST /driver/qr-login') {
-    Response::ok($service->driverQrLogin($body));
-    return;
-}
-if ($routeKey === 'POST /driver/pairing/confirm') {
-    Response::ok($service->driverQrLogin($body));
-    return;
-}
-if ($routeKey === 'POST /driver/activate') {
-    Response::ok($service->driverActivate($body));
-    return;
-}
-if ($routeKey === 'POST /driver/login') {
-    Response::ok($service->driverLogin($body));
-    return;
-}
-if ($routeKey === 'GET /driver/trips') {
-    Response::ok($service->driverTrips($_GET['motorista_id'] ?? $_GET['id'] ?? null, $user));
-    return;
-}
-if ($routeKey === 'GET /driver/trips/active') {
-    Response::ok($service->activeDriverTrip($_GET['motorista_id'] ?? $_GET['id'] ?? null, $user));
-    return;
-}
-if ($routeKey === 'GET /driver/notices') {
-    Response::ok($service->driverNotices($_GET['motorista_id'] ?? null, $user));
-    return;
-}
-if ($routeKey === 'GET /driver/events') {
-    Response::ok($service->driverEvents($user));
-    return;
-}
-if ($routeKey === 'POST /driver/events') {
-    Response::ok($service->genericCreate('eventos', driverScopedBody($body, $user), $user), 201);
-    return;
-}
-if ($routeKey === 'GET /driver/locations') {
-    Response::ok($service->driverLocations($user));
-    return;
-}
-if ($routeKey === 'POST /driver/locations') {
-    if (!empty($body['viagem_id']) || !empty($body['viagemId'])) {
-        Response::ok($service->addGps(driverScopedBody($body, $user), $user), 201);
-    } else {
-        Response::ok($service->genericCreate('localizacoes', driverScopedBody($body, $user), $user), 201);
+$router->get('/ai/status', fn () => $controller->respond($ai->status()));
+$router->post('/ai/chat', fn () => $controller->respond($ai->chat($body, $user)));
+$router->post('/ai/question', fn () => $controller->respond($ai->chat($body, $user)));
+$router->post('/ai/ask', fn () => $controller->respond($ai->chat($body, $user)));
+$router->post('/ai/operational-summary', fn () => $controller->respond($ai->operationalSummary($body, $user)));
+$router->post('/ai/manager-report', fn () => $controller->respond($ai->managerReport($body, $user)));
+$router->post('/ai/trip-analysis', fn () => $controller->respond($ai->tripAnalysis($body, $user)));
+$router->post('/ai/statistics', fn () => $controller->respond($ai->statistics($body, $user)));
+$router->post('/ai/route-intelligence', fn () => $controller->respond($ai->routeIntelligence($body, $user)));
+$router->post('/ai/weather', fn () => $controller->respond($ai->weather($body, $user)));
+$router->get('/ai/sugestoes-agendamento', fn () => $controller->respond($service->operatorSuggestions($user)));
+$router->get('/ai/anomalias-viagens', fn () => $controller->respond($service->tripAnomalies($user)));
+$router->get('/destinos/sugestoes', fn () => $controller->respond($service->destinationSuggestions($_GET)));
+$router->get('/integrations/cnes/search', fn () => $controller->respond($service->integrationCnesSearch($_GET)));
+$router->get('/gamificacao/resumo', fn () => $controller->respond($service->gamificationSummary($user)));
+
+$router->get('/viagens/{id}', fn (string $id) => $controller->respond(['viagem' => $service->findById('viagens', $id)]));
+$router->get('/viagens/{id}/comentarios', fn (string $id) => $controller->respond($service->tripComments($id, $user)));
+$router->post('/viagens/{id}/comentarios', fn (string $id) => $controller->respond($service->addTripComment($id, $body, $user), 201));
+$router->post('/viagens/{id}/assinatura', fn (string $id) => $controller->respond($service->saveTripSignature($id, $body, $user), 201));
+$router->post('/viagens/{id}/cancelar', fn (string $id) => $controller->respond($service->cancelTrip($id, $body, $user)));
+$router->post('/viagens/{id}/status', fn (string $id) => $controller->respond($service->operatorTripStatus($id, $body, $user)));
+$router->patch('/viagens/{id}/status', fn (string $id) => $controller->respond($service->operatorTripStatus($id, $body, $user)));
+$router->post('/viagens/{id}/reatribuir', fn (string $id) => $controller->respond($service->reassignTrip($id, $body, $user)));
+$router->get('/viagens/{id}/passageiros', function (string $id) use ($controller, $service, $user): void {
+    if (strtoupper((string) ($user['perfil'] ?? '')) === 'MOTORISTA') {
+        $service->assertDriverCanAccessTripId($id, $user);
     }
-    return;
-}
-if ($routeKey === 'GET /driver/trips/status') {
-    Response::ok($service->listTripStatuses($user));
-    return;
-}
-if ($routeKey === 'POST /driver/trips/status') {
-    Response::ok($service->driverTripStatus(driverScopedBody($body, $user), $user), 201);
-    return;
-}
-if ($routeKey === 'POST /driver/sync') {
-    Response::ok($service->driverSync(driverScopedBody($body, $user), $user), 201);
-    return;
-}
-if ($routeKey === 'POST /driver/change-password') {
-    Response::ok($service->driverChangePassword($_SERVER['HTTP_AUTHORIZATION'] ?? null, $body));
-    return;
-}
-if ($routeKey === 'POST /gps') {
-    Response::ok($service->addGps(driverScopedBody($body, $user), $user), 201);
-    return;
-}
-if ($routeKey === 'GET /live-map') {
-    Response::ok($service->liveMap());
-    return;
-}
-if ($routeKey === 'GET /rastreamento' || $routeKey === 'GET /tracking') {
-    Response::ok($service->tracking($_GET));
-    return;
-}
-if ($routeKey === 'GET /emergencias') {
-    Response::ok($service->emergencies());
-    return;
-}
-if ($method === 'POST' && preg_match('#^/emergencias/([^/]+)/atender$#', $path, $m)) {
-    Response::ok($service->updateEmergency($m[1], 'em_atendimento', $user));
-    return;
-}
-if ($method === 'POST' && preg_match('#^/emergencias/([^/]+)/finalizar$#', $path, $m)) {
-    Response::ok($service->updateEmergency($m[1], 'finalizada', $user));
-    return;
-}
-if ($routeKey === 'GET /ai/status') {
-    Response::ok($ai->status());
-    return;
-}
+    $controller->respond($service->listTripPassengers($id, $user));
+});
 
-if ($routeKey === 'POST /ai/chat' || $routeKey === 'POST /ai/question' || $routeKey === 'POST /ai/ask') {
-    Response::ok($ai->chat($body, $user));
-    return;
-}
-if ($routeKey === 'POST /ai/operational-summary') {
-    Response::ok($ai->operationalSummary($body, $user));
-    return;
-}
-if ($routeKey === 'POST /ai/manager-report') {
-    Response::ok($ai->managerReport($body, $user));
-    return;
-}
-if ($routeKey === 'POST /ai/trip-analysis') {
-    Response::ok($ai->tripAnalysis($body, $user));
-    return;
-}
-if ($routeKey === 'POST /ai/statistics') {
-    Response::ok($ai->statistics($body, $user));
-    return;
-}
-if ($routeKey === 'POST /ai/route-intelligence') {
-    Response::ok($ai->routeIntelligence($body, $user));
-    return;
-}
-if ($method === 'GET' && preg_match('#^/viagens/([^/]+)$#', $path, $m)) {
-    Response::ok(['viagem' => $service->findById('viagens', $m[1])]);
-    return;
-}
-if ($method === 'GET' && preg_match('#^/viagens/([^/]+)/passageiros$#', $path, $m)) {
-    Response::ok($service->listTripPassengers($m[1], $user));
-    return;
-}
-if ($method === 'POST' && preg_match('#^/driver/trips/([^/]+)/checklist$#', $path, $m)) {
-    Response::ok($service->driverChecklist($m[1], driverScopedBody($body, $user), $user), 201);
-    return;
-}
-if ($method === 'POST' && preg_match('#^/driver/trips/([^/]+)/km-inicial$#', $path, $m)) {
-    Response::ok($service->driverInitialKm($m[1], driverScopedBody($body, $user), $user));
-    return;
-}
-if ($method === 'POST' && preg_match('#^/driver/trips/([^/]+)/flow$#', $path, $m)) {
-    Response::ok($service->driverFlow($m[1], driverScopedBody($body, $user), $user));
-    return;
-}
-if ($method === 'POST' && preg_match('#^/driver/trips/([^/]+)/finalizar$#', $path, $m)) {
-    Response::ok($service->driverFinalizeTrip($m[1], driverScopedBody($body, $user), $user));
-    return;
-}
-if ($routeKey === 'POST /driver/panic') {
-    Response::ok($service->driverPanic(driverScopedBody($body, $user), $user), 201);
-    return;
-}
-if ($routeKey === 'POST /driver/occurrences') {
-    Response::ok($service->genericCreate('ocorrencias', driverScopedBody($body, $user), $user), 201);
-    return;
-}
-if ($routeKey === 'POST /driver/messages') {
-    Response::ok($service->genericCreate('mensagens', driverScopedBody($body, $user), $user), 201);
-    return;
-}
-if ($routeKey === 'POST /driver/proofs') {
-    Response::ok($service->driverProof(driverScopedBody($body, $user), $user), 201);
-    return;
-}
-if ($method === 'POST' && preg_match('#^/driver/passengers/([^/]+)/(boarding|dropoff|absent)$#', $path, $m)) {
-    Response::ok($service->driverPassengerAction($m[1], $m[2], driverScopedBody($body, $user), $user));
-    return;
-}
-if ($routeKey === 'GET /indicadores/operador') {
-    Response::ok($service->operatorIndicators());
-    return;
-}
-if ($method === 'GET' && preg_match('#^/operator/pairings/([^/]+)/status$#', $path, $m)) {
-    Response::ok($service->pairingStatus($m[1]));
-    return;
-}
-if ($method === 'POST' && preg_match('#^/operator/pairings/([^/]+)/cancel$#', $path, $m)) {
-    Response::ok($service->cancelPairing($m[1], $user));
-    return;
-}
-if ($routeKey === 'GET /gestao/dashboard') {
-    Response::ok($service->dashboard());
-    return;
-}
-if ($routeKey === 'GET /gestao/frota') {
-    Response::ok($service->managementFleet());
-    return;
-}
-if ($routeKey === 'GET /gestao/motoristas') {
-    Response::ok($service->managementDrivers());
-    return;
-}
-if ($routeKey === 'GET /gestao/passageiros') {
-    Response::ok($service->managementPassengers());
-    return;
-}
-if ($routeKey === 'GET /gestao/custos') {
-    Response::ok($service->managementCosts());
-    return;
-}
-if ($routeKey === 'GET /gestao/auditoria' || $routeKey === 'GET /auditoria') {
-    Response::ok($service->audit());
-    return;
-}
-if ($routeKey === 'GET /lgpd') {
-    Response::ok($service->lgpdReport());
-    return;
-}
-if ($routeKey === 'POST /lgpd/consents') {
-    Response::ok($service->registerConsent($body, $user), 201);
-    return;
-}
-if ($routeKey === 'POST /lgpd/anonymization-requests') {
-    Response::ok($service->requestAnonymization($body, $user), 201);
-    return;
-}
-if ($method === 'GET' && preg_match('#^/graficos/([^/]+)$#', $path, $m)) {
-    Response::ok(['datasets' => $service->chart($m[1])]);
-    return;
-}
-if ($routeKey === 'GET /export/csv') {
-    Response::csv(($_GET['tipo'] ?? 'eventos') . '.csv', $service->export((string) ($_GET['tipo'] ?? 'eventos')));
-    return;
-}
+$router->get('/sync/painel', fn () => $controller->respond($service->syncPanel($user)));
+$router->post('/sync/reenvio', fn () => $controller->respond($service->syncReenvio($user)));
+$router->post('/sync/offline', fn () => $controller->respond($service->offlineSync($body, $user), 207));
+$router->post('/sync/resolve-conflict', fn () => $controller->respond($service->resolveSyncConflict($body, $user)));
+
+$router->get('/indicadores/operador', fn () => $controller->respond($service->operatorIndicators()));
+$router->get('/operator/pairings/{id}/status', fn (string $id) => $controller->respond($service->pairingStatus($id)));
+$router->post('/operator/pairings/{id}/cancel', fn (string $id) => $controller->respond($service->cancelPairing($id, $user)));
+
+$router->get('/gestao/dashboard', fn () => $controller->respond($service->dashboard()));
+$router->get('/gestao/frota', fn () => $controller->respond($service->managementFleet()));
+$router->get('/gestao/motoristas', fn () => $controller->respond($service->managementDrivers()));
+$router->get('/gestao/passageiros', fn () => $controller->respond($service->managementPassengers()));
+$router->get('/gestao/custos', fn () => $controller->respond($service->managementCosts()));
+$router->get('/gestao/auditoria', fn () => $controller->respond($service->audit()));
+$router->get('/auditoria', fn () => $controller->respond($service->audit()));
+$router->get('/seguranca/login-attempts', fn () => $controller->respond($service->securityLoginAttempts()));
+$router->get('/lgpd', fn () => $controller->respond($service->lgpdReport()));
+$router->post('/lgpd/consents', fn () => $controller->respond($service->registerConsent($body, $user), 201));
+$router->post('/lgpd/anonymization-requests', fn () => $controller->respond($service->requestAnonymization($body, $user), 201));
+$router->get('/graficos/{name}', fn (string $name) => $controller->respond(['datasets' => $service->chart($name)]));
+$router->get('/export/csv', fn () => $controller->respondCsv((string) ($_GET['tipo'] ?? 'eventos') . '.csv', $service->export((string) ($_GET['tipo'] ?? 'eventos'))));
 
 $genericTables = ['viagens', 'veiculos', 'pacientes', 'destinos', 'passageiros', 'despesas', 'ocorrencias', 'alertas', 'mensagens', 'checklists', 'eventos', 'localizacoes'];
-$first = explode('/', trim($path, '/'))[0] ?? '';
-if (in_array($first, $genericTables, true) && $method === 'GET' && $path === '/' . $first) {
-    Response::ok($service->genericList($first));
-    return;
-}
-if (in_array($first, $genericTables, true) && $method === 'POST' && $path === '/' . $first) {
-    Response::ok($service->genericCreate($first, $body, $user), 201);
-    return;
-}
-if (in_array($first, $genericTables, true) && $method === 'DELETE' && preg_match('#^/' . preg_quote($first, '#') . '/([^/]+)$#', $path, $m)) {
-    Response::ok($service->genericDelete($first, rawurldecode($m[1]), $user));
-    return;
+foreach ($genericTables as $table) {
+    $router->get('/' . $table, fn () => $controller->respond($service->genericList($table, $_GET)));
+    $router->post('/' . $table, fn () => $controller->respond($service->genericCreate($table, $body, $user), 201));
+    $router->delete('/' . $table . '/{id}', fn (string $id) => $controller->respond($service->genericDelete($table, $id, $user)));
 }
 
-Response::error('Endpoint não encontrado.', 404);
-
-function internalApiPath(string $uri): string
-{
-    $script = str_replace('\\', '/', $_SERVER['SCRIPT_NAME'] ?? '/api/index.php');
-    $apiBase = rtrim(str_replace('/index.php', '', $script), '/');
-    if ($apiBase !== '' && strpos($uri, $apiBase) === 0) {
-        $uri = substr($uri, strlen($apiBase));
-    } elseif (preg_match('#/api(?:/|$)#', $uri, $match, PREG_OFFSET_CAPTURE)) {
-        $uri = substr($uri, $match[0][1] + 4);
-    }
-    $path = '/' . trim($uri, '/');
-    return $path === '/' ? '/status' : $path;
-}
-
-
-function isPublicRoute(string $method, string $path, string $routeKey, array $publicRoutes): bool
-{
-    return in_array($routeKey, $publicRoutes, true);
-}
-
-function isProtectedDriverRoute(string $method, string $path, string $routeKey): bool
-{
-    if (preg_match('#^/driver/#', $path)) {
-        return !in_array($routeKey, ['POST /driver/activate', 'POST /driver/login', 'POST /driver/qr-login', 'POST /driver/pairing/confirm'], true);
-    }
-    return $routeKey === 'POST /gps';
-}
-
-
-function driverScopedBody(array $body, ?array $user): array
-{
-    if (strtoupper((string) ($user['perfil'] ?? '')) === 'MOTORISTA') {
-        $driverId = (string) ($user['id'] ?? '');
-        if ($driverId !== '') {
-            $body['motorista_id'] = $driverId;
-            $body['motoristaId'] = $driverId;
-        }
-    }
-    return $body;
-}
-
-function routeResource(string $path, string $routeKey): string
-{
-    if (preg_match('#^/viagens/[^/]+/passageiros$#', $path)) {
-        return 'trip-passengers';
-    }
-    if (preg_match('#^/driver/#', $path)) {
-        return 'driver';
-    }
-    if ($routeKey === 'POST /gps') {
-        return 'gps';
-    }
-    if ($routeKey === 'GET /rastreamento' || $routeKey === 'GET /tracking') {
-        return 'rastreamento';
-    }
-    return explode('/', trim($path, '/'))[0] ?: 'status';
+if (!$router->dispatch($method, $path)) {
+    Response::error('Endpoint não encontrado.', 404);
 }

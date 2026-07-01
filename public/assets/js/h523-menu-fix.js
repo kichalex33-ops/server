@@ -2,7 +2,7 @@
 (function () {
   "use strict";
 
-  const HOME = "/homologacao/public/";
+  const HOME = (window.appUrl ? window.appUrl("/public/") : ((window.PAINEL_BASE_PATH || "") + "/public/"));
   const icon = {
     home: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/><path d="M9 20v-6h6v6"/></svg>',
     chart: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19V5"/><path d="M4 19h16"/><path d="M8 15l3-3 3 2 5-7"/></svg>',
@@ -39,6 +39,7 @@
     { label: "Relatórios", href: "gestao-relatorios.html", key: "relatorios", icon: "file" },
     { label: "Exportações", href: "gestao-exportacoes.html", key: "exportacoes", icon: "down" },
     { label: "Segurança Operacional", href: "gestao-seguranca.html", key: "seguranca", icon: "shield" },
+    { label: "Privacidade / LGPD", href: "gestao-lgpd.html", key: "lgpd", icon: "shield" },
     { section: "Configurações" },
     { label: "Operadores Logísticos", href: "gestao-operadores.html", key: "operadores", icon: "shield" },
     { label: "Perfis de Acesso", href: "gestao-perfis.html", key: "perfis", icon: "user" },
@@ -58,9 +59,9 @@
     { label: "Conectar App / Senha", href: "operador-conectar-app.html", key: "qr", icon: "phone" },
     { label: "Sincronização", href: "operador-sincronizacao.html", key: "sync", icon: "sync" },
     { section: "Centrais" },
-    { label: "Sala de Situação", href: "/homologacao/painel-logistico/sala-situacao", key: "sala", icon: "gear" },
-    { label: "Ocorrências", href: "/homologacao/painel-logistico/emergencias", key: "emergencias", icon: "alert" },
-    { label: "App Motorista", href: "/homologacao/public/motorista/", key: "app", icon: "phone" },
+    { label: "Sala de Situação", href: (window.appUrl ? window.appUrl("/painel-logistico/sala-situacao") : "/painel-logistico/sala-situacao"), key: "sala", icon: "gear" },
+    { label: "Ocorrências", href: (window.appUrl ? window.appUrl("/painel-logistico/emergencias") : "/painel-logistico/emergencias"), key: "emergencias", icon: "alert" },
+    { label: "App Motorista", href: (window.appUrl ? window.appUrl("/public/motorista/") : "/public/motorista/"), key: "app", icon: "phone" },
     { label: "Sair", href: "#", key: "logout", icon: "logout", logout: true }
   ];
 
@@ -139,7 +140,7 @@
           localStorage.removeItem("painel-logistico-auth");
         } catch (_) {}
         if (window.clearAuthSession) window.clearAuthSession();
-        location.href = window.appUrl ? window.appUrl("/") : "/homologacao/";
+        location.href = window.appUrl ? window.appUrl("/") : "/";
       });
     });
   }
