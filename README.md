@@ -1,37 +1,44 @@
-# Plataforma Logistica - Server PHP HostGator
+# Plataforma Logística — LogiSaúde (Server PHP/HostGator)
 
-Servidor PHP/MySQL para HostGator Shared Hosting.
+Servidor **PHP 8 + MySQL** para hospedagem compartilhada (HostGator), sem bundler
+e sem etapa de build. Frontend estático + backend PHP puro.
 
-## Estrutura principal
+> 📐 **Novo no projeto? Comece por [`ARCHITECTURE.md`](ARCHITECTURE.md).**
+> Ele explica os dois frontends (painéis modulares × app do motorista), a ordem
+> da cascata de CSS, o fluxo de requisição e as pegadinhas não óbvias.
 
-- `public/portal.html`: tela de acesso.
-- `public/operador.html`: painel do operador, cadastro de motorista e QR Code.
-- `public/gestao.html`: painel gestor.
-- `api/index.php`: API PHP consumida pelos paineis e pelo app.
-- `db/migrations/001_php_hostgator_core.sql`: estrutura MySQL.
-- `db/migrations/002_destinos.sql`: cadastro de destinos do operador.
+## Estrutura do repositório
 
-## Rotas dos paineis
+```
+api/            Backend PHP (entrada: api/index.php) — router, auth/JWT, serviços
+db/migrations/  Migrações MySQL versionadas (001 → 015), aplicar em ordem
+public/         Frontend estático
+  ├── *.html            Páginas dos painéis (gestor, operador, sala, etc.)
+  ├── js/               App modular (loader app.js + core/ + modules/)
+  ├── assets/           css/, js/, img/ (inclui camada legada usada pelo motorista)
+  └── motorista/        PWA do motorista (loader próprio, legado)
+storage/        cache/ logs/ backups/ uploads/ (conteúdo ignorado pelo Git)
+scripts/        Utilitários (ex.: validação de migrações)
+docs/           Documentação; docs/auditorias/ = histórico de auditorias H3–H549
+```
+
+## Rotas dos painéis
 
 - `/painel-logistico`
 - `/painel-logistico/operador`
 - `/painel-logistico/gestao`
 
-## Configuracao obrigatoria
+## Configuração obrigatória
 
-- Configurar `DB_HOST`, `DB_NAME`, `DB_USER`, `DB_PASSWORD` e `JWT_SECRET`.
-- Importar `001_php_hostgator_core.sql` e, em seguida, `002_destinos.sql` no MySQL.
-- Criar usuarios reais na tabela `usuarios`.
-- Criar motoristas reais pelo painel operador, com senha para o app motorista.
+1. Definir `DB_HOST`, `DB_NAME`, `DB_USER`, `DB_PASSWORD` e `JWT_SECRET`
+   (ver `.env.example` / `.env.homologacao.modelo`).
+2. Importar as migrações `db/migrations/001..015` **em ordem** no MySQL.
+3. Criar usuários reais na tabela `usuarios` — **não há dados de demonstração
+   nem senhas fixas no código**.
+4. Criar motoristas reais pelo painel do operador (senha usada no app do motorista).
 
-Nao ha dados de demonstracao nem senhas fixas no codigo.
+## Homologação
 
-## Fases recentes
-
-- `docs/H3_5_AUDITORIA_CONVERSAO_PHP.md`
-- `docs/H3_6_CORRECAO_NAO_CONFORMIDADES.md`
-- `docs/H4_11_MENU_CADASTROS_DESTINOS.md`
-
-## Validacao pendente
-
-A homologacao final deve ocorrer em PHP 8 + MySQL na HostGator ou ambiente equivalente.
+A validação final deve ocorrer em **PHP 8 + MySQL** na HostGator ou ambiente
+equivalente. O histórico de homologação está em `docs/auditorias/`.
+</content>
