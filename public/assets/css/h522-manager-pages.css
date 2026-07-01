@@ -1,7 +1,7 @@
 
 /* H5.22 - Gestor no mesmo padrão visual do operador + telas separadas */
-body[data-theme="dark"] .manager-app,
-body[data-theme="dark"] .operator-app {
+body[data-theme=""] .manager-app,
+body[data-theme=""] .operator-app {
   --h522-bg: #061423;
   --h522-panel: #0d2036;
   --h522-panel-2: #102842;
@@ -11,10 +11,10 @@ body[data-theme="dark"] .operator-app {
   --h522-accent: #73adff;
 }
 
-body[data-theme="dark"] .dashboard-shell.manager-app,
-body[data-theme="dark"] .dashboard-shell.operator-app,
-body[data-theme="dark"] .manager-app .main-dashboard,
-body[data-theme="dark"] .operator-app .main-dashboard {
+body[data-theme=""] .dashboard-shell.manager-app,
+body[data-theme=""] .dashboard-shell.operator-app,
+body[data-theme=""] .manager-app .main-dashboard,
+body[data-theme=""] .operator-app .main-dashboard {
   background: radial-gradient(circle at 20% 0%, rgba(47, 100, 160, .28), transparent 32%), linear-gradient(180deg, #071727 0%, #06111e 100%) !important;
   color: var(--h522-text) !important;
 }
@@ -52,15 +52,15 @@ body.operator-menu-open::after {
   backdrop-filter: blur(2px);
 }
 
-body[data-theme="dark"] .manager-app .side-nav,
-body[data-theme="dark"] .operator-app .side-nav {
+body[data-theme=""] .manager-app .side-nav,
+body[data-theme=""] .operator-app .side-nav {
   background: linear-gradient(180deg, #0b2036 0%, #071727 100%) !important;
   border-right: 1px solid rgba(133, 172, 215, .22) !important;
   color: var(--h522-text) !important;
 }
 
-body[data-theme="dark"] .manager-app .side-brand,
-body[data-theme="dark"] .operator-app .side-brand {
+body[data-theme=""] .manager-app .side-brand,
+body[data-theme=""] .operator-app .side-brand {
   min-height: 112px !important;
   padding: 18px 18px 16px !important;
   display: flex !important;
@@ -70,37 +70,37 @@ body[data-theme="dark"] .operator-app .side-brand {
   border-bottom: 1px solid rgba(133, 172, 215, .22) !important;
 }
 
-body[data-theme="dark"] .manager-app .side-brand img,
-body[data-theme="dark"] .operator-app .side-brand img {
+body[data-theme=""] .manager-app .side-brand img,
+body[data-theme=""] .operator-app .side-brand img {
   width: 96px !important;
   max-height: 54px !important;
   object-fit: contain !important;
 }
 
-body[data-theme="dark"] .manager-app .side-brand strong,
-body[data-theme="dark"] .operator-app .side-brand strong {
+body[data-theme=""] .manager-app .side-brand strong,
+body[data-theme=""] .operator-app .side-brand strong {
   display: block !important;
   color: #fff !important;
   font-size: 18px !important;
   line-height: 1.1 !important;
 }
 
-body[data-theme="dark"] .manager-app .side-brand small,
-body[data-theme="dark"] .operator-app .side-brand small {
+body[data-theme=""] .manager-app .side-brand small,
+body[data-theme=""] .operator-app .side-brand small {
   display: block !important;
   color: #c8dcf4 !important;
   font-size: 13px !important;
 }
 
-body[data-theme="dark"] .manager-app .nav-section,
-body[data-theme="dark"] .operator-app .nav-section {
+body[data-theme=""] .manager-app .nav-section,
+body[data-theme=""] .operator-app .nav-section {
   padding: 14px 8px !important;
   display: grid !important;
   gap: 4px !important;
 }
 
-body[data-theme="dark"] .manager-app .nav-section p,
-body[data-theme="dark"] .operator-app .nav-section p {
+body[data-theme=""] .manager-app .nav-section p,
+body[data-theme=""] .operator-app .nav-section p {
   color: #91b7df !important;
   margin: 16px 8px 8px !important;
   font-size: 11px !important;
@@ -108,8 +108,8 @@ body[data-theme="dark"] .operator-app .nav-section p {
   text-transform: uppercase !important;
 }
 
-body[data-theme="dark"] .manager-app .nav-section a,
-body[data-theme="dark"] .operator-app .nav-section a {
+body[data-theme=""] .manager-app .nav-section a,
+body[data-theme=""] .operator-app .nav-section a {
   color: #d8e7f8 !important;
   min-height: 42px !important;
   padding: 10px 12px !important;
@@ -122,19 +122,19 @@ body[data-theme="dark"] .operator-app .nav-section a {
   border: 1px solid transparent !important;
 }
 
-body[data-theme="dark"] .manager-app .nav-section a:hover,
-body[data-theme="dark"] .manager-app .nav-section a.active,
-body[data-theme="dark"] .operator-app .nav-section a:hover,
-body[data-theme="dark"] .operator-app .nav-section a.active {
+body[data-theme=""] .manager-app .nav-section a:hover,
+body[data-theme=""] .manager-app .nav-section a.active,
+body[data-theme=""] .operator-app .nav-section a:hover,
+body[data-theme=""] .operator-app .nav-section a.active {
   color: #ffffff !important;
   background: linear-gradient(90deg, rgba(70, 134, 215, .32), rgba(21, 54, 89, .70)) !important;
   border-color: rgba(115, 173, 255, .36) !important;
 }
 
-body[data-theme="dark"] .manager-app .nav-icon,
-body[data-theme="dark"] .operator-app .nav-icon,
-body[data-theme="dark"] .manager-app .inline-icon,
-body[data-theme="dark"] .operator-app .inline-icon {
+body[data-theme=""] .manager-app .nav-icon,
+body[data-theme=""] .operator-app .nav-icon,
+body[data-theme=""] .manager-app .inline-icon,
+body[data-theme=""] .operator-app .inline-icon {
   display: inline-grid !important;
   place-items: center !important;
   width: 20px !important;
@@ -144,12 +144,12 @@ body[data-theme="dark"] .operator-app .inline-icon {
   opacity: 1 !important;
 }
 
-body[data-theme="dark"] .manager-app .nav-icon svg,
-body[data-theme="dark"] .operator-app .nav-icon svg,
-body[data-theme="dark"] .manager-app .inline-icon svg,
-body[data-theme="dark"] .operator-app .inline-icon svg,
-body[data-theme="dark"] .manager-app svg,
-body[data-theme="dark"] .operator-app svg {
+body[data-theme=""] .manager-app .nav-icon svg,
+body[data-theme=""] .operator-app .nav-icon svg,
+body[data-theme=""] .manager-app .inline-icon svg,
+body[data-theme=""] .operator-app .inline-icon svg,
+body[data-theme=""] .manager-app svg,
+body[data-theme=""] .operator-app svg {
   width: 20px !important;
   height: 20px !important;
   min-width: 20px !important;
@@ -158,21 +158,21 @@ body[data-theme="dark"] .operator-app svg {
   overflow: visible !important;
 }
 
-body[data-theme="dark"] .manager-app .topbar,
-body[data-theme="dark"] .operator-app .topbar {
+body[data-theme=""] .manager-app .topbar,
+body[data-theme=""] .operator-app .topbar {
   background: linear-gradient(90deg, rgba(8, 28, 48, .98), rgba(11, 35, 59, .98)) !important;
   border-bottom: 1px solid rgba(133, 172, 215, .22) !important;
   box-shadow: 0 8px 24px rgba(0,0,0,.25) !important;
 }
 
-body[data-theme="dark"] .manager-app .panel,
-body[data-theme="dark"] .operator-app .panel,
-body[data-theme="dark"] .manager-app .kpi-card,
-body[data-theme="dark"] .operator-app .kpi-card,
-body[data-theme="dark"] .manager-app .ops-metric-strip article,
-body[data-theme="dark"] .operator-app .ops-metric-strip article,
-body[data-theme="dark"] .manager-app .manager-placeholder-grid article,
-body[data-theme="dark"] .operator-app .manager-placeholder-grid article {
+body[data-theme=""] .manager-app .panel,
+body[data-theme=""] .operator-app .panel,
+body[data-theme=""] .manager-app .kpi-card,
+body[data-theme=""] .operator-app .kpi-card,
+body[data-theme=""] .manager-app .ops-metric-strip article,
+body[data-theme=""] .operator-app .ops-metric-strip article,
+body[data-theme=""] .manager-app .manager-placeholder-grid article,
+body[data-theme=""] .operator-app .manager-placeholder-grid article {
   background: linear-gradient(180deg, #102a46 0%, #0b1d31 100%) !important;
   border: 1px solid var(--h522-line) !important;
   color: var(--h522-text) !important;
@@ -180,31 +180,31 @@ body[data-theme="dark"] .operator-app .manager-placeholder-grid article {
   box-shadow: 0 14px 34px rgba(0,0,0,.24) !important;
 }
 
-body[data-theme="dark"] .manager-app .page-heading,
-body[data-theme="dark"] .operator-app .page-heading {
+body[data-theme=""] .manager-app .page-heading,
+body[data-theme=""] .operator-app .page-heading {
   background: linear-gradient(180deg, #112d4c 0%, #0b2036 100%) !important;
   border: 1px solid var(--h522-line) !important;
   border-radius: 14px !important;
   color: var(--h522-text) !important;
 }
 
-body[data-theme="dark"] .manager-app h1,
-body[data-theme="dark"] .manager-app h2,
-body[data-theme="dark"] .manager-app h3,
-body[data-theme="dark"] .manager-app strong,
-body[data-theme="dark"] .operator-app h1,
-body[data-theme="dark"] .operator-app h2,
-body[data-theme="dark"] .operator-app h3,
-body[data-theme="dark"] .operator-app strong {
+body[data-theme=""] .manager-app h1,
+body[data-theme=""] .manager-app h2,
+body[data-theme=""] .manager-app h3,
+body[data-theme=""] .manager-app strong,
+body[data-theme=""] .operator-app h1,
+body[data-theme=""] .operator-app h2,
+body[data-theme=""] .operator-app h3,
+body[data-theme=""] .operator-app strong {
   color: #ffffff !important;
 }
 
-body[data-theme="dark"] .manager-app span,
-body[data-theme="dark"] .manager-app small,
-body[data-theme="dark"] .manager-app p,
-body[data-theme="dark"] .operator-app span,
-body[data-theme="dark"] .operator-app small,
-body[data-theme="dark"] .operator-app p {
+body[data-theme=""] .manager-app span,
+body[data-theme=""] .manager-app small,
+body[data-theme=""] .manager-app p,
+body[data-theme=""] .operator-app span,
+body[data-theme=""] .operator-app small,
+body[data-theme=""] .operator-app p {
   color: var(--h522-muted) !important;
 }
 

@@ -9,19 +9,26 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <title>Frota de Veículos | Painel Operador</title>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
-  <link rel="stylesheet" href="/homologacao/public/assets/css/painel-acesso.css?v=h525">
-  <link rel="stylesheet" href="/homologacao/public/assets/css/mapas.css?v=h525">
-    <link rel="stylesheet" href="/homologacao/public/assets/css/theme-dark-fix.css?v=h525">
-  <link rel="stylesheet" href="/homologacao/public/assets/css/h520-forcado.css?v=h525">
-  <link rel="stylesheet" href="/homologacao/public/assets/css/h521-visual-definitivo.css?v=h525">
-  <link rel="stylesheet" href="/homologacao/public/assets/css/h524-menu-router.css?v=h525">
-  <link rel="stylesheet" href="/homologacao/public/assets/css/h525-menu-layout-final.css?v=h525">
+  <link rel="stylesheet" href="assets/css/painel-acesso.css?v=h540">
+  <link rel="stylesheet" href="assets/css/mapas.css?v=h540">
+    <link rel="stylesheet" href="assets/css/theme-dark-fix.css?v=h540">
+  <link rel="stylesheet" href="assets/css/h520-forcado.css?v=h540">
+  <link rel="stylesheet" href="assets/css/h521-visual-definitivo.css?v=h540">
+  <link rel="stylesheet" href="assets/css/h524-menu-router.css?v=h540">
+  <link rel="stylesheet" href="assets/css/h525-menu-layout-final.css?v=h540">
+  <link rel="stylesheet" href="assets/css/h530-auditoria-visual.css?v=h540" data-h530-visual="1">
+  <link rel="stylesheet" href="assets/css/h531-correcao-final.css?v=h540" data-h531-visual="1">
+  <link rel="stylesheet" href="assets/css/h533-correcao-final.css?v=h540" data-h533-visual="1">
+  <link rel="stylesheet" href="assets/css/h534-correcao-final.css?v=h540" data-h534-visual="1">
+  <link rel="stylesheet" href="assets/css/h536-contraste-tema-unificado.css?v=h540" data-h536-visual="1">
+  <link rel="stylesheet" href="assets/css/h537-transicao-tema-suave.css?v=h540" data-h537-transition="1">
+  <link rel="stylesheet" href="assets/css/h540-interface-agatho-icons.css?v=h540" data-h540-interface="1">
 </head>
-<body data-theme="dark" data-initial-screen="drivers" data-initial-driver-tab="fleet" data-focus-selector="#frota">
+<body data-theme="" data-initial-screen="drivers" data-initial-driver-tab="fleet" data-focus-selector="#frota">
   <div class="dashboard-shell operator-app">
     <aside class="side-nav">
       <div class="side-brand compact-brand">
-        <img class="brand-logo" src="/homologacao/public/assets/img/andrade-gestao-saude.jpeg" alt="Andrade Gestão em Saúde">
+        <img class="brand-logo" src="assets/img/andrade-gestao-saude.jpeg" alt="Andrade Gestão em Saúde">
         <div><strong>Painel Logístico</strong><small>Transporte de Pacientes</small></div>
       </div>
 
@@ -210,7 +217,7 @@
         </nav>
         <section class="driver-subpanel active" data-driver-content="people">
         <div class="manager-content driver-layout">
-          <article class="panel"><div class="panel-header"><h2>Cadastro inicial de motorista</h2><span id="driverFormStatus"></span></div><form id="driverForm" class="quick-actions"><input name="nome" required placeholder="Nome do motorista"><input name="senha_app" required autocomplete="off" placeholder="Senha alfanumérica do app"><details class="optional-fields"><summary>Dados complementares para preencher depois/opcional</summary><input name="cpf" placeholder="CPF opcional"><input name="matricula" placeholder="Matrícula opcional"><input name="telefone" placeholder="Telefone opcional"><input name="cnh" placeholder="CNH opcional"></details><button type="submit">Cadastrar motorista</button><small>Na primeira conexão, basta nome e senha do app. CPF, matrícula, telefone e CNH ficam para preencher depois.</small></form></article>
+          <article class="panel"><div class="panel-header"><h2>Cadastro inicial de motorista</h2><span id="driverFormStatus"></span></div><form id="driverForm" class="quick-actions"><input name="nome" required placeholder="Nome do motorista"><details class="optional-fields"><summary>Dados complementares para preencher depois/opcional</summary><input name="cpf" placeholder="CPF opcional"><input name="matricula" placeholder="Matrícula opcional"><input name="telefone" placeholder="Telefone opcional"><input name="cnh" placeholder="CNH opcional"><label>Validade da CNH<input name="cnh_validade" type="date"></label></details><button type="submit">Cadastrar motorista</button><small>O sistema gera um código de ativação de uso único. Ele expira em 48 horas e não fica salvo em texto aberto.</small></form></article>
           <article class="panel"><div class="panel-header"><h2>Motoristas cadastrados</h2><button id="refreshDriversBtn" type="button">Atualizar</button></div><div id="driversList" class="ranking"></div></article>
         </div>
         </section>
@@ -240,15 +247,19 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <script src="/homologacao/public/assets/js/api-config.js?v=h525"></script>
-  <script src="/homologacao/public/assets/js/auth-client.js?v=h525"></script>
-  <script src="/homologacao/public/assets/js/theme.js?v=h525"></script>
-  <script src="/homologacao/public/assets/js/charts/dashboard-charts.js?v=h525"></script>
-  <script src="/homologacao/public/assets/js/operador-dashboard.js?v=h525"></script>
-  <script src="/homologacao/public/assets/js/live-map.js?v=h525"></script>
-  <script src="/homologacao/public/assets/js/h520-force-ui.js?v=h525"></script>
-  <script src="/homologacao/public/assets/js/h521-force-ui.js?v=h525"></script>
-  <script src="/homologacao/public/assets/js/h524-menu-router.js?v=h525"></script>
-  <script src="/homologacao/public/assets/js/h525-menu-completo.js?v=h525"></script>
+  <script src="assets/js/api-config.js?v=h540"></script>
+  <script src="assets/js/auth-client.js?v=h540"></script>
+  <script src="assets/js/h526-security-auth.js?v=h540"></script>
+  <script src="assets/js/theme.js?v=h540"></script>
+  <script src="assets/js/charts/dashboard-charts.js?v=h540"></script>
+  <script src="assets/js/operador-dashboard.js?v=h540"></script>
+  <script src="assets/js/live-map.js?v=h540"></script>
+  <script src="assets/js/h520-force-ui.js?v=h540"></script>
+  <script src="assets/js/h521-force-ui.js?v=h540"></script>
+  <script src="assets/js/h524-menu-router.js?v=h540"></script>
+  <script src="assets/js/h525-menu-completo.js?v=h540"></script>
+  <script src="assets/js/h534-self-healing.js?v=h540"></script>
+  <script src="assets/js/h536-self-healing.js?v=h540"></script>
+  <script src="assets/js/h540-interface-polish.js?v=h540"></script>
 </body>
 </html>

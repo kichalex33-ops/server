@@ -1,0 +1,268 @@
+/* H5.40 — Identidade visual: tipografia editorial + ícones lineares
+   Referência: mockup aprovado pelo usuário.
+   Observação: esta folha usa a família "Agatho" se ela estiver disponível no servidor/navegador.
+   Os arquivos da fonte NÃO são empacotados aqui; fallback seguro: Georgia/serif. */
+
+:root {
+  --h540-font-display: "Agatho", "Cormorant Garamond", "Libre Baskerville", "Georgia", "Times New Roman", serif;
+  --h540-font-ui: "Agatho", "Georgia", "Times New Roman", serif;
+  --h540-font-system: "Inter", "Segoe UI", Arial, sans-serif;
+
+  --h540-ink: #0f172a;
+  --h540-ink-soft: #475569;
+  --h540-ink-muted: #64748b;
+  --h540-paper: #ffffff;
+  --h540-paper-soft: #f8fafc;
+  --h540-navy: #07182b;
+  --h540-navy-2: #0b2038;
+  --h540-line: #d8e1ea;
+  --h540-gold: #d6a93f;
+  --h540-icon-stroke: 1.55;
+}
+
+/* Tipografia global: elegante, mas sem esmagar legibilidade. */
+html body {
+  font-family: var(--h540-font-ui) !important;
+  font-feature-settings: "kern" 1, "liga" 1, "calt" 1;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  font-kerning: normal;
+}
+
+/* Títulos e blocos de navegação com aparência editorial. */
+:where(
+  h1, h2, h3,
+  .top-title h1,
+  #screenTitle,
+  #managerScreenTitle,
+  .page-heading h1,
+  .page-heading h2,
+  .section-title h2,
+  .panel-header h2,
+  .side-brand strong,
+  .nav-section a,
+  .nav-label,
+  .profile-pill strong,
+  .kpi-card strong,
+  .metric-card strong,
+  .overview-card strong,
+  .mini-card strong,
+  .driver-hero h2,
+  .login-card h1,
+  .portal-card h2
+) {
+  font-family: var(--h540-font-display) !important;
+  letter-spacing: -0.018em;
+}
+
+/* Textos de interface. */
+:where(
+  button, input, textarea, select, option,
+  .filter-button, .theme-button, .icon-button,
+  .primary-action, .primary-button, .ghost-button,
+  .badge, .chip, .status-pill, .status-chip,
+  .kpi-card span, .kpi-card small,
+  .metric-card span, .metric-card small,
+  .table-wrap th, .table-wrap td,
+  .data-table th, .data-table td,
+  .h534-table th, .h534-table td,
+  .muted, .text-muted, .subtitle, .hint, .description,
+  .top-title span, .top-title small,
+  .profile-pill small,
+  .side-brand small
+) {
+  font-family: var(--h540-font-ui) !important;
+}
+
+:where(input, textarea, select, button) {
+  font-size: 15px;
+}
+
+/* Números ficam alinhados e elegantes nos painéis. */
+:where(.kpi-card strong, .metric-card strong, .overview-card strong, .mini-card strong, [id*="total"], [id*="kpi"], [data-stat], [data-live-map-stat]) {
+  font-variant-numeric: tabular-nums lining-nums;
+}
+
+/* Gestor: aproxima do mockup aprovado. */
+.dashboard-shell.manager-app .main-dashboard {
+  background: #f6f8fb !important;
+}
+
+.dashboard-shell.manager-app .topbar {
+  background: linear-gradient(180deg, #061529 0%, #0a2038 100%) !important;
+  box-shadow: 0 18px 50px rgba(6, 21, 41, .16) !important;
+}
+
+.dashboard-shell.manager-app .top-title h1,
+.dashboard-shell.manager-app #managerScreenTitle {
+  font-size: clamp(30px, 3vw, 50px) !important;
+  line-height: .98 !important;
+  font-weight: 700 !important;
+}
+
+.dashboard-shell.manager-app .top-title span,
+.dashboard-shell.manager-app .top-title small,
+.dashboard-shell.manager-app #managerScreenEyebrow {
+  letter-spacing: .018em !important;
+  opacity: .86;
+}
+
+.dashboard-shell.manager-app :where(.card, .panel, .manager-content, .table-wrap, .filter-card, .summary-card),
+.dashboard-shell.manager-app .main-dashboard > section > article:not(.kpi-card) {
+  border-radius: 18px !important;
+  border-color: rgba(148, 163, 184, .34) !important;
+  box-shadow: 0 18px 46px rgba(15, 23, 42, .045) !important;
+}
+
+/* Cards KPI: mantém horizontal, visual premium. */
+.dashboard-shell.manager-app .kpi-card {
+  border-radius: 18px !important;
+  box-shadow: 0 18px 42px rgba(15, 23, 42, .055) !important;
+}
+
+.dashboard-shell.manager-app .kpi-card > div:first-child > span {
+  font-family: var(--h540-font-display) !important;
+  letter-spacing: .02em !important;
+  text-transform: uppercase !important;
+  font-size: clamp(12px, .82vw, 15px) !important;
+  font-weight: 600 !important;
+}
+
+.dashboard-shell.manager-app .kpi-card > div:first-child > strong {
+  font-family: var(--h540-font-display) !important;
+  letter-spacing: -.025em !important;
+  font-weight: 600 !important;
+}
+
+.dashboard-shell.manager-app .kpi-card > div:first-child > small {
+  font-size: 13px !important;
+  letter-spacing: .002em !important;
+}
+
+.dashboard-shell.manager-app .kpi-icon {
+  border-radius: 999px !important;
+  background: #f3f7fc !important;
+  border: 1px solid rgba(148, 163, 184, .35) !important;
+}
+
+/* Operador e demais painéis recebem a mesma linguagem sem mudar estrutura. */
+.dashboard-shell.operator-app .topbar,
+.dashboard-shell.manager-app .topbar,
+.app-header,
+.side-nav {
+  letter-spacing: -.004em;
+}
+
+.dashboard-shell.operator-app .kpi-card strong,
+.dashboard-shell.operator-app .metric-card strong {
+  font-family: var(--h540-font-display) !important;
+  font-weight: 650 !important;
+  letter-spacing: -.02em !important;
+}
+
+/* Ícones lineares: estilo fino, branco/monocromático como referência. */
+:where(
+  .nav-icon svg,
+  .side-nav svg,
+  .kpi-icon svg,
+  .kpi-symbol svg,
+  .icon-button svg,
+  .theme-button svg,
+  .filter-button svg,
+  .topbar svg,
+  .tab svg,
+  .primary-action svg,
+  .primary-button svg,
+  .ghost-button svg,
+  .status-pill svg,
+  .status-chip svg,
+  .leaflet-popup svg,
+  .activity-icon svg,
+  .menu-button svg
+) {
+  fill: none !important;
+  stroke: currentColor !important;
+  stroke-width: var(--h540-icon-stroke) !important;
+  stroke-linecap: round !important;
+  stroke-linejoin: round !important;
+  shape-rendering: geometricPrecision;
+}
+
+:where(.nav-icon, .kpi-icon, .kpi-symbol, .icon-button, .theme-button, .filter-button, .menu-button) {
+  color: inherit;
+}
+
+.side-nav .nav-icon {
+  width: 38px !important;
+  height: 38px !important;
+  min-width: 38px !important;
+  border-radius: 12px !important;
+}
+
+.side-nav .nav-icon svg {
+  width: 21px !important;
+  height: 21px !important;
+}
+
+.side-nav .nav-section a {
+  min-height: 44px !important;
+  border-radius: 14px !important;
+  gap: 12px !important;
+}
+
+.side-nav .nav-section a.active {
+  box-shadow: inset 3px 0 0 rgba(214, 169, 63, .92);
+}
+
+/* Botões do topo mais próximos do mockup. */
+.topbar :where(.theme-button, .icon-button, .menu-button),
+.dashboard-shell.manager-app .topbar :where(.theme-button, .icon-button, .menu-button) {
+  border-radius: 13px !important;
+  backdrop-filter: blur(8px);
+}
+
+/* Campos de filtro: aparência limpa e editorial. */
+:where(select, input, textarea, .filter-button) {
+  border-radius: 12px !important;
+}
+
+.dashboard-shell.manager-app :where(select, input, textarea) {
+  min-height: 44px;
+}
+
+/* Tabelas mais leves. */
+:where(.data-table, .h534-table, .day-table) th {
+  font-family: var(--h540-font-display) !important;
+  letter-spacing: .035em !important;
+  text-transform: uppercase;
+  font-weight: 650 !important;
+}
+
+/* Mantém contraste lógico já corrigido. */
+body[data-theme="dark"] :where(.white-card, .light-card, .card-light, .panel-light, .table-wrap, .data-table, .filter-card, .summary-card, .h536-light-surface) {
+  color: #0f172a !important;
+}
+
+body[data-theme="dark"] :where(.white-card, .light-card, .card-light, .panel-light, .table-wrap, .data-table, .filter-card, .summary-card, .h536-light-surface) :where(h1,h2,h3,h4,strong,b,p,span,small,label,td,th,a,div) {
+  color: inherit !important;
+}
+
+/* Responsivo: tipografia elegante sem quebrar texto. */
+@media (max-width: 900px) {
+  .dashboard-shell.manager-app .top-title h1,
+  .dashboard-shell.manager-app #managerScreenTitle {
+    font-size: clamp(28px, 8vw, 42px) !important;
+  }
+  .side-nav .nav-section a {
+    font-size: 15px !important;
+  }
+}
+
+@media (max-width: 640px) {
+  html body {
+    font-size: 15px;
+  }
+  .dashboard-shell.manager-app .kpi-card > div:first-child > span {
+    font-size: 12px !important;
+  }
+}

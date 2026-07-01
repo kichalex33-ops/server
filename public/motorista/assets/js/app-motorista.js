@@ -56,49 +56,117 @@
     }
   }
 
+  function apiData(body) {
+    return body && body.ok === true && body.data ? body.data : body;
+  }
+
+  function authHeaders(extra = {}) {
+    const headers = { ...extra };
+    const token = state.config?.access_token || state.config?.token || state.config?.sessao?.token;
+    if (token) headers.Authorization = `Bearer ${token}`;
+    return headers;
+  }
+
+  async function motoristaFetch(url, options = {}) {
+    return fetch(url, {
+      ...options,
+      headers: authHeaders(options.headers || {})
+    });
+  }
+
+  async function readJsonResponse(response, fallbackMessage) {
+    const text = await response.text();
+    let body = {};
+    if (text) {
+      try { body = JSON.parse(text); } catch (_) { throw new Error('Resposta invalida do servidor.'); }
+    }
+    if (!response.ok || body.ok === false) throw new Error(body.error || body.message || fallbackMessage || `HTTP ${response.status}`);
+    return apiData(body);
+  }
+
   async function confirmarPareamento() {
-    const message = $("#pairingMessage");
+    const message = $('#pairingMessage');
     try {
-      const payload = JSON.parse($("#pairingPayload").value.trim());
-      validatePairingPayload(payload);
+      const payload = JSON.parse($('#pairingPayload').value.trim());
       const device = buildDeviceInfo();
-      const response = await fetch(`${payload.server_url}/api/driver/pairing/confirm`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json", Accept: "application/json" },
-        body: JSON.stringify({
-          pairing_id: payload.pairing_id,
-          pairing_token: payload.pairing_token,
-          device
-        })
-      });
-      const body = await response.json();
-      if (!response.ok || body.ok !== true) throw new Error(body.error || body.message || "Falha ao confirmar pareamento.");
+      const serverUrl = normalizeServerUrl(payload.server_url || payload.api_base_url || payload.api || '');
+      if (!serverUrl) throw new Error('Payload sem server_url. Gere novamente no painel.');
+
+      let data;
+      if (isPairingPayload(payload)) {
+        validatePairingPayload(payload);
+        const response = await fetch(`${serverUrl}/api/driver/pairing/confirm`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+          body: JSON.stringify({
+            pairing_id: payload.pairing_id,
+            pairing_token: payload.pairing_token,
+            motorista_id: payload.motorista_id,
+            device
+          })
+        });
+        data = await readJsonResponse(response, 'Falha ao confirmar pareamento.');
+      } else {
+        const code = activationCodeFromPayload(payload);
+        if (!code) throw new Error('Payload sem pairing_token ou codigo de ativacao.');
+        const response = await fetch(`${serverUrl}/api/driver/activate`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+          body: JSON.stringify({
+            codigo: code,
+            activation_code: code,
+            senha_app: code,
+            nome: payload.motorista_nome || payload.nome || '',
+            device
+          })
+        });
+        data = await readJsonResponse(response, 'Falha ao ativar motorista.');
+      }
+
+      const accessToken = data.access_token || data.token || data.sessao?.token || '';
+      if (!accessToken) throw new Error('Token do motorista nao retornado pelo servidor.');
 
       state.config = {
-        id: "current",
-        server_url: payload.server_url,
-        api_base_url: body.api?.base_url || payload.server_url,
-        motorista_id: body.motorista?.id,
-        motorista_nome: body.motorista?.nome || "Motorista",
-        device_id: body.device?.id || device.device_id,
+        id: 'current',
+        server_url: serverUrl,
+        api_base_url: data.api?.base_url || payload.api_base_url || serverUrl,
+        motorista_id: data.motorista?.id || data.usuario?.id || payload.motorista_id,
+        motorista_nome: data.motorista?.nome || data.usuario?.nome || payload.motorista_nome || 'Motorista',
+        device_id: data.device?.id || device.device_id,
         device_name: device.device_name,
-        pairing_status: "CONFIRMADO",
+        access_token: accessToken,
+        token: accessToken,
+        pairing_status: 'CONFIRMADO',
         paired_at: new Date().toISOString()
       };
       await store.setConfig(state.config);
-      setMessage(message, "Pareamento confirmado. Carregando viagens...", "ok");
+      setMessage(message, 'Pareamento confirmado. Carregando viagens...', 'ok');
       showDashboard();
       await fetchTrips();
       renderAll();
     } catch (error) {
-      setMessage(message, error.message, "error");
+      setMessage(message, error.message, 'error');
     }
   }
 
+  function isPairingPayload(payload) {
+    return Boolean(payload?.pairing_id || payload?.pairing_token || payload?.type === 'PAINEL_LOGISTICO_DRIVER_PAIRING');
+  }
+
   function validatePairingPayload(payload) {
-    if (payload.type !== "PAINEL_LOGISTICO_DRIVER_PAIRING") throw new Error("Payload de QR invalido.");
-    if (Number(payload.version) !== 1) throw new Error("Versao de QR nao suportada.");
-    if (!payload.server_url || !payload.pairing_id || !payload.pairing_token) throw new Error("Payload incompleto.");
+    if (payload.type && payload.type !== 'PAINEL_LOGISTICO_DRIVER_PAIRING') throw new Error('Payload de QR invalido.');
+    if (payload.version && Number(payload.version) !== 1) throw new Error('Versao de QR nao suportada.');
+    if (!payload.server_url || !payload.pairing_id || !payload.pairing_token) throw new Error('Payload incompleto.');
+  }
+
+  function activationCodeFromPayload(payload) {
+    return String(payload.codigo_ativacao || payload.activation_code || payload.codigo || payload.code || payload.senha_app || '').trim();
+  }
+
+  function normalizeServerUrl(value) {
+    const raw = String(value || '').trim().replace(/\/+$/, '');
+    if (!raw) return '';
+    return raw.replace(/\/api$/, '');
   }
 
   function buildDeviceInfo() {
@@ -121,10 +189,9 @@
     if (!state.config) return;
     try {
       updateConnectionBadge("Sincronizando");
-      const response = await fetch(`${state.config.api_base_url}/api/driver/trips?motorista_id=${encodeURIComponent(state.config.motorista_id)}`);
-      const body = await response.json();
-      if (!response.ok || !body.ok) throw new Error(body.error || "Falha ao buscar viagens.");
-      const trips = (body.data.viagens || []).map(normalizeTrip);
+      const response = await motoristaFetch(`${state.config.api_base_url}/api/driver/trips?motorista_id=${encodeURIComponent(state.config.motorista_id)}`, { headers: { Accept: "application/json" } });
+      const data = await readJsonResponse(response, "Falha ao buscar viagens.");
+      const trips = (data.viagens || data.trips || []).map(normalizeTrip);
       const passengers = trips.flatMap((trip) => (trip.passageiros || []).map((passenger) => normalizePassenger(passenger, trip.id)));
       await store.putMany("viagens", trips);
       await store.putMany("passageiros", passengers);
@@ -386,12 +453,12 @@
         item.tentativas = Number(item.tentativas || 0) + 1;
         item.updated_at = new Date().toISOString();
         await store.put(storeName, item);
-        const response = await fetch(`${state.config.api_base_url}${item.endpoint}`, {
+        const response = await motoristaFetch(`${state.config.api_base_url}${item.endpoint}`, {
           method: item.method || "POST",
           headers: { "Content-Type": "application/json", Accept: "application/json" },
           body: JSON.stringify(item.payload)
         });
-        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        await readJsonResponse(response, `HTTP ${response.status}`);
         await store.remove(storeName, item.id);
       } catch (error) {
         item.status = "erro";

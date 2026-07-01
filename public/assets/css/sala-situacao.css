@@ -557,4 +557,4 @@ a { color: inherit; }
 
 
 /* H5.13 dark variables */
-[data-theme="dark"] { --ink:#e5edf8; --muted:#9fb0c5; --line:#26364f; --panel:#0f1b2d; --soft:#07111f; --navy-dark:#e5edf8; --shadow:0 16px 34px rgba(0,0,0,.28); }
+[data-theme=""] { --ink:#e5edf8; --muted:#9fb0c5; --line:#26364f; --panel:#0f1b2d; --soft:#07111f; --navy-dark:#e5edf8; --shadow:0 16px 34px rgba(0,0,0,.28); }

@@ -96,6 +96,13 @@ final class Auth
 
     private function issueTokens(array $user): array
     {
+        // H526 FIX: revogar TODAS as sessões anteriores do usuário antes de emitir nova
+        // Impede que tokens roubados continuem válidos após novo login
+        $this->db->execute(
+            'UPDATE refresh_tokens SET revogado_em = NOW() WHERE usuario_id = :uid AND revogado_em IS NULL',
+            ['uid' => $user['id']]
+        );
+
         $access = $this->jwt->sign([
             'sub' => (string) $user['id'],
             'nome' => $user['nome'],
@@ -153,7 +160,7 @@ final class Auth
             ['login_key' => $loginKey, 'ip' => $ip]
         )['total'] ?? 0));
 
-        if ($attempts >= 8) {
+        if ($attempts >= 5) {
             $this->audit->failure('auth_login_rate_limited', 'usuarios', $login);
             throw new RuntimeException('Muitas tentativas de login. Aguarde 15 minutos e tente novamente.');
         }

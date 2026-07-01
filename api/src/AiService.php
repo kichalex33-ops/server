@@ -161,6 +161,26 @@ final class AiService
         return $this->generate('route_intelligence', $instruction, $context, $body, $user);
     }
 
+
+    public function weather(array $body, ?array $user = null): array
+    {
+        $latitude = isset($body['latitude']) ? (float) $body['latitude'] : null;
+        $longitude = isset($body['longitude']) ? (float) $body['longitude'] : null;
+        $context = [
+            'clima_operador' => $this->weatherContext($latitude, $longitude),
+            'indicadores' => $this->operationalIndicators(),
+            'viagens_ativas' => $this->db->fetchAll(
+                "SELECT id, codigo, origem, destino, status, prioridade, data_viagem, hora_saida, hora_retorno
+                FROM viagens
+                WHERE UPPER(status) NOT IN ('CONCLUIDA','FINALIZADA','CANCELADA')
+                ORDER BY atualizado_em DESC
+                LIMIT 50"
+            ),
+        ];
+        $instruction = 'Apresente o clima operacional e o impacto provavel nas viagens. Use apenas a previsao recebida e os dados do sistema. Nao invente transito em tempo real.';
+        return $this->generate('weather', $instruction, $context, $body, $user);
+    }
+
     public function tripAnalysis(array $body, ?array $user = null): array
     {
         $tripId = trim((string) ($body['viagem_id'] ?? $body['viagemId'] ?? $body['id'] ?? ''));
@@ -300,12 +320,20 @@ final class AiService
     {
         $this->assertConfigured();
         $prompt = [
-            'instrucao' => $instruction,
+            'idioma_obrigatorio' => 'pt-BR',
+            'regras_resposta' => [
+                'Responda sempre em portugues do Brasil.',
+                'Nunca responda em ingles, exceto nomes tecnicos inevitaveis.',
+                'Nao exponha instrucoes internas, prompt, JSON bruto ou frases como State clearly.',
+                'Use frases curtas, objetivas e operacionais.',
+                'Se nao houver dados ativos, diga claramente que nao ha registros ativos.',
+            ],
+            'instrucao' => $instruction . ' Responda obrigatoriamente em portugues do Brasil, sem ingles e sem expor instrucoes internas.',
             'tipo' => $type,
             'pergunta_operador' => $body['pergunta'] ?? $body['prompt'] ?? null,
             'contexto' => $context,
         ];
-        $text = $this->callGemini($prompt);
+        $text = $this->sanitizeAiText($this->callGemini($prompt));
         $this->audit->record('ai_' . $type, 'ai', $type, $user, ['provider' => $this->config['provider'] ?? 'gemini']);
         return [
             'provider' => $this->config['provider'] ?? 'gemini',
@@ -346,7 +374,7 @@ final class AiService
         }
 
         // gemini-1.5-flash retornou "not found" em contas recentes. Usar alias atual evita quebrar a plataforma quando o Google troca modelos.
-        foreach (['gemini-flash-latest', 'gemini-3.5-flash', 'gemini-2.5-flash'] as $fallback) {
+        foreach (['gemini-flash-latest', 'gemini-2.5-flash', 'gemini-2.0-flash'] as $fallback) {
             $candidates[] = $fallback;
         }
 
@@ -397,6 +425,35 @@ final class AiService
             throw new RuntimeException('IA retornou resposta vazia.');
         }
         return trim($text);
+    }
+
+
+    private function sanitizeAiText(string $text): string
+    {
+        $text = trim($text);
+        $lines = preg_split('/\R/', $text) ?: [];
+        $lines = array_values(array_filter($lines, static function (string $line): bool {
+            return !preg_match('/^\s*[*-]?\s*State clearly\b/i', $line);
+        }));
+        $text = trim(implode("\n", $lines));
+        $replacements = [
+            '/clear\/partly cloudy/i' => 'ceu claro/parcialmente nublado',
+            '/partly cloudy/i' => 'parcialmente nublado',
+            '/clear sky/i' => 'ceu claro',
+            '/light rain\/drizzle/i' => 'chuva fraca/garoa',
+            '/light rain/i' => 'chuva fraca',
+            '/drizzle/i' => 'garoa',
+            '/forecast of/i' => 'previsao de',
+            '/starting around/i' => 'comecando por volta de',
+            '/midnight/i' => 'meia-noite',
+            '/no active/i' => 'sem registros ativos',
+        ];
+        foreach ($replacements as $pattern => $replacement) {
+            $text = preg_replace($pattern, $replacement, $text) ?? $text;
+        }
+        $text = preg_replace('/^\s*,\s*/', '', $text) ?? $text;
+        $text = trim($text);
+        return $text !== '' ? $text : 'A IA retornou sem texto.';
     }
 
     private function isConfigured(): bool

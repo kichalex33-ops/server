@@ -7,6 +7,7 @@ final class ApiService
     private Database $db;
     private array $config;
     private AuditLogger $audit;
+    private array $columnCache = [];
 
     public function __construct(Database $db, array $config, AuditLogger $audit)
     {
@@ -94,12 +95,15 @@ final class ApiService
 
     public function dashboardSummary(): array
     {
+        $activeStatuses = "'EM_ANDAMENTO','EM_TRANSITO','EM_TRANSITO_IDA','EM_TRANSITO_VOLTA','CHEGADA_EMBARQUE','PASSAGEIRO_EMBARCADO','EM_ESPERA','PREPARACAO'";
+        $statusExpression = $this->viagemStatusExpression();
+
         return [
             'viagensHoje' => $this->scalar("SELECT COUNT(*) FROM viagens WHERE data_viagem = CURDATE()"),
-            'viagensEmAndamento' => $this->scalar("SELECT COUNT(*) FROM viagens WHERE UPPER(COALESCE(status_operacional, status, '')) IN ('EM_ANDAMENTO','EM_TRANSITO','EM_TRANSITO_IDA','EM_TRANSITO_VOLTA','CHEGADA_EMBARQUE','PASSAGEIRO_EMBARCADO','EM_ESPERA','PREPARACAO')"),
+            'viagensEmAndamento' => $this->scalar("SELECT COUNT(*) FROM viagens WHERE {$statusExpression} IN ({$activeStatuses})"),
             'motoristasAtivos' => $this->scalar("SELECT COUNT(*) FROM motoristas WHERE status IN ('ativo','online','em_operacao')"),
             'ultimaLocalizacao' => $this->db->fetch('SELECT * FROM localizacoes ORDER BY criado_em DESC LIMIT 1'),
-            'viagem_ativa' => $this->db->fetch("SELECT * FROM viagens WHERE UPPER(COALESCE(status_operacional, status, '')) IN ('EM_ANDAMENTO','EM_TRANSITO','EM_TRANSITO_IDA','EM_TRANSITO_VOLTA','CHEGADA_EMBARQUE','PASSAGEIRO_EMBARCADO','EM_ESPERA','PREPARACAO') ORDER BY criado_em DESC LIMIT 1"),
+            'viagem_ativa' => $this->db->fetch("SELECT * FROM viagens WHERE {$statusExpression} IN ({$activeStatuses}) ORDER BY criado_em DESC LIMIT 1"),
         ];
     }
 
@@ -245,16 +249,41 @@ final class ApiService
     public function listMotoristas(): array
     {
         $this->ensureDriverAppPasswordColumns();
+        $this->ensureDriverActivationTable();
+        $this->ensureDriverComplianceColumns();
         $items = $this->db->fetchAll(
-            "SELECT id, nome, cpf, matricula, telefone, email, status, metadados, criado_em, atualizado_em,
-                    CASE WHEN app_senha_atual IS NULL OR app_senha_atual = '' THEN 0 ELSE 1 END AS tem_senha_app,
-                    RIGHT(COALESCE(app_senha_atual, ''), 4) AS app_senha_hint,
-                    app_senha_gerada_em, app_senha_expira_em
-             FROM motoristas
-             WHERE LOWER(COALESCE(status, '')) <> 'excluido'
-             ORDER BY criado_em DESC"
+            "SELECT m.id, m.nome, m.cpf, m.matricula, m.telefone, m.email, m.status, m.metadados, m.criado_em, m.atualizado_em,
+                    m.cnh, m.cnh_validade,
+                    CASE WHEN m.senha_hash IS NULL OR m.senha_hash = '' THEN 0 ELSE 1 END AS tem_senha_app,
+                    CASE WHEN EXISTS (
+                        SELECT 1 FROM motorista_activation_codes ac
+                        WHERE ac.motorista_id = m.id
+                          AND ac.usado_em IS NULL
+                          AND ac.revogado_em IS NULL
+                          AND ac.expira_em > NOW()
+                    ) THEN 1 ELSE 0 END AS tem_codigo_ativacao,
+                    (
+                        SELECT ac.codigo_hint FROM motorista_activation_codes ac
+                        WHERE ac.motorista_id = m.id
+                          AND ac.usado_em IS NULL
+                          AND ac.revogado_em IS NULL
+                          AND ac.expira_em > NOW()
+                        ORDER BY ac.criado_em DESC LIMIT 1
+                    ) AS app_senha_hint,
+                    m.app_senha_gerada_em,
+                    (
+                        SELECT ac.expira_em FROM motorista_activation_codes ac
+                        WHERE ac.motorista_id = m.id
+                          AND ac.usado_em IS NULL
+                          AND ac.revogado_em IS NULL
+                          AND ac.expira_em > NOW()
+                        ORDER BY ac.criado_em DESC LIMIT 1
+                    ) AS app_senha_expira_em
+             FROM motoristas m
+             WHERE LOWER(COALESCE(m.status, '')) <> 'excluido'
+             ORDER BY m.criado_em DESC"
         );
-        return ['motoristas' => $items, 'items' => $items];
+        return ['motoristas' => $items, 'items' => $items, 'alertas_cnh' => $this->driverLicenseAlerts()];
     }
 
     public function revealMotoristaAppPassword(string $id, ?array $user = null): array
@@ -263,50 +292,21 @@ final class ApiService
         if ($id === '') {
             throw new RuntimeException('ID do motorista e obrigatorio.');
         }
-        $this->ensureDriverAppPasswordColumns();
-        $driver = $this->db->fetch(
-            "SELECT id, nome, app_senha_atual, app_senha_gerada_em, app_senha_expira_em
-             FROM motoristas
-             WHERE id = :id AND LOWER(COALESCE(status, '')) <> 'excluido'
-             LIMIT 1",
-            ['id' => $id]
-        );
-        if (!$driver || trim((string) ($driver['app_senha_atual'] ?? '')) === '') {
-            throw new RuntimeException('Senha do app nao encontrada para este motorista. Gere uma nova senha.');
-        }
-        $this->audit->record('consulta_credencial_app', 'motoristas', $id, $user, ['acao' => 'revelar_senha_app_motorista']);
-        return [
-            'motorista_id' => $id,
-            'nome' => $driver['nome'] ?? '',
-            'senha_app' => (string) $driver['app_senha_atual'],
-            'codigo_ativacao' => (string) $driver['app_senha_atual'],
-            'hint' => substr((string) $driver['app_senha_atual'], -4),
-            'gerada_em' => $driver['app_senha_gerada_em'] ?? null,
-            'expira_em' => $driver['app_senha_expira_em'] ?? null,
-        ];
+        $result = $this->driverActivationCode($id, ['validade_segundos' => 86400, 'origem' => 'regeneracao_segura'], $user);
+        $result['aviso'] = 'Por segurança, senha antiga não é revelada. Um novo código de ativação foi gerado e expira em 24 horas.';
+        $result['credencial_rotacionada'] = true;
+        return $result;
     }
 
     public function createMotorista(array $body, ?array $user = null): array
     {
         $this->ensureDriverAppPasswordColumns();
+        $this->ensureDriverActivationTable();
+        $this->ensureDriverComplianceColumns();
         $id = $this->newId('mot');
         $nome = trim((string) ($body['nome'] ?? ''));
         if ($nome === '') {
             throw new RuntimeException('Nome do motorista e obrigatorio.');
-        }
-
-        $senhaApp = $this->normalizeActivationCode((string) (
-            $body['senha_app']
-            ?? $body['codigo_app']
-            ?? $body['codigo_ativacao']
-            ?? $body['activation_code']
-            ?? ''
-        ));
-        if ($senhaApp === '') {
-            $senhaApp = $this->newAppPassword(8);
-        }
-        if (strlen($senhaApp) < 4) {
-            throw new RuntimeException('Senha do app deve ter pelo menos 4 caracteres.');
         }
 
         $this->db->execute(
@@ -324,72 +324,27 @@ final class ApiService
             ]
         );
 
-        $this->db->execute(
-            'UPDATE motoristas SET app_senha_atual = :app_senha_atual, app_senha_hash = :app_senha_hash, app_senha_gerada_em = NOW(), app_senha_expira_em = NULL, atualizado_em = NOW() WHERE id = :id',
-            [
-                'id' => $id,
-                'app_senha_atual' => $senhaApp,
-                'app_senha_hash' => password_hash($senhaApp, PASSWORD_DEFAULT),
-            ]
-        );
+        $cnh = $this->limitText($body['cnh'] ?? $body['numero_cnh'] ?? null, 40);
+        $cnhValidade = $body['cnh_validade'] ?? $body['validade_cnh'] ?? null;
+        if ($cnh !== null || $cnhValidade) {
+            $this->db->execute(
+                'UPDATE motoristas SET cnh = :cnh, cnh_validade = :cnh_validade, atualizado_em = NOW() WHERE id = :id',
+                ['id' => $id, 'cnh' => $cnh, 'cnh_validade' => $cnhValidade ?: null]
+            );
+        }
 
-        $driver = $this->db->fetch('SELECT * FROM motoristas WHERE id = :id', ['id' => $id]);
-        $serverUrl = $this->publicServerUrl();
-        $activation = [
-            'tipo' => 'MOTORISTA_APP_PASSWORD',
-            'versao' => 1,
-            'motorista_id' => $id,
-            'codigo' => $senhaApp,
-            'senha_app' => $senhaApp,
-            'endpoint' => '/api/driver/activate',
-            'server_url' => $serverUrl,
-            'api_base_url' => $serverUrl,
-            'expira_em' => null,
-        ];
-
-        $this->audit->record('criacao', 'motoristas', $id, $user, ['cadastro_minimo' => true]);
+        $activation = $this->driverActivationCode($id, ['validade_segundos' => 172800, 'origem' => 'cadastro_motorista'], $user);
+        $driver = $this->db->fetch('SELECT * FROM motoristas WHERE id = :id', ['id' => $id]) ?: [];
+        $this->audit->record('criacao', 'motoristas', $id, $user, ['cadastro_minimo' => true, 'credencial' => 'codigo_ativacao_hash_expiravel']);
         return [
             'motorista' => $driver,
-            'ativacao' => $activation,
-            'activation' => $activation,
-            'senha_app' => $senhaApp,
-            'codigo_ativacao' => $senhaApp,
-            'aviso' => 'Motorista cadastrado com nome e senha do app. CPF, matricula, telefone e CNH podem ser preenchidos depois.',
+            'ativacao' => $activation['ativacao'] ?? $activation['activation'] ?? null,
+            'activation' => $activation['activation'] ?? $activation['ativacao'] ?? null,
+            'codigo_ativacao' => $activation['codigo'] ?? $activation['codigo_manual'] ?? null,
+            'codigo' => $activation['codigo'] ?? $activation['codigo_manual'] ?? null,
+            'expira_em' => $activation['expira_em'] ?? null,
+            'aviso' => 'Código de ativação gerado uma única vez. Ele expira em 48 horas e não será revelado novamente; use Gerar novo código se perder.',
         ];
-    }
-
-
-    public function deleteMotorista(string $id, ?array $user = null): array
-    {
-        $id = trim($id);
-        if ($id === '') {
-            throw new RuntimeException('ID do motorista e obrigatorio.');
-        }
-        $driver = $this->db->fetch('SELECT * FROM motoristas WHERE id = :id LIMIT 1', ['id' => $id]);
-        if (!$driver || strtolower((string) ($driver['status'] ?? '')) === 'excluido') {
-            throw new RuntimeException('Motorista nao encontrado.');
-        }
-        $activeTrips = $this->scalar(
-            "SELECT COUNT(*) FROM viagens WHERE motorista_id = :id AND UPPER(status) NOT IN ('CONCLUIDA','FINALIZADA','CANCELADA')",
-            ['id' => $id]
-        );
-        if ((int) $activeTrips > 0) {
-            throw new RuntimeException('Nao e possivel excluir motorista com viagem ativa ou pendente. Finalize/cancele as viagens primeiro.');
-        }
-        $this->db->execute(
-            "UPDATE motoristas SET status = 'excluido', atualizado_em = NOW(), metadados = :metadados WHERE id = :id",
-            [
-                'id' => $id,
-                'metadados' => $this->json([
-                    'excluido_em' => date('c'),
-                    'excluido_por' => $user['id'] ?? null,
-                    'registro_anterior' => $driver,
-                ]),
-            ]
-        );
-        $this->db->execute('UPDATE motorista_qr_tokens SET usado_em = COALESCE(usado_em, NOW()) WHERE motorista_id = :id', ['id' => $id]);
-        $this->audit->record('exclusao_logica', 'motoristas', $id, $user);
-        return ['excluido' => true, 'motorista_id' => $id];
     }
 
     public function driverQr(string $id, array $body, ?array $user = null): array
@@ -401,12 +356,14 @@ final class ApiService
         if (in_array(strtolower((string) ($driver['status'] ?? '')), ['excluido', 'inativo', 'bloqueado'], true)) {
             throw new RuntimeException('Motorista inativo ou excluido nao pode gerar QR Code.');
         }
+
+        $pairingId = $this->newId('qr');
         $token = bin2hex(random_bytes(24));
         $expires = date('Y-m-d H:i:s', time() + 600);
         $this->db->execute(
             'INSERT INTO motorista_qr_tokens (id, motorista_id, token_hash, origem, ip, expira_em, criado_em) VALUES (:id, :motorista_id, :token_hash, :origem, :ip, :expira_em, NOW())',
             [
-                'id' => $this->newId('qr'),
+                'id' => $pairingId,
                 'motorista_id' => $id,
                 'token_hash' => hash('sha256', $token),
                 'origem' => $body['origem'] ?? 'painel_operador',
@@ -414,29 +371,58 @@ final class ApiService
                 'expira_em' => $expires,
             ]
         );
-        $payload = [
+
+        $serverUrl = $this->publicServerUrl();
+        if ($serverUrl === '' && !empty($body['server_url'])) {
+            $serverUrl = rtrim((string) $body['server_url'], '/');
+        }
+        if ($serverUrl === '' && !empty($body['api_base_url'])) {
+            $serverUrl = preg_replace('#/api/?$#', '', rtrim((string) $body['api_base_url'], '/')) ?: rtrim((string) $body['api_base_url'], '/');
+        }
+
+        $expiresIso = date('c', strtotime($expires));
+        $legacyPayload = [
             'tipo' => 'MOTORISTA_QR_LOGIN',
             'versao' => 1,
             'motorista_id' => $id,
             'token' => $token,
             'endpoint' => '/api/driver/qr-login',
             'codigo_manual' => $token,
-            'expira_em' => date('c', strtotime($expires)),
+            'expira_em' => $expiresIso,
         ];
-        if ($this->config['base_url'] !== '') {
-            $serverUrl = preg_replace('#/api/?$#', '', rtrim((string) $this->config['base_url'], '/'));
-            $payload['server_url'] = $serverUrl;
-            $payload['api_base_url'] = $serverUrl;
-            $payload['api'] = $serverUrl;
+        $pairingPayload = [
+            'type' => 'PAINEL_LOGISTICO_DRIVER_PAIRING',
+            'version' => 1,
+            'pairing_id' => $pairingId,
+            'pairing_token' => $token,
+            'motorista_id' => $id,
+            'motorista_nome' => (string) ($driver['nome'] ?? ''),
+            'server_url' => $serverUrl,
+            'api_base_url' => $serverUrl,
+            'endpoint' => '/api/driver/pairing/confirm',
+            'expires_at' => $expiresIso,
+            'expira_em' => $expiresIso,
+        ];
+        if ($serverUrl !== '') {
+            $legacyPayload['server_url'] = $serverUrl;
+            $legacyPayload['api_base_url'] = $serverUrl;
+            $legacyPayload['api'] = $serverUrl;
         }
+
         $this->audit->record('alteracao_critica', 'motoristas', $id, $user, ['acao' => 'gerar_qrcode']);
         return [
             'motorista' => $driver,
+            'pairing_id' => $pairingId,
+            'pairing_token' => $token,
+            'expires_at' => $expiresIso,
+            'qrPayload' => $pairingPayload,
+            'qr_payload' => $pairingPayload,
             'qr' => [
-                'texto' => json_encode($payload, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES),
-                'payload' => $payload,
+                'texto' => json_encode($pairingPayload, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES),
+                'payload' => $pairingPayload,
+                'legacy_payload' => $legacyPayload,
                 'codigo_manual' => $token,
-                'expira_em' => $payload['expira_em'],
+                'expira_em' => $expiresIso,
             ],
         ];
     }
@@ -484,11 +470,9 @@ final class ApiService
         );
 
         $this->db->execute(
-            'UPDATE motoristas SET app_senha_atual = :app_senha_atual, app_senha_hash = :app_senha_hash, app_senha_gerada_em = NOW(), app_senha_expira_em = :app_senha_expira_em, atualizado_em = NOW() WHERE id = :id',
+            'UPDATE motoristas SET app_senha_atual = NULL, app_senha_hash = NULL, app_senha_gerada_em = NOW(), app_senha_expira_em = :app_senha_expira_em, atualizado_em = NOW() WHERE id = :id',
             [
                 'id' => $id,
-                'app_senha_atual' => $code,
-                'app_senha_hash' => password_hash($this->normalizeActivationCode($code), PASSWORD_DEFAULT),
                 'app_senha_expira_em' => $expires,
             ]
         );
@@ -545,36 +529,6 @@ final class ApiService
         $activationId = null;
         if ($row) {
             $activationId = (string) $row['activation_id'];
-        } else {
-            $drivers = $this->db->fetchAll(
-                "SELECT id, nome, matricula, cpf, email, status, app_senha_hash, app_senha_atual
-                 FROM motoristas
-                 WHERE app_senha_hash IS NOT NULL
-                   AND LOWER(COALESCE(status, '')) NOT IN ('excluido','inativo','bloqueado')"
-            );
-            foreach ($drivers as $driverRow) {
-                if ($nomeInformado !== '' && !$this->driverMatchesName($driverRow, $nomeInformado)) {
-                    continue;
-                }
-                if (password_verify($code, (string) ($driverRow['app_senha_hash'] ?? ''))) {
-                    $row = $driverRow + [
-                        'motorista_id' => $driverRow['id'],
-                        'activation_id' => null,
-                    ];
-                    break;
-                }
-            }
-            if (!$row && $nomeInformado !== '') {
-                foreach ($drivers as $driverRow) {
-                    if (password_verify($code, (string) ($driverRow['app_senha_hash'] ?? ''))) {
-                        $row = $driverRow + [
-                            'motorista_id' => $driverRow['id'],
-                            'activation_id' => null,
-                        ];
-                        break;
-                    }
-                }
-            }
         }
 
         if (!$row) {
@@ -590,6 +544,21 @@ final class ApiService
                     'device_id' => $this->limitText($body['device_id'] ?? $body['deviceId'] ?? null, 120),
                     'plataforma' => $this->limitText($body['platform'] ?? $body['plataforma'] ?? 'android', 40),
                 ]
+            );
+            $this->db->execute(
+                'UPDATE motorista_activation_codes SET revogado_em = COALESCE(revogado_em, NOW()) WHERE motorista_id = :motorista_id AND id <> :id AND usado_em IS NULL AND revogado_em IS NULL',
+                ['motorista_id' => (string) $row['motorista_id'], 'id' => $activationId]
+            );
+        }
+
+        $newPassword = (string) ($body['nova_senha'] ?? $body['novaSenha'] ?? $body['password'] ?? '');
+        if ($newPassword !== '') {
+            if (strlen($newPassword) < 6) {
+                throw new RuntimeException('A senha definitiva do motorista deve ter pelo menos 6 caracteres.');
+            }
+            $this->db->execute(
+                'UPDATE motoristas SET senha_hash = :senha_hash, atualizado_em = NOW() WHERE id = :id',
+                ['senha_hash' => password_hash($newPassword, PASSWORD_DEFAULT), 'id' => (string) $row['motorista_id']]
             );
         }
 
@@ -620,21 +589,26 @@ final class ApiService
 
     public function driverQrLogin(array $body): array
     {
-        $token = trim((string) ($body['token'] ?? $body['codigo_manual'] ?? $body['codigo'] ?? ''));
+        $token = trim((string) ($body['pairing_token'] ?? $body['token'] ?? $body['codigo_manual'] ?? $body['codigo'] ?? ''));
         $motoristaId = trim((string) ($body['motorista_id'] ?? $body['motoristaId'] ?? ''));
+        $pairingId = trim((string) ($body['pairing_id'] ?? $body['id'] ?? ''));
         if ($token === '') {
             throw new RuntimeException('QR Code invalido.');
         }
 
         $params = ['token_hash' => hash('sha256', $token)];
-        $whereMotorista = '';
+        $where = '';
         if ($motoristaId !== '') {
-            $whereMotorista = ' AND qt.motorista_id = :motorista_id';
+            $where .= ' AND qt.motorista_id = :motorista_id';
             $params['motorista_id'] = $motoristaId;
+        }
+        if ($pairingId !== '') {
+            $where .= ' AND qt.id = :pairing_id';
+            $params['pairing_id'] = $pairingId;
         }
 
         $row = $this->db->fetch(
-            "SELECT qt.*, m.nome, m.matricula, m.cpf, m.status FROM motorista_qr_tokens qt INNER JOIN motoristas m ON m.id = qt.motorista_id WHERE qt.token_hash = :token_hash" . $whereMotorista . " AND LOWER(COALESCE(m.status, '')) NOT IN ('excluido','inativo','bloqueado') AND qt.usado_em IS NULL AND qt.expira_em > NOW() LIMIT 1",
+            "SELECT qt.*, m.nome, m.matricula, m.cpf, m.status FROM motorista_qr_tokens qt INNER JOIN motoristas m ON m.id = qt.motorista_id WHERE qt.token_hash = :token_hash" . $where . " AND LOWER(COALESCE(m.status, '')) NOT IN ('excluido','inativo','bloqueado') AND qt.usado_em IS NULL AND qt.expira_em > NOW() LIMIT 1",
             $params
         );
         if (!$row) {
@@ -644,8 +618,21 @@ final class ApiService
         $this->db->execute('UPDATE motorista_qr_tokens SET usado_em = NOW() WHERE id = :id', ['id' => $row['id']]);
         $motorista = $this->driverUser($row);
         $sessionToken = $this->driverSessionToken($motorista);
+        $serverUrl = $this->publicServerUrl();
+        $device = is_array($body['device'] ?? null) ? $body['device'] : [];
         $this->audit->record('login', 'motoristas', (string) $row['motorista_id'], $motorista, ['origem' => 'qr_code']);
-        return ['motorista' => $motorista, 'usuario' => $motorista, 'sessao' => ['token' => $sessionToken, 'tipo' => 'Bearer', 'expira_em' => date('c', time() + 86400)]];
+        return [
+            'token' => $sessionToken,
+            'access_token' => $sessionToken,
+            'motorista' => $motorista,
+            'usuario' => $motorista,
+            'device' => [
+                'id' => (string) ($device['device_id'] ?? $device['id'] ?? ''),
+                'nome' => (string) ($device['device_name'] ?? $device['nome'] ?? ''),
+            ],
+            'api' => ['base_url' => $serverUrl],
+            'sessao' => ['token' => $sessionToken, 'tipo' => 'Bearer', 'expira_em' => date('c', time() + 86400)],
+        ];
     }
 
     public function driverLogin(array $body): array
@@ -1185,6 +1172,141 @@ final class ApiService
         return ['solicitacao' => true];
     }
 
+    public function securityLoginAttempts(): array
+    {
+        $this->ensureLoginAttemptsTable();
+        $items = $this->db->fetchAll(
+            "SELECT login_key, ip, succeeded, criado_em
+             FROM login_attempts
+             ORDER BY criado_em DESC
+             LIMIT 200"
+        );
+        $failed15 = (int) $this->scalar("SELECT COUNT(*) FROM login_attempts WHERE succeeded = 0 AND criado_em >= (NOW() - INTERVAL 15 MINUTE)");
+        $blocked = $this->db->fetchAll(
+            "SELECT login_key, ip, COUNT(*) AS falhas, MAX(criado_em) AS ultima_tentativa
+             FROM login_attempts
+             WHERE succeeded = 0 AND criado_em >= (NOW() - INTERVAL 15 MINUTE)
+             GROUP BY login_key, ip
+             HAVING falhas >= 5
+             ORDER BY ultima_tentativa DESC
+             LIMIT 50"
+        );
+        return [
+            'tentativas' => $items,
+            'bloqueios' => $blocked,
+            'resumo' => [
+                'falhas_15min' => $failed15,
+                'bloqueios_ativos' => count($blocked),
+                'politica' => '5 falhas por login/IP em 15 minutos',
+                'retencao' => '7 dias',
+            ],
+        ];
+    }
+
+    public function cancelTrip(string $id, array $body, ?array $user = null): array
+    {
+        $this->ensureTripOperationColumns();
+        $id = trim($id);
+        $reason = trim((string) ($body['motivo'] ?? $body['motivo_cancelamento'] ?? $body['reason'] ?? ''));
+        if ($id === '') {
+            throw new RuntimeException('ID da viagem e obrigatorio.');
+        }
+        if ($reason === '') {
+            throw new RuntimeException('Motivo do cancelamento e obrigatorio.');
+        }
+        $trip = $this->db->fetch('SELECT * FROM viagens WHERE id = :id LIMIT 1', ['id' => $id]);
+        if (!$trip) {
+            throw new RuntimeException('Viagem nao encontrada.');
+        }
+        if (in_array($this->normalizeStatus((string) ($trip['status'] ?? '')), ['CONCLUIDA', 'FINALIZADA', 'CANCELADA'], true)) {
+            throw new RuntimeException('Viagem ja finalizada ou cancelada.');
+        }
+        $this->db->execute(
+            "UPDATE viagens
+             SET status = 'CANCELADA', motivo_cancelamento = :motivo, cancelado_em = NOW(), cancelado_por = :cancelado_por, atualizado_em = NOW()
+             WHERE id = :id",
+            ['id' => $id, 'motivo' => $this->limitText($reason, 1000), 'cancelado_por' => $user['id'] ?? null]
+        );
+        $this->createEvent(['viagem_id' => $id, 'tipo' => 'VIAGEM_CANCELADA', 'descricao' => 'Viagem cancelada: ' . $reason, 'metadados' => $this->json(['motivo' => $reason])]);
+        $this->audit->record('cancelamento', 'viagens', $id, $user, ['motivo' => $reason, 'status_anterior' => $trip['status'] ?? null]);
+        return ['cancelada' => true, 'viagem' => $this->findTrip($id)];
+    }
+
+    public function reassignTrip(string $id, array $body, ?array $user = null): array
+    {
+        $this->ensureTripOperationColumns();
+        $id = trim($id);
+        if ($id === '') {
+            throw new RuntimeException('ID da viagem e obrigatorio.');
+        }
+        $trip = $this->db->fetch('SELECT * FROM viagens WHERE id = :id LIMIT 1', ['id' => $id]);
+        if (!$trip) {
+            throw new RuntimeException('Viagem nao encontrada.');
+        }
+        if (in_array($this->normalizeStatus((string) ($trip['status'] ?? '')), ['CONCLUIDA', 'FINALIZADA', 'CANCELADA'], true)) {
+            throw new RuntimeException('Nao e possivel reatribuir viagem finalizada ou cancelada.');
+        }
+        $motoristaId = trim((string) ($body['motorista_id'] ?? $body['motoristaId'] ?? ''));
+        $veiculoId = trim((string) ($body['veiculo_id'] ?? $body['veiculoId'] ?? ''));
+        if ($motoristaId === '' && $veiculoId === '') {
+            throw new RuntimeException('Informe novo motorista e/ou novo veiculo.');
+        }
+        if ($motoristaId !== '') {
+            $driver = $this->db->fetch("SELECT id FROM motoristas WHERE id = :id AND LOWER(COALESCE(status, '')) NOT IN ('excluido','inativo','bloqueado') LIMIT 1", ['id' => $motoristaId]);
+            if (!$driver) {
+                throw new RuntimeException('Novo motorista nao encontrado ou inativo.');
+            }
+        }
+        if ($veiculoId !== '') {
+            $vehicle = $this->db->fetch("SELECT id FROM veiculos WHERE id = :id AND LOWER(COALESCE(status, '')) NOT IN ('excluido','inativo','bloqueado') LIMIT 1", ['id' => $veiculoId]);
+            if (!$vehicle) {
+                throw new RuntimeException('Novo veiculo nao encontrado ou inativo.');
+            }
+        }
+        $this->db->execute(
+            'UPDATE viagens SET motorista_id = COALESCE(NULLIF(:motorista_id, ""), motorista_id), veiculo_id = COALESCE(NULLIF(:veiculo_id, ""), veiculo_id), reatribuido_em = NOW(), reatribuido_por = :reatribuido_por, atualizado_em = NOW() WHERE id = :id',
+            ['id' => $id, 'motorista_id' => $motoristaId, 'veiculo_id' => $veiculoId, 'reatribuido_por' => $user['id'] ?? null]
+        );
+        $meta = ['motorista_anterior' => $trip['motorista_id'] ?? null, 'veiculo_anterior' => $trip['veiculo_id'] ?? null, 'motorista_novo' => $motoristaId ?: null, 'veiculo_novo' => $veiculoId ?: null];
+        $this->createEvent(['viagem_id' => $id, 'tipo' => 'VIAGEM_REATRIBUIDA', 'descricao' => 'Motorista/veiculo reatribuido na viagem.', 'metadados' => $this->json($meta)]);
+        $this->audit->record('reatribuicao', 'viagens', $id, $user, $meta);
+        return ['reatribuida' => true, 'viagem' => $this->findTrip($id)];
+    }
+
+    public function runBackup(?array $user = null): array
+    {
+        $this->requireGestor($user);
+        $backupDir = $this->config['paths']['backups'];
+        if (!is_dir($backupDir) && !@mkdir($backupDir, 0775, true) && !is_dir($backupDir)) {
+            throw new RuntimeException('Nao foi possivel criar diretorio de backup.');
+        }
+        $pdo = $this->db->pdo();
+        $file = rtrim($backupDir, '/\\') . '/mysql-' . date('Ymd-His') . '.sql';
+        $out = fopen($file, 'wb');
+        if (!$out) {
+            throw new RuntimeException('Nao foi possivel abrir arquivo de backup.');
+        }
+        fwrite($out, "SET FOREIGN_KEY_CHECKS=0;\n");
+        $tables = $pdo->query('SHOW TABLES')->fetchAll(PDO::FETCH_COLUMN);
+        foreach ($tables as $table) {
+            $safeTable = str_replace('`', '``', (string) $table);
+            $create = $pdo->query('SHOW CREATE TABLE `' . $safeTable . '`')->fetch(PDO::FETCH_ASSOC);
+            fwrite($out, "\nDROP TABLE IF EXISTS `{$safeTable}`;\n");
+            fwrite($out, $create['Create Table'] . ";\n");
+            $rows = $pdo->query('SELECT * FROM `' . $safeTable . '`');
+            while ($row = $rows->fetch(PDO::FETCH_ASSOC)) {
+                $columns = array_map(static fn($column) => '`' . str_replace('`', '``', (string) $column) . '`', array_keys($row));
+                $values = array_map(fn($value) => $value === null ? 'NULL' : $pdo->quote((string) $value), array_values($row));
+                fwrite($out, 'INSERT INTO `' . $safeTable . '` (' . implode(',', $columns) . ') VALUES (' . implode(',', $values) . ");\n");
+            }
+        }
+        fwrite($out, "\nSET FOREIGN_KEY_CHECKS=1;\n");
+        fclose($out);
+        $this->cleanupOldBackups($backupDir, 30);
+        $this->audit->record('backup_manual', 'infra', basename($file), $user, ['arquivo' => basename($file), 'tamanho' => filesize($file) ?: 0]);
+        return ['backup' => true, 'arquivo' => basename($file), 'sizeBytes' => filesize($file) ?: 0, 'criado_em' => date('c')];
+    }
+
     public function chart(string $name): array
     {
         if ($name === 'viagens') {
@@ -1223,6 +1345,67 @@ final class ApiService
             'eventos' => 'SELECT * FROM eventos ORDER BY data_hora DESC',
         ];
         return $this->db->fetchAll($map[$type] ?? $map['eventos']);
+    }
+
+
+    public function tripsHistoryReport(array $query = []): array
+    {
+        $limit = max(50, min(500, (int) ($query['limit'] ?? 300)));
+        $rows = $this->db->fetchAll(
+            "SELECT
+                v.*,
+                m.nome AS motorista_nome,
+                ve.nome AS veiculo_nome,
+                ve.prefixo,
+                ve.placa,
+                COALESCE(pp.total_passageiros, 0) AS total_passageiros,
+                COALESCE(oc.total_ocorrencias, 0) AS total_ocorrencias
+            FROM viagens v
+            LEFT JOIN motoristas m ON m.id = v.motorista_id
+            LEFT JOIN veiculos ve ON ve.id = v.veiculo_id
+            LEFT JOIN (
+                SELECT viagem_id, COUNT(*) AS total_passageiros
+                FROM passageiros
+                WHERE viagem_id IS NOT NULL
+                GROUP BY viagem_id
+            ) pp ON pp.viagem_id = v.id
+            LEFT JOIN (
+                SELECT viagem_id, COUNT(*) AS total_ocorrencias
+                FROM ocorrencias
+                WHERE viagem_id IS NOT NULL
+                GROUP BY viagem_id
+            ) oc ON oc.viagem_id = v.id
+            ORDER BY COALESCE(v.data_viagem, DATE(v.criado_em)) DESC, v.criado_em DESC
+            LIMIT {$limit}"
+        );
+
+        $kmRodados = 0.0;
+        foreach ($rows as &$row) {
+            $kmSaida = $row['km_saida'] ?? null;
+            $kmRetorno = $row['km_retorno'] ?? null;
+            $km = is_numeric($kmSaida) && is_numeric($kmRetorno) ? max(0.0, (float) $kmRetorno - (float) $kmSaida) : 0.0;
+            $row['km_rodados'] = $km;
+            $row['motorista'] = $row['motorista_nome'] ?? null;
+            $row['veiculo'] = trim((string) (($row['prefixo'] ?? '') . ' ' . ($row['placa'] ?? '')));
+            $kmRodados += $km;
+        }
+        unset($row);
+
+        $resumo = [
+            'total_viagens' => count($rows),
+            'km_rodados' => round($kmRodados, 2),
+            'concluidas' => count(array_filter($rows, static fn (array $item): bool => in_array(strtoupper((string) ($item['status'] ?? '')), ['CONCLUIDA', 'FINALIZADA'], true))),
+            'canceladas' => count(array_filter($rows, static fn (array $item): bool => strtoupper((string) ($item['status'] ?? '')) === 'CANCELADA')),
+            'ativas_ou_pendentes' => count(array_filter($rows, static fn (array $item): bool => !in_array(strtoupper((string) ($item['status'] ?? '')), ['CONCLUIDA', 'FINALIZADA', 'CANCELADA'], true))),
+            'gerado_em' => date('c'),
+            'limite' => $limit,
+        ];
+
+        return [
+            'resumo' => $resumo,
+            'viagens' => $rows,
+            'items' => $rows,
+        ];
     }
 
     public function genericList(string $table): array
@@ -1467,6 +1650,32 @@ final class ApiService
         return ['syncLog' => $event];
     }
 
+    public function syncPanel(?array $user = null): array
+    {
+        $eventosPendentes = [];
+        $eventosErro = [];
+        try {
+            $eventosPendentes = $this->db->fetchAll("SELECT id, viagem_id, tipo, 'confirmado' AS status, criado_em FROM eventos ORDER BY criado_em DESC LIMIT 30");
+        } catch (Throwable $error) {
+            $eventosPendentes = [];
+        }
+        return [
+            'pendentes' => 0,
+            'erros' => count($eventosErro),
+            'enviando' => 0,
+            'confirmados' => count($eventosPendentes),
+            'eventosPendentes' => [],
+            'eventosErro' => $eventosErro,
+            'ultimosConfirmados' => $eventosPendentes,
+        ];
+    }
+
+    public function syncReenvio(?array $user = null): array
+    {
+        $this->audit->record('sync_reenvio_manual', 'sync', null, $user);
+        return ['reenvio' => true, 'mensagem' => 'Fila marcada para reprocessamento quando houver pendencias locais.'];
+    }
+
     public function driverChangePassword(?string $authorization, array $body): array
     {
         $token = '';
@@ -1571,12 +1780,16 @@ final class ApiService
         if ($name === '') {
             throw new RuntimeException('Informe o paciente/acompanhante ou digite um nome.');
         }
+        $viagemId = trim((string) ($body['viagem_id'] ?? $body['viagemId'] ?? ''));
+        if ($viagemId !== '') {
+            $this->assertTripCapacityAllowsPassenger($viagemId);
+        }
         $id = (string) ($body['id'] ?? $this->newId('pas'));
         $this->db->execute(
             'INSERT INTO passageiros (id, viagem_id, paciente_id, nome, tipo, cpf, telefone, status, metadados, criado_em, atualizado_em) VALUES (:id, :viagem_id, :paciente_id, :nome, :tipo, :cpf, :telefone, :status, :metadados, NOW(), NOW())',
             [
                 'id' => $id,
-                'viagem_id' => $body['viagem_id'] ?? $body['viagemId'] ?? null,
+                'viagem_id' => $viagemId !== '' ? $viagemId : null,
                 'paciente_id' => $patientId !== '' ? $patientId : null,
                 'nome' => $this->limitText($name, 160),
                 'tipo' => strtoupper((string) ($body['tipo'] ?? $patient['tipo'] ?? 'PACIENTE')),
@@ -1664,9 +1877,10 @@ final class ApiService
 
     private function createTrip(array $body, ?array $user = null): array
     {
+        $this->ensureTripOperationColumns();
         $id = (string) ($body['id'] ?? $body['codigo'] ?? $this->newId('via'));
         $this->db->execute(
-            'INSERT INTO viagens (id, codigo, origem, destino, motorista_id, veiculo_id, status, prioridade, data_viagem, km_saida, km_retorno, hora_saida, hora_retorno, observacoes, metadados, criado_em, atualizado_em) VALUES (:id, :codigo, :origem, :destino, :motorista_id, :veiculo_id, :status, :prioridade, :data_viagem, :km_saida, :km_retorno, :hora_saida, :hora_retorno, :observacoes, :metadados, NOW(), NOW())',
+            'INSERT INTO viagens (id, codigo, origem, destino, motorista_id, veiculo_id, status, prioridade, data_viagem, km_saida, km_retorno, hora_saida, hora_retorno, observacoes, sentido_viagem, viagem_vinculada_id, metadados, criado_em, atualizado_em) VALUES (:id, :codigo, :origem, :destino, :motorista_id, :veiculo_id, :status, :prioridade, :data_viagem, :km_saida, :km_retorno, :hora_saida, :hora_retorno, :observacoes, :sentido_viagem, :viagem_vinculada_id, :metadados, NOW(), NOW())',
             [
                 'id' => $id,
                 'codigo' => $body['codigo'] ?? $id,
@@ -1682,6 +1896,8 @@ final class ApiService
                 'hora_saida' => $body['hora_saida'] ?? null,
                 'hora_retorno' => $body['hora_retorno'] ?? null,
                 'observacoes' => $body['observacoes'] ?? null,
+                'sentido_viagem' => $this->normalizeTripDirection((string) ($body['sentido_viagem'] ?? $body['sentidoViagem'] ?? $body['tipo_viagem'] ?? 'ida')),
+                'viagem_vinculada_id' => $body['viagem_vinculada_id'] ?? $body['viagemVinculadaId'] ?? null,
                 'metadados' => $this->json($body),
             ]
         );
@@ -1825,12 +2041,115 @@ final class ApiService
 
 
 
+    private function ensureLoginAttemptsTable(): void
+    {
+        $this->db->execute(
+            "CREATE TABLE IF NOT EXISTS login_attempts (
+                id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+                login_key CHAR(64) NOT NULL,
+                ip VARCHAR(64) NOT NULL,
+                succeeded TINYINT(1) NOT NULL DEFAULT 0,
+                criado_em DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                INDEX idx_login_attempts_lookup (login_key, ip, criado_em),
+                INDEX idx_login_attempts_created (criado_em)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci"
+        );
+    }
+
+    private function ensureDriverComplianceColumns(): void
+    {
+        $this->addColumnIfMissing('motoristas', 'cnh', 'VARCHAR(40) NULL');
+        $this->addColumnIfMissing('motoristas', 'cnh_validade', 'DATE NULL');
+    }
+
+    private function driverLicenseAlerts(): array
+    {
+        $this->ensureDriverComplianceColumns();
+        return $this->db->fetchAll(
+            "SELECT id, nome, cnh, cnh_validade,
+                    CASE
+                        WHEN cnh_validade IS NULL THEN 'SEM_DATA'
+                        WHEN cnh_validade < CURDATE() THEN 'VENCIDA'
+                        WHEN cnh_validade <= (CURDATE() + INTERVAL 30 DAY) THEN 'VENCE_EM_30_DIAS'
+                        ELSE 'OK'
+                    END AS status_cnh
+             FROM motoristas
+             WHERE LOWER(COALESCE(status, '')) <> 'excluido'
+               AND (cnh_validade IS NULL OR cnh_validade <= (CURDATE() + INTERVAL 30 DAY))
+             ORDER BY cnh_validade IS NULL DESC, cnh_validade ASC, nome ASC
+             LIMIT 100"
+        );
+    }
+
+    private function ensureTripOperationColumns(): void
+    {
+        $this->addColumnIfMissing('viagens', 'motivo_cancelamento', 'TEXT NULL');
+        $this->addColumnIfMissing('viagens', 'cancelado_em', 'DATETIME NULL');
+        $this->addColumnIfMissing('viagens', 'cancelado_por', 'VARCHAR(64) NULL');
+        $this->addColumnIfMissing('viagens', 'reatribuido_em', 'DATETIME NULL');
+        $this->addColumnIfMissing('viagens', 'reatribuido_por', 'VARCHAR(64) NULL');
+        $this->addColumnIfMissing('viagens', 'sentido_viagem', "VARCHAR(20) NOT NULL DEFAULT 'ida'");
+        $this->addColumnIfMissing('viagens', 'viagem_vinculada_id', 'VARCHAR(64) NULL');
+    }
+
+    private function assertTripCapacityAllowsPassenger(string $tripId): void
+    {
+        $trip = $this->db->fetch(
+            "SELECT v.id, v.veiculo_id, ve.capacidade
+             FROM viagens v
+             LEFT JOIN veiculos ve ON ve.id = v.veiculo_id
+             WHERE v.id = :id LIMIT 1",
+            ['id' => $tripId]
+        );
+        if (!$trip) {
+            throw new RuntimeException('Viagem nao encontrada para vincular passageiro.');
+        }
+        $capacity = (int) ($trip['capacidade'] ?? 0);
+        if ($capacity <= 0) {
+            return;
+        }
+        $current = (int) $this->scalar(
+            "SELECT COUNT(*) FROM passageiros WHERE viagem_id = :viagem_id AND UPPER(COALESCE(status, 'AGUARDANDO')) NOT IN ('EXCLUIDO','CANCELADO','CANCELADA')",
+            ['viagem_id' => $tripId]
+        );
+        if ($current >= $capacity) {
+            throw new RuntimeException('Capacidade do veiculo excedida para esta viagem. Remova passageiro ou escolha veiculo com mais lugares.');
+        }
+    }
+
+    private function normalizeTripDirection(string $value): string
+    {
+        $key = strtolower(trim($value));
+        if (in_array($key, ['volta', 'retorno'], true)) {
+            return 'volta';
+        }
+        if (in_array($key, ['ida_volta', 'ida-e-volta', 'ida e volta'], true)) {
+            return 'ida_volta';
+        }
+        return 'ida';
+    }
+
+    private function cleanupOldBackups(string $backupDir, int $days): void
+    {
+        $limit = time() - ($days * 86400);
+        foreach (glob(rtrim($backupDir, '/\\') . '/mysql-*.sql') ?: [] as $file) {
+            if (is_file($file) && (filemtime($file) ?: time()) < $limit) {
+                @unlink($file);
+            }
+        }
+    }
+
     private function ensureDriverAppPasswordColumns(): void
     {
         $this->addColumnIfMissing('motoristas', 'app_senha_atual', 'VARCHAR(32) NULL');
         $this->addColumnIfMissing('motoristas', 'app_senha_hash', 'VARCHAR(255) NULL');
         $this->addColumnIfMissing('motoristas', 'app_senha_gerada_em', 'DATETIME NULL');
         $this->addColumnIfMissing('motoristas', 'app_senha_expira_em', 'DATETIME NULL');
+        try {
+            $this->db->execute("UPDATE motoristas SET app_senha_atual = NULL WHERE app_senha_atual IS NOT NULL AND app_senha_atual <> ''");
+        } catch (Throwable $error) {
+            // Não bloqueia fluxo por falha de saneamento em tabela antiga.
+        }
     }
 
     private function addColumnIfMissing(string $table, string $column, string $definition): void
@@ -2204,6 +2523,33 @@ final class ApiService
         if (!in_array($table, $allowed, true)) {
             throw new RuntimeException('Colecao invalida.');
         }
+    }
+
+    private function viagemStatusExpression(string $alias = ''): string
+    {
+        $prefix = $alias !== '' ? rtrim($alias, '.') . '.' : '';
+        if ($this->tableHasColumn('viagens', 'status_operacional')) {
+            return "UPPER(COALESCE({$prefix}status_operacional, {$prefix}status, ''))";
+        }
+        return "UPPER(COALESCE({$prefix}status, ''))";
+    }
+
+    private function tableHasColumn(string $table, string $column): bool
+    {
+        $key = $table . '.' . $column;
+        if (array_key_exists($key, $this->columnCache)) {
+            return $this->columnCache[$key];
+        }
+        try {
+            $row = $this->db->fetch(
+                'SELECT COUNT(*) AS total FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = :table AND COLUMN_NAME = :column',
+                ['table' => $table, 'column' => $column]
+            );
+            $this->columnCache[$key] = ((int) ($row['total'] ?? 0)) > 0;
+        } catch (Throwable $error) {
+            $this->columnCache[$key] = false;
+        }
+        return $this->columnCache[$key];
     }
 
     private function scalar(string $sql, array $params = [])

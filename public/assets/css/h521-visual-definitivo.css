@@ -25,18 +25,18 @@ html, body, .dashboard-shell, .dashboard-shell * {
 }
 
 /* Painéis gestor e operador: dark mode real quando ativo */
-html[data-theme="dark"] body,
-body[data-theme="dark"],
+html[data-theme=""] body,
+body[data-theme=""],
 body.theme-dark {
   color-scheme: dark !important;
   background: var(--h521-bg) !important;
   color: var(--h521-text) !important;
 }
 
-html[data-theme="dark"] body .dashboard-shell.operator-app,
-html[data-theme="dark"] body .dashboard-shell.manager-app,
-body[data-theme="dark"] .dashboard-shell.operator-app,
-body[data-theme="dark"] .dashboard-shell.manager-app,
+html[data-theme=""] body .dashboard-shell.operator-app,
+html[data-theme=""] body .dashboard-shell.manager-app,
+body[data-theme=""] .dashboard-shell.operator-app,
+body[data-theme=""] .dashboard-shell.manager-app,
 body.theme-dark .dashboard-shell.operator-app,
 body.theme-dark .dashboard-shell.manager-app {
   display: grid !important;
@@ -46,10 +46,10 @@ body.theme-dark .dashboard-shell.manager-app {
   color: var(--h521-text) !important;
 }
 
-html[data-theme="dark"] body .operator-app .main-dashboard,
-html[data-theme="dark"] body .manager-app .main-dashboard,
-body[data-theme="dark"] .operator-app .main-dashboard,
-body[data-theme="dark"] .manager-app .main-dashboard,
+html[data-theme=""] body .operator-app .main-dashboard,
+html[data-theme=""] body .manager-app .main-dashboard,
+body[data-theme=""] .operator-app .main-dashboard,
+body[data-theme=""] .manager-app .main-dashboard,
 body.theme-dark .operator-app .main-dashboard,
 body.theme-dark .manager-app .main-dashboard {
   background:
@@ -60,10 +60,10 @@ body.theme-dark .manager-app .main-dashboard {
   gap: 18px !important;
 }
 
-html[data-theme="dark"] body .operator-app .topbar,
-html[data-theme="dark"] body .manager-app .topbar,
-body[data-theme="dark"] .operator-app .topbar,
-body[data-theme="dark"] .manager-app .topbar,
+html[data-theme=""] body .operator-app .topbar,
+html[data-theme=""] body .manager-app .topbar,
+body[data-theme=""] .operator-app .topbar,
+body[data-theme=""] .manager-app .topbar,
 body.theme-dark .operator-app .topbar,
 body.theme-dark .manager-app .topbar {
   min-height: 66px !important;
@@ -77,17 +77,17 @@ body.theme-dark .manager-app .topbar {
   box-shadow: 0 10px 26px rgba(0,0,0,.28) !important;
 }
 
-html[data-theme="dark"] body .operator-app .topbar *,
-html[data-theme="dark"] body .manager-app .topbar *,
-body[data-theme="dark"] .operator-app .topbar *,
-body[data-theme="dark"] .manager-app .topbar *,
+html[data-theme=""] body .operator-app .topbar *,
+html[data-theme=""] body .manager-app .topbar *,
+body[data-theme=""] .operator-app .topbar *,
+body[data-theme=""] .manager-app .topbar *,
 body.theme-dark .operator-app .topbar *,
 body.theme-dark .manager-app .topbar * {
   color: #ffffff !important;
 }
 
-html[data-theme="dark"] body .top-title h1,
-body[data-theme="dark"] .top-title h1,
+html[data-theme=""] body .top-title h1,
+body[data-theme=""] .top-title h1,
 body.theme-dark .top-title h1 {
   font-size: clamp(21px, 2vw, 26px) !important;
   font-weight: 850 !important;
@@ -128,26 +128,26 @@ body.manager-menu-open::after {
 }
 .menu-button { display: inline-grid !important; place-items: center !important; }
 
-html[data-theme="dark"] body .side-nav,
-body[data-theme="dark"] .side-nav,
+html[data-theme=""] body .side-nav,
+body[data-theme=""] .side-nav,
 body.theme-dark .side-nav {
   background: linear-gradient(180deg, #08192b 0%, #06101c 100%) !important;
   border-right: 1px solid var(--h521-border) !important;
   color: var(--h521-text) !important;
 }
-html[data-theme="dark"] body .side-brand,
-body[data-theme="dark"] .side-brand,
+html[data-theme=""] body .side-brand,
+body[data-theme=""] .side-brand,
 body.theme-dark .side-brand {
   background: linear-gradient(135deg, #123257 0%, #0b1f36 100%) !important;
   color: #ffffff !important;
   border-bottom: 1px solid var(--h521-border-soft) !important;
 }
-html[data-theme="dark"] body .side-brand *,
-body[data-theme="dark"] .side-brand *,
+html[data-theme=""] body .side-brand *,
+body[data-theme=""] .side-brand *,
 body.theme-dark .side-brand * { color: #ffffff !important; }
 
-html[data-theme="dark"] body .nav-section p,
-body[data-theme="dark"] .nav-section p,
+html[data-theme=""] body .nav-section p,
+body[data-theme=""] .nav-section p,
 body.theme-dark .nav-section p {
   color: #93b8e4 !important;
   font-size: 10px !important;
@@ -155,8 +155,8 @@ body.theme-dark .nav-section p {
   letter-spacing: .10em !important;
   text-transform: uppercase !important;
 }
-html[data-theme="dark"] body .nav-section a,
-body[data-theme="dark"] .nav-section a,
+html[data-theme=""] body .nav-section a,
+body[data-theme=""] .nav-section a,
 body.theme-dark .nav-section a {
   min-height: 40px !important;
   color: #d8e8ff !important;
@@ -166,10 +166,10 @@ body.theme-dark .nav-section a {
   font-weight: 700 !important;
   gap: 10px !important;
 }
-html[data-theme="dark"] body .nav-section a:hover,
-html[data-theme="dark"] body .nav-section a.active,
-body[data-theme="dark"] .nav-section a:hover,
-body[data-theme="dark"] .nav-section a.active,
+html[data-theme=""] body .nav-section a:hover,
+html[data-theme=""] body .nav-section a.active,
+body[data-theme=""] .nav-section a:hover,
+body[data-theme=""] .nav-section a.active,
 body.theme-dark .nav-section a:hover,
 body.theme-dark .nav-section a.active {
   background: linear-gradient(90deg, rgba(47,109,183,.32), rgba(18,46,81,.66)) !important;
@@ -179,14 +179,14 @@ body.theme-dark .nav-section a.active {
 .nav-logout { margin-top: 12px !important; color: #fecaca !important; }
 
 /* Page headings */
-html[data-theme="dark"] body .operator-app .page-heading,
-html[data-theme="dark"] body .manager-app .page-heading,
-html[data-theme="dark"] body .operator-app .date-card,
-html[data-theme="dark"] body .manager-app .date-card,
-body[data-theme="dark"] .operator-app .page-heading,
-body[data-theme="dark"] .manager-app .page-heading,
-body[data-theme="dark"] .operator-app .date-card,
-body[data-theme="dark"] .manager-app .date-card,
+html[data-theme=""] body .operator-app .page-heading,
+html[data-theme=""] body .manager-app .page-heading,
+html[data-theme=""] body .operator-app .date-card,
+html[data-theme=""] body .manager-app .date-card,
+body[data-theme=""] .operator-app .page-heading,
+body[data-theme=""] .manager-app .page-heading,
+body[data-theme=""] .operator-app .date-card,
+body[data-theme=""] .manager-app .date-card,
 body.theme-dark .operator-app .page-heading,
 body.theme-dark .manager-app .page-heading,
 body.theme-dark .operator-app .date-card,
@@ -197,57 +197,57 @@ body.theme-dark .manager-app .date-card {
   border-radius: var(--h521-radius) !important;
   box-shadow: var(--h521-shadow) !important;
 }
-html[data-theme="dark"] body .page-heading h1,
-html[data-theme="dark"] body .page-heading h2,
-html[data-theme="dark"] body .date-card strong,
-body[data-theme="dark"] .page-heading h1,
-body[data-theme="dark"] .page-heading h2,
-body[data-theme="dark"] .date-card strong,
+html[data-theme=""] body .page-heading h1,
+html[data-theme=""] body .page-heading h2,
+html[data-theme=""] body .date-card strong,
+body[data-theme=""] .page-heading h1,
+body[data-theme=""] .page-heading h2,
+body[data-theme=""] .date-card strong,
 body.theme-dark .page-heading h1,
 body.theme-dark .page-heading h2,
 body.theme-dark .date-card strong {
   color: #ffffff !important;
 }
-html[data-theme="dark"] body .page-heading p,
-html[data-theme="dark"] body .date-card span,
-body[data-theme="dark"] .page-heading p,
-body[data-theme="dark"] .date-card span,
+html[data-theme=""] body .page-heading p,
+html[data-theme=""] body .date-card span,
+body[data-theme=""] .page-heading p,
+body[data-theme=""] .date-card span,
 body.theme-dark .page-heading p,
 body.theme-dark .date-card span {
   color: var(--h521-muted) !important;
 }
 
 /* Cards: cobre os cards brancos do gestor/operador */
-html[data-theme="dark"] body .operator-app .panel,
-html[data-theme="dark"] body .operator-app .kpi-card,
-html[data-theme="dark"] body .operator-app .quick-menu-card,
-html[data-theme="dark"] body .operator-app .ops-metric-strip article,
-html[data-theme="dark"] body .operator-app .compact-stats article,
-html[data-theme="dark"] body .operator-app .mapa-resumo article,
-html[data-theme="dark"] body .operator-app .mini-card,
-html[data-theme="dark"] body .manager-app .panel,
-html[data-theme="dark"] body .manager-app .kpi-card,
-html[data-theme="dark"] body .manager-app .quick-menu-card,
-html[data-theme="dark"] body .manager-app .ops-metric-strip article,
-html[data-theme="dark"] body .manager-app .compact-stats article,
-html[data-theme="dark"] body .manager-app .mapa-resumo article,
-html[data-theme="dark"] body .manager-app .manager-operational-strip article,
-html[data-theme="dark"] body .manager-app .overview-card,
-body[data-theme="dark"] .operator-app .panel,
-body[data-theme="dark"] .operator-app .kpi-card,
-body[data-theme="dark"] .operator-app .quick-menu-card,
-body[data-theme="dark"] .operator-app .ops-metric-strip article,
-body[data-theme="dark"] .operator-app .compact-stats article,
-body[data-theme="dark"] .operator-app .mapa-resumo article,
-body[data-theme="dark"] .operator-app .mini-card,
-body[data-theme="dark"] .manager-app .panel,
-body[data-theme="dark"] .manager-app .kpi-card,
-body[data-theme="dark"] .manager-app .quick-menu-card,
-body[data-theme="dark"] .manager-app .ops-metric-strip article,
-body[data-theme="dark"] .manager-app .compact-stats article,
-body[data-theme="dark"] .manager-app .mapa-resumo article,
-body[data-theme="dark"] .manager-app .manager-operational-strip article,
-body[data-theme="dark"] .manager-app .overview-card,
+html[data-theme=""] body .operator-app .panel,
+html[data-theme=""] body .operator-app .kpi-card,
+html[data-theme=""] body .operator-app .quick-menu-card,
+html[data-theme=""] body .operator-app .ops-metric-strip article,
+html[data-theme=""] body .operator-app .compact-stats article,
+html[data-theme=""] body .operator-app .mapa-resumo article,
+html[data-theme=""] body .operator-app .mini-card,
+html[data-theme=""] body .manager-app .panel,
+html[data-theme=""] body .manager-app .kpi-card,
+html[data-theme=""] body .manager-app .quick-menu-card,
+html[data-theme=""] body .manager-app .ops-metric-strip article,
+html[data-theme=""] body .manager-app .compact-stats article,
+html[data-theme=""] body .manager-app .mapa-resumo article,
+html[data-theme=""] body .manager-app .manager-operational-strip article,
+html[data-theme=""] body .manager-app .overview-card,
+body[data-theme=""] .operator-app .panel,
+body[data-theme=""] .operator-app .kpi-card,
+body[data-theme=""] .operator-app .quick-menu-card,
+body[data-theme=""] .operator-app .ops-metric-strip article,
+body[data-theme=""] .operator-app .compact-stats article,
+body[data-theme=""] .operator-app .mapa-resumo article,
+body[data-theme=""] .operator-app .mini-card,
+body[data-theme=""] .manager-app .panel,
+body[data-theme=""] .manager-app .kpi-card,
+body[data-theme=""] .manager-app .quick-menu-card,
+body[data-theme=""] .manager-app .ops-metric-strip article,
+body[data-theme=""] .manager-app .compact-stats article,
+body[data-theme=""] .manager-app .mapa-resumo article,
+body[data-theme=""] .manager-app .manager-operational-strip article,
+body[data-theme=""] .manager-app .overview-card,
 body.theme-dark .operator-app .panel,
 body.theme-dark .operator-app .kpi-card,
 body.theme-dark .operator-app .quick-menu-card,
@@ -271,14 +271,14 @@ body.theme-dark .manager-app .overview-card {
   border-radius: var(--h521-radius) !important;
 }
 
-html[data-theme="dark"] body .ops-metric-strip article,
-html[data-theme="dark"] body .compact-stats article,
-html[data-theme="dark"] body .manager-operational-strip article,
-html[data-theme="dark"] body .mapa-resumo article,
-body[data-theme="dark"] .ops-metric-strip article,
-body[data-theme="dark"] .compact-stats article,
-body[data-theme="dark"] .manager-operational-strip article,
-body[data-theme="dark"] .mapa-resumo article,
+html[data-theme=""] body .ops-metric-strip article,
+html[data-theme=""] body .compact-stats article,
+html[data-theme=""] body .manager-operational-strip article,
+html[data-theme=""] body .mapa-resumo article,
+body[data-theme=""] .ops-metric-strip article,
+body[data-theme=""] .compact-stats article,
+body[data-theme=""] .manager-operational-strip article,
+body[data-theme=""] .mapa-resumo article,
 body.theme-dark .ops-metric-strip article,
 body.theme-dark .compact-stats article,
 body.theme-dark .manager-operational-strip article,
@@ -291,20 +291,20 @@ body.theme-dark .mapa-resumo article {
   justify-content: center !important;
 }
 
-html[data-theme="dark"] body .panel h1,
-html[data-theme="dark"] body .panel h2,
-html[data-theme="dark"] body .panel h3,
-html[data-theme="dark"] body .panel strong,
-html[data-theme="dark"] body .kpi-card strong,
-html[data-theme="dark"] body .ops-metric-strip strong,
-html[data-theme="dark"] body .compact-stats strong,
-body[data-theme="dark"] .panel h1,
-body[data-theme="dark"] .panel h2,
-body[data-theme="dark"] .panel h3,
-body[data-theme="dark"] .panel strong,
-body[data-theme="dark"] .kpi-card strong,
-body[data-theme="dark"] .ops-metric-strip strong,
-body[data-theme="dark"] .compact-stats strong,
+html[data-theme=""] body .panel h1,
+html[data-theme=""] body .panel h2,
+html[data-theme=""] body .panel h3,
+html[data-theme=""] body .panel strong,
+html[data-theme=""] body .kpi-card strong,
+html[data-theme=""] body .ops-metric-strip strong,
+html[data-theme=""] body .compact-stats strong,
+body[data-theme=""] .panel h1,
+body[data-theme=""] .panel h2,
+body[data-theme=""] .panel h3,
+body[data-theme=""] .panel strong,
+body[data-theme=""] .kpi-card strong,
+body[data-theme=""] .ops-metric-strip strong,
+body[data-theme=""] .compact-stats strong,
 body.theme-dark .panel h1,
 body.theme-dark .panel h2,
 body.theme-dark .panel h3,
@@ -315,24 +315,24 @@ body.theme-dark .compact-stats strong {
   color: #ffffff !important;
 }
 
-html[data-theme="dark"] body .panel span,
-html[data-theme="dark"] body .panel small,
-html[data-theme="dark"] body .panel p,
-html[data-theme="dark"] body .kpi-card span,
-html[data-theme="dark"] body .kpi-card small,
-html[data-theme="dark"] body .ops-metric-strip span,
-html[data-theme="dark"] body .ops-metric-strip small,
-html[data-theme="dark"] body .compact-stats span,
-html[data-theme="dark"] body .compact-stats small,
-body[data-theme="dark"] .panel span,
-body[data-theme="dark"] .panel small,
-body[data-theme="dark"] .panel p,
-body[data-theme="dark"] .kpi-card span,
-body[data-theme="dark"] .kpi-card small,
-body[data-theme="dark"] .ops-metric-strip span,
-body[data-theme="dark"] .ops-metric-strip small,
-body[data-theme="dark"] .compact-stats span,
-body[data-theme="dark"] .compact-stats small,
+html[data-theme=""] body .panel span,
+html[data-theme=""] body .panel small,
+html[data-theme=""] body .panel p,
+html[data-theme=""] body .kpi-card span,
+html[data-theme=""] body .kpi-card small,
+html[data-theme=""] body .ops-metric-strip span,
+html[data-theme=""] body .ops-metric-strip small,
+html[data-theme=""] body .compact-stats span,
+html[data-theme=""] body .compact-stats small,
+body[data-theme=""] .panel span,
+body[data-theme=""] .panel small,
+body[data-theme=""] .panel p,
+body[data-theme=""] .kpi-card span,
+body[data-theme=""] .kpi-card small,
+body[data-theme=""] .ops-metric-strip span,
+body[data-theme=""] .ops-metric-strip small,
+body[data-theme=""] .compact-stats span,
+body[data-theme=""] .compact-stats small,
 body.theme-dark .panel span,
 body.theme-dark .panel small,
 body.theme-dark .panel p,
@@ -346,18 +346,18 @@ body.theme-dark .compact-stats small {
 }
 
 /* Tabelas */
-html[data-theme="dark"] body .data-table,
-html[data-theme="dark"] body .table-wrap,
-body[data-theme="dark"] .data-table,
-body[data-theme="dark"] .table-wrap,
+html[data-theme=""] body .data-table,
+html[data-theme=""] body .table-wrap,
+body[data-theme=""] .data-table,
+body[data-theme=""] .table-wrap,
 body.theme-dark .data-table,
 body.theme-dark .table-wrap {
   background: transparent !important;
   color: var(--h521-text) !important;
   border-color: var(--h521-border-soft) !important;
 }
-html[data-theme="dark"] body .data-table th,
-body[data-theme="dark"] .data-table th,
+html[data-theme=""] body .data-table th,
+body[data-theme=""] .data-table th,
 body.theme-dark .data-table th {
   height: 42px !important;
   background: rgba(255,255,255,.055) !important;
@@ -366,8 +366,8 @@ body.theme-dark .data-table th {
   font-size: 12px !important;
   font-weight: 850 !important;
 }
-html[data-theme="dark"] body .data-table td,
-body[data-theme="dark"] .data-table td,
+html[data-theme=""] body .data-table td,
+body[data-theme=""] .data-table td,
 body.theme-dark .data-table td {
   background: transparent !important;
   color: #edf6ff !important;
@@ -375,12 +375,12 @@ body.theme-dark .data-table td {
 }
 
 /* Formulários, botões, tabs */
-html[data-theme="dark"] body input,
-html[data-theme="dark"] body select,
-html[data-theme="dark"] body textarea,
-body[data-theme="dark"] input,
-body[data-theme="dark"] select,
-body[data-theme="dark"] textarea,
+html[data-theme=""] body input,
+html[data-theme=""] body select,
+html[data-theme=""] body textarea,
+body[data-theme=""] input,
+body[data-theme=""] select,
+body[data-theme=""] textarea,
 body.theme-dark input,
 body.theme-dark select,
 body.theme-dark textarea {
@@ -390,16 +390,16 @@ body.theme-dark textarea {
   border: 1px solid var(--h521-border) !important;
   border-radius: 10px !important;
 }
-html[data-theme="dark"] body .icon-button,
-html[data-theme="dark"] body .filter-button,
-html[data-theme="dark"] body .theme-button,
-html[data-theme="dark"] body .subtab,
-html[data-theme="dark"] body button,
-body[data-theme="dark"] .icon-button,
-body[data-theme="dark"] .filter-button,
-body[data-theme="dark"] .theme-button,
-body[data-theme="dark"] .subtab,
-body[data-theme="dark"] button,
+html[data-theme=""] body .icon-button,
+html[data-theme=""] body .filter-button,
+html[data-theme=""] body .theme-button,
+html[data-theme=""] body .subtab,
+html[data-theme=""] body button,
+body[data-theme=""] .icon-button,
+body[data-theme=""] .filter-button,
+body[data-theme=""] .theme-button,
+body[data-theme=""] .subtab,
+body[data-theme=""] button,
 body.theme-dark .icon-button,
 body.theme-dark .filter-button,
 body.theme-dark .theme-button,

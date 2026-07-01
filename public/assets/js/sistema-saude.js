@@ -7,8 +7,8 @@
 
     async function loadHealth() {
       const [healthResponse, watchdogResponse] = await Promise.all([
-        fetch("/homologacao/api/system/health"),
-        fetch("/homologacao/api/watchdog")
+        fetch(window.apiUrl ? window.apiUrl("/system/health") : "/api/system/health"),
+        fetch(window.apiUrl ? window.apiUrl("/watchdog") : "/api/watchdog")
       ]);
       const health = await healthResponse.json();
       const watchdog = await watchdogResponse.json();

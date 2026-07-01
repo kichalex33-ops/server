@@ -16,7 +16,7 @@ function requireOperatorSession() {
     return false;
   }
   const profile = String(session.usuario?.perfil || "").toUpperCase();
-  if (!["OPERADOR", "ADMIN"].includes(profile)) {
+  if (!["OPERADOR", "GESTOR", "ADMIN"].includes(profile)) {
     redirectToLogin("Este acesso é exclusivo do Painel Operador.");
     return false;
   }
@@ -31,7 +31,7 @@ function redirectToLogin(message) {
   } catch (error) {
     // ignora falha de storage
   }
-  window.location.href = "/homologacao/";
+  window.location.href = window.appUrl ? window.appUrl("/") : "/";
 }
 
 async function loadOperatorDashboard() {
@@ -237,7 +237,7 @@ async function safeApiJson(path, fallback, signal) {
   try {
     return await apiJson(path, signal);
   } catch (error) {
-    if (/Token inválido|Autentica|Acesso negado/i.test(error.message)) throw error;
+    if (/Token inv[áa]lido|Autentica|Acesso negado/i.test(error.message)) throw error;
     showSmallError(path, error.message);
     return fallback;
   }
@@ -275,7 +275,8 @@ function renderTrips(trips, drivers, vehicles) {
     <td>${escapeText(trip.origem || "--")}</td><td>${escapeText(trip.destino || "--")}</td>
     <td>${escapeText(driverNames.get(String(trip.motorista_id)) || "A definir")}</td><td>${escapeText(vehicleNames.get(String(trip.veiculo_id)) || trip.veiculo_id || "A definir")}</td>
     <td><span class="status info">${escapeText(trip.status || "AGUARDANDO")}</span></td>
-  </tr>`).join("") : emptyTableRow(8, "Nenhuma viagem cadastrada", "Crie uma viagem pela aba de cadastro.");
+    <td><button class="driver-action danger small-action" type="button" data-trip-cancel-id="${escapeAttr(trip.id)}">Cancelar</button></td>
+  </tr>`).join("") : emptyTableRow(9, "Nenhuma viagem cadastrada", "Crie uma viagem pela aba de cadastro.");
 }
 
 function renderTripAgenda(trips, drivers, vehicles) {
@@ -410,7 +411,7 @@ function bindDriverSecretReveal() {
     if (!button || button.dataset.loading === "true") return;
     const driverId = button.dataset.driverSecretReveal;
     if (!driverId) return;
-    const ok = window.confirm("Mostrar a senha do app deste motorista? Use apenas no momento do pareamento.");
+    const ok = window.confirm("Gerar um novo código de ativação? A senha antiga não será revelada e o novo código expira em 24 horas.");
     if (!ok) return;
     button.dataset.loading = "true";
     const oldText = button.textContent;
@@ -420,15 +421,15 @@ function bindDriverSecretReveal() {
       const secret = body.senha_app || body.codigo_ativacao || body.codigo || "";
       const target = document.querySelector(`[data-driver-secret-target="${cssEscape(driverId)}"]`);
       if (target && secret) target.textContent = secret;
-      button.textContent = "Ocultar";
+      button.textContent = "Gerado";
       button.onclick = () => {
         if (target) target.textContent = maskSecret(body.hint || secret);
-        button.textContent = oldText || "Mostrar";
+        button.textContent = oldText || "Gerar novo código";
         button.onclick = null;
       };
     } catch (error) {
       showDriverError(error);
-      button.textContent = oldText || "Mostrar";
+      button.textContent = oldText || "Gerar novo código";
     } finally {
       button.dataset.loading = "false";
     }
@@ -683,7 +684,7 @@ function renderDrivers(drivers) {
     <div class="ranking-row driver-card-row">
       <strong>${escapeText(driver.status || "ativo")}</strong>
       <span>${escapeText(driver.nome || driver.id)}<br><small>${escapeText(driver.matricula || driver.cpf || "")}</small></span>
-      <span>${driver.tem_senha_app || driver.app_senha_hint ? `<small>Senha app salva</small><br><strong class="activation-inline-code" data-driver-secret-target="${escapeAttr(driver.id)}">${escapeText(maskSecret(driver.app_senha_hint || appPassword))}</strong>${generatedAt}<br><button class="driver-action small-action" type="button" data-driver-secret-reveal="${escapeAttr(driver.id)}">Mostrar</button>` : `<small>Sem senha do app salva</small>`}</span>
+      <span>${driver.tem_senha_app || driver.app_senha_hint ? `<small>Código/senha protegida</small><br><strong class="activation-inline-code" data-driver-secret-target="${escapeAttr(driver.id)}">${escapeText(maskSecret(driver.app_senha_hint || appPassword))}</strong>${generatedAt}<br><button class="driver-action small-action" type="button" data-driver-secret-reveal="${escapeAttr(driver.id)}">Gerar novo código</button>` : `<small>Sem senha do app salva</small>`}</span>
       <span class="driver-actions-inline"><button class="driver-action" type="button" data-driver-id="${escapeAttr(driver.id)}">Gerar nova senha</button><button class="driver-action danger" type="button" data-driver-delete-id="${escapeAttr(driver.id)}" data-driver-name="${escapeAttr(driver.nome || driver.id)}">Excluir</button></span>
     </div>`;
   }).join("") : emptyDriverList();
@@ -897,10 +898,10 @@ async function runOperatorAi(mode, overridePrompt = null) {
   const response = await postAiJson(path, body);
   if (result) {
     result.className = "ai-output";
-    result.textContent = response.resposta || "A IA retornou sem texto.";
+    result.textContent = normalizeAiText(response.resposta || "A IA retornou sem texto.");
   }
   if (status) status.textContent = "Concluído";
-  updateFloatingAiAnswer(response.resposta || "A IA retornou sem texto.");
+  updateFloatingAiAnswer(normalizeAiText(response.resposta || "A IA retornou sem texto."));
 }
 
 
@@ -1081,6 +1082,27 @@ function appendFloatingAiMessage(text, type = "bot", loading = false) {
   messages.scrollTop = messages.scrollHeight;
 }
 
+
+function normalizeAiText(text) {
+  let value = String(text || '').trim();
+  if (!value) return 'A IA retornou sem texto.';
+  value = value.replace(/\r\n/g, '\n');
+  value = value.split('\n').filter((line) => !/^\s*[*-]?\s*State clearly\b/i.test(line)).join('\n');
+  value = value.replace(/clear\/partly cloudy/gi, 'céu claro/parcialmente nublado');
+  value = value.replace(/partly cloudy/gi, 'parcialmente nublado');
+  value = value.replace(/clear sky/gi, 'céu claro');
+  value = value.replace(/light rain\/drizzle/gi, 'chuva fraca/garoa');
+  value = value.replace(/light rain/gi, 'chuva fraca');
+  value = value.replace(/drizzle/gi, 'garoa');
+  value = value.replace(/forecast of/gi, 'previsão de');
+  value = value.replace(/starting around/gi, 'começando por volta de');
+  value = value.replace(/midnight/gi, 'meia-noite');
+  value = value.replace(/no active/gi, 'sem registros ativos');
+  value = value.replace(/^\s*,\s*/, '');
+  value = value.replace(/\n{3,}/g, '\n\n').trim();
+  return value || 'A IA retornou sem texto.';
+}
+
 function updateFloatingAiAnswer(text, isError = false) {
   const messages = document.querySelector("#floatingAiMessages");
   if (!messages) return;
@@ -1090,7 +1112,7 @@ function updateFloatingAiAnswer(text, isError = false) {
     messages.appendChild(node);
   }
   node.className = `ai-bubble bot${isError ? " error" : ""}`;
-  node.textContent = text;
+  node.textContent = normalizeAiText(text);
   messages.scrollTop = messages.scrollHeight;
 }
 

@@ -136,84 +136,84 @@ body.manager-menu-open::after {
 .menu-button { display: inline-grid !important; place-items: center !important; }
 .nav-logout { margin-top: 12px !important; color: #fecaca !important; }
 /* Modo escuro forte: cobre html, body, classes e fallback do painel gestor */
-html[data-theme="dark"], html.theme-dark,
-html[data-theme="dark"] body, body[data-theme="dark"], body.theme-dark {
+html[data-theme=""], html.theme-dark,
+html[data-theme=""] body, body[data-theme=""], body.theme-dark {
   color-scheme: dark !important;
   background: var(--ags-dark-bg) !important;
   color: var(--ags-dark-text) !important;
 }
-html[data-theme="dark"] body .main-dashboard,
-body[data-theme="dark"] .main-dashboard,
+html[data-theme=""] body .main-dashboard,
+body[data-theme=""] .main-dashboard,
 body.theme-dark .main-dashboard {
   background: radial-gradient(circle at 22% 0%, rgba(45,95,151,.30), transparent 32%), linear-gradient(180deg, #081624 0%, #06101c 100%) !important;
   color: var(--ags-dark-text) !important;
 }
-html[data-theme="dark"] body .topbar,
-body[data-theme="dark"] .topbar,
+html[data-theme=""] body .topbar,
+body[data-theme=""] .topbar,
 body.theme-dark .topbar {
   background: linear-gradient(90deg, #0b2036, #0e2a47) !important;
   border-bottom: 1px solid var(--ags-dark-line) !important;
   box-shadow: 0 10px 28px rgba(0,0,0,.30) !important;
   color: #fff !important;
 }
-html[data-theme="dark"] body .side-nav,
-body[data-theme="dark"] .side-nav,
+html[data-theme=""] body .side-nav,
+body[data-theme=""] .side-nav,
 body.theme-dark .side-nav {
   background: linear-gradient(180deg, #08192b 0%, #06101c 100%) !important;
   border-right: 1px solid var(--ags-dark-line) !important;
   color: #eaf4ff !important;
 }
-html[data-theme="dark"] body .side-brand,
-body[data-theme="dark"] .side-brand,
+html[data-theme=""] body .side-brand,
+body[data-theme=""] .side-brand,
 body.theme-dark .side-brand {
   background: linear-gradient(135deg, #123257, #0b1f36) !important;
   color: #fff !important;
 }
-html[data-theme="dark"] body .nav-section a,
-body[data-theme="dark"] .nav-section a,
+html[data-theme=""] body .nav-section a,
+body[data-theme=""] .nav-section a,
 body.theme-dark .nav-section a {
   color: #d8e8ff !important;
   border: 1px solid transparent !important;
   background: transparent !important;
 }
-html[data-theme="dark"] body .nav-section a.active,
-html[data-theme="dark"] body .nav-section a:hover,
-body[data-theme="dark"] .nav-section a.active,
-body[data-theme="dark"] .nav-section a:hover,
+html[data-theme=""] body .nav-section a.active,
+html[data-theme=""] body .nav-section a:hover,
+body[data-theme=""] .nav-section a.active,
+body[data-theme=""] .nav-section a:hover,
 body.theme-dark .nav-section a.active,
 body.theme-dark .nav-section a:hover {
   background: linear-gradient(90deg, rgba(47,109,183,.30), rgba(18,46,81,.62)) !important;
   border-color: rgba(115,173,255,.28) !important;
   color: #fff !important;
 }
-html[data-theme="dark"] body .page-heading,
-html[data-theme="dark"] body .date-card,
-body[data-theme="dark"] .page-heading,
-body[data-theme="dark"] .date-card,
+html[data-theme=""] body .page-heading,
+html[data-theme=""] body .date-card,
+body[data-theme=""] .page-heading,
+body[data-theme=""] .date-card,
 body.theme-dark .page-heading,
 body.theme-dark .date-card {
   background: linear-gradient(180deg, #102842 0%, #0b1e33 100%) !important;
   border: 1px solid var(--ags-dark-line) !important;
   color: #fff !important;
 }
-html[data-theme="dark"] body .panel,
-html[data-theme="dark"] body .kpi-card,
-html[data-theme="dark"] body .quick-menu-card,
-html[data-theme="dark"] body .ops-metric-strip article,
-html[data-theme="dark"] body .compact-stats article,
-html[data-theme="dark"] body .manager-operational-strip article,
-html[data-theme="dark"] body .mapa-resumo article,
-html[data-theme="dark"] body .mini-card,
-html[data-theme="dark"] body .overview-card,
-body[data-theme="dark"] .panel,
-body[data-theme="dark"] .kpi-card,
-body[data-theme="dark"] .quick-menu-card,
-body[data-theme="dark"] .ops-metric-strip article,
-body[data-theme="dark"] .compact-stats article,
-body[data-theme="dark"] .manager-operational-strip article,
-body[data-theme="dark"] .mapa-resumo article,
-body[data-theme="dark"] .mini-card,
-body[data-theme="dark"] .overview-card,
+html[data-theme=""] body .panel,
+html[data-theme=""] body .kpi-card,
+html[data-theme=""] body .quick-menu-card,
+html[data-theme=""] body .ops-metric-strip article,
+html[data-theme=""] body .compact-stats article,
+html[data-theme=""] body .manager-operational-strip article,
+html[data-theme=""] body .mapa-resumo article,
+html[data-theme=""] body .mini-card,
+html[data-theme=""] body .overview-card,
+body[data-theme=""] .panel,
+body[data-theme=""] .kpi-card,
+body[data-theme=""] .quick-menu-card,
+body[data-theme=""] .ops-metric-strip article,
+body[data-theme=""] .compact-stats article,
+body[data-theme=""] .manager-operational-strip article,
+body[data-theme=""] .mapa-resumo article,
+body[data-theme=""] .mini-card,
+body[data-theme=""] .overview-card,
 body.theme-dark .panel,
 body.theme-dark .kpi-card,
 body.theme-dark .quick-menu-card,
@@ -229,32 +229,32 @@ body.theme-dark .overview-card {
   border: 1px solid var(--ags-dark-line) !important;
   box-shadow: var(--ags-shadow) !important;
 }
-html[data-theme="dark"] body .ops-metric-strip article,
-html[data-theme="dark"] body .compact-stats article,
-html[data-theme="dark"] body .manager-operational-strip article,
-html[data-theme="dark"] body .mapa-resumo article,
-body[data-theme="dark"] .ops-metric-strip article,
-body[data-theme="dark"] .compact-stats article,
-body[data-theme="dark"] .manager-operational-strip article,
-body[data-theme="dark"] .mapa-resumo article,
+html[data-theme=""] body .ops-metric-strip article,
+html[data-theme=""] body .compact-stats article,
+html[data-theme=""] body .manager-operational-strip article,
+html[data-theme=""] body .mapa-resumo article,
+body[data-theme=""] .ops-metric-strip article,
+body[data-theme=""] .compact-stats article,
+body[data-theme=""] .manager-operational-strip article,
+body[data-theme=""] .mapa-resumo article,
 body.theme-dark .ops-metric-strip article,
 body.theme-dark .compact-stats article,
 body.theme-dark .manager-operational-strip article,
 body.theme-dark .mapa-resumo article {
   border-left: 5px solid var(--ags-blue) !important;
 }
-html[data-theme="dark"] body h1,
-html[data-theme="dark"] body h2,
-html[data-theme="dark"] body h3,
-html[data-theme="dark"] body strong,
-html[data-theme="dark"] body .topbar span,
-html[data-theme="dark"] body .topbar strong,
-body[data-theme="dark"] h1,
-body[data-theme="dark"] h2,
-body[data-theme="dark"] h3,
-body[data-theme="dark"] strong,
-body[data-theme="dark"] .topbar span,
-body[data-theme="dark"] .topbar strong,
+html[data-theme=""] body h1,
+html[data-theme=""] body h2,
+html[data-theme=""] body h3,
+html[data-theme=""] body strong,
+html[data-theme=""] body .topbar span,
+html[data-theme=""] body .topbar strong,
+body[data-theme=""] h1,
+body[data-theme=""] h2,
+body[data-theme=""] h3,
+body[data-theme=""] strong,
+body[data-theme=""] .topbar span,
+body[data-theme=""] .topbar strong,
 body.theme-dark h1,
 body.theme-dark h2,
 body.theme-dark h3,
@@ -263,40 +263,40 @@ body.theme-dark .topbar span,
 body.theme-dark .topbar strong {
   color: #ffffff !important;
 }
-html[data-theme="dark"] body span,
-html[data-theme="dark"] body small,
-html[data-theme="dark"] body p,
-html[data-theme="dark"] body label,
-body[data-theme="dark"] span,
-body[data-theme="dark"] small,
-body[data-theme="dark"] p,
-body[data-theme="dark"] label,
+html[data-theme=""] body span,
+html[data-theme=""] body small,
+html[data-theme=""] body p,
+html[data-theme=""] body label,
+body[data-theme=""] span,
+body[data-theme=""] small,
+body[data-theme=""] p,
+body[data-theme=""] label,
 body.theme-dark span,
 body.theme-dark small,
 body.theme-dark p,
 body.theme-dark label {
   color: var(--ags-dark-muted) !important;
 }
-html[data-theme="dark"] body .data-table th,
-body[data-theme="dark"] .data-table th,
+html[data-theme=""] body .data-table th,
+body[data-theme=""] .data-table th,
 body.theme-dark .data-table th {
   background: rgba(255,255,255,.05) !important;
   color: #aecdff !important;
   border-color: var(--ags-dark-line-soft) !important;
 }
-html[data-theme="dark"] body .data-table td,
-body[data-theme="dark"] .data-table td,
+html[data-theme=""] body .data-table td,
+body[data-theme=""] .data-table td,
 body.theme-dark .data-table td {
   background: transparent !important;
   color: #edf6ff !important;
   border-color: var(--ags-dark-line-soft) !important;
 }
-html[data-theme="dark"] body input,
-html[data-theme="dark"] body select,
-html[data-theme="dark"] body textarea,
-body[data-theme="dark"] input,
-body[data-theme="dark"] select,
-body[data-theme="dark"] textarea,
+html[data-theme=""] body input,
+html[data-theme=""] body select,
+html[data-theme=""] body textarea,
+body[data-theme=""] input,
+body[data-theme=""] select,
+body[data-theme=""] textarea,
 body.theme-dark input,
 body.theme-dark select,
 body.theme-dark textarea {
@@ -304,14 +304,14 @@ body.theme-dark textarea {
   color: var(--ags-dark-text) !important;
   border-color: var(--ags-dark-line) !important;
 }
-html[data-theme="dark"] body .icon-button,
-html[data-theme="dark"] body .filter-button,
-html[data-theme="dark"] body .theme-button,
-html[data-theme="dark"] body .subtab,
-body[data-theme="dark"] .icon-button,
-body[data-theme="dark"] .filter-button,
-body[data-theme="dark"] .theme-button,
-body[data-theme="dark"] .subtab,
+html[data-theme=""] body .icon-button,
+html[data-theme=""] body .filter-button,
+html[data-theme=""] body .theme-button,
+html[data-theme=""] body .subtab,
+body[data-theme=""] .icon-button,
+body[data-theme=""] .filter-button,
+body[data-theme=""] .theme-button,
+body[data-theme=""] .subtab,
 body.theme-dark .icon-button,
 body.theme-dark .filter-button,
 body.theme-dark .theme-button,

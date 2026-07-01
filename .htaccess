@@ -1,26 +1,32 @@
 Options -Indexes
 DirectoryIndex index.php
+ServerSignature Off
 
 <IfModule mod_authz_core.c>
-  <FilesMatch "^\.env">
+  <FilesMatch "(^\.env|^env(\s|\(|$)|\.log$|\.md$|composer\.(json|lock)$)">
     Require all denied
   </FilesMatch>
 </IfModule>
 
 <IfModule !mod_authz_core.c>
-  <FilesMatch "^\.env">
+  <FilesMatch "(^\.env|^env(\s|\(|$)|\.log$|\.md$|composer\.(json|lock)$)">
     Order allow,deny
     Deny from all
   </FilesMatch>
 </IfModule>
 
+<IfModule mod_setenvif.c>
+  SetEnvIf Authorization "(.+)" HTTP_AUTHORIZATION=$1
+</IfModule>
+
 <IfModule mod_rewrite.c>
   RewriteEngine On
+  RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
 
-  # H526 FIX: bloquear data/ (continha painel-logistico.json exposto publicamente)
-  RewriteRule ^(?:data|db|docs|scripts|storage)(?:/.*)?$ - [F,L]
+  RewriteRule ^(?:data|db|docs|scripts|storage|vendor)(?:/.*)?$ - [F,L]
   RewriteRule ^api/(?:src|config)(?:/.*)?$ - [F,L]
   RewriteRule ^(?:gerar-hash|hash-password|backup-mysql)\.php$ - [F,L]
+  RewriteRule (^|/)\. - [F,L]
 
   RewriteCond %{REQUEST_FILENAME} -f [OR]
   RewriteCond %{REQUEST_FILENAME} -d
@@ -53,4 +59,9 @@ DirectoryIndex index.php
   Header always set Referrer-Policy "strict-origin-when-cross-origin"
   Header always set Permissions-Policy "geolocation=(self), camera=(self), microphone=()"
   Header always set Content-Security-Policy "default-src 'self'; script-src 'self' https://cdn.jsdelivr.net https://unpkg.com; style-src 'self' 'unsafe-inline' https://unpkg.com https://cdn.jsdelivr.net https://fonts.googleapis.com; img-src 'self' data: blob: https://*.tile.openstreetmap.org https://tile.openstreetmap.org https://*.openstreetmap.org; connect-src 'self' https://agsap.com.br; font-src 'self' data: https://cdn.jsdelivr.net https://fonts.gstatic.com; frame-ancestors 'none'; base-uri 'self'; form-action 'self'"
+  <FilesMatch "\.(?:html|css|js)$">
+    Header always set Cache-Control "no-store, no-cache, must-revalidate, max-age=0"
+    Header always set Pragma "no-cache"
+    Header always set Expires "0"
+  </FilesMatch>
 </IfModule>

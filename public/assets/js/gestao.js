@@ -20,7 +20,7 @@ function bindManagerMenu() {
   sideNav.querySelectorAll('a').forEach((link) => link.addEventListener('click', closeMenu));
 }
 
-const apiRoot = window.PAINEL_API_ROOT || "/homologacao/api";
+const apiRoot = (window.PAINEL_API_ROOT || (window.apiUrl ? window.apiUrl("") : "/api")).replace(/\/$/, "");
 const brl = new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" });
 
 const managerSession = window.loadAuthSession ? window.loadAuthSession() : null;
@@ -28,7 +28,7 @@ const managerProfile = String(managerSession?.usuario?.perfil || "").toUpperCase
 if (!managerSession?.accessToken || !["GESTOR", "ADMIN"].includes(managerProfile)) {
   if (window.clearAuthSession) window.clearAuthSession();
   sessionStorage.setItem("painel-logistico-login-message", "Este acesso é exclusivo do Painel Gestor.");
-  window.location.href = "/homologacao/";
+  window.location.href = window.appUrl ? window.appUrl("/") : "/";
   throw new Error("Acesso ao Painel Gestor negado para este perfil.");
 }
 

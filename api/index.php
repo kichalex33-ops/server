@@ -62,17 +62,18 @@ $publicRoutes = [
 ];
 
 $routeKey = $method . ' ' . $path;
+$authorizationHeader = authorizationHeader();
 $user = null;
 if (!isPublicRoute($method, $path, $routeKey, $publicRoutes)) {
     $authError = null;
     try {
-        $user = $auth->userFromBearer($_SERVER['HTTP_AUTHORIZATION'] ?? null);
+        $user = $auth->userFromBearer($authorizationHeader);
     } catch (Throwable $error) {
         $authError = $error;
     }
 
     if (isProtectedDriverRoute($method, $path, $routeKey)) {
-        $driverUser = $service->driverUserFromBearer($_SERVER['HTTP_AUTHORIZATION'] ?? null);
+        $driverUser = $service->driverUserFromBearer($authorizationHeader);
         if ($user && strtoupper((string) ($user['perfil'] ?? '')) === 'MOTORISTA') {
             $user = $driverUser;
         } elseif (!$user) {
@@ -84,7 +85,7 @@ if (!isPublicRoute($method, $path, $routeKey, $publicRoutes)) {
         $audit->failure($authError ? 'auth_invalid' : 'auth_required', null, null);
         $message = isProtectedDriverRoute($method, $path, $routeKey)
             ? 'Token de motorista obrigatório.'
-            : 'Token invalido ou expirado.';
+            : 'Token inválido ou expirado.';
         Response::error($message, 401);
         return;
     }
@@ -110,11 +111,15 @@ if ($routeKey === 'GET /infra/status') {
     return;
 }
 if ($routeKey === 'POST /infra/backup') {
-    Response::error('Backup deve ser executado por CLI no HostGator.', 403);
+    Response::ok($service->runBackup($user), 201);
     return;
 }
 if ($routeKey === 'GET /dashboard/resumo-dia') {
     Response::ok($service->dashboardSummary());
+    return;
+}
+if ($routeKey === 'GET /relatorios/viagens-historico') {
+    Response::ok($service->tripsHistoryReport($_GET));
     return;
 }
 if ($routeKey === 'POST /auth/login') {
@@ -235,7 +240,7 @@ if ($routeKey === 'POST /driver/sync') {
     return;
 }
 if ($routeKey === 'POST /driver/change-password') {
-    Response::ok($service->driverChangePassword($_SERVER['HTTP_AUTHORIZATION'] ?? null, $body));
+    Response::ok($service->driverChangePassword($authorizationHeader, $body));
     return;
 }
 if ($routeKey === 'POST /gps') {
@@ -291,11 +296,27 @@ if ($routeKey === 'POST /ai/route-intelligence') {
     Response::ok($ai->routeIntelligence($body, $user));
     return;
 }
+if ($routeKey === 'POST /ai/weather') {
+    Response::ok($ai->weather($body, $user));
+    return;
+}
 if ($method === 'GET' && preg_match('#^/viagens/([^/]+)$#', $path, $m)) {
     Response::ok(['viagem' => $service->findById('viagens', $m[1])]);
     return;
 }
+if ($method === 'POST' && preg_match('#^/viagens/([^/]+)/cancelar$#', $path, $m)) {
+    Response::ok($service->cancelTrip($m[1], $body, $user));
+    return;
+}
+if ($method === 'POST' && preg_match('#^/viagens/([^/]+)/reatribuir$#', $path, $m)) {
+    Response::ok($service->reassignTrip($m[1], $body, $user));
+    return;
+}
 if ($method === 'GET' && preg_match('#^/viagens/([^/]+)/passageiros$#', $path, $m)) {
+    // H526 FIX: motorista so pode ver passageiros de viagens proprias
+    if (strtoupper((string) ($user['perfil'] ?? '')) === 'MOTORISTA') {
+        $service->assertDriverCanAccessTripId($m[1], $user);
+    }
     Response::ok($service->listTripPassengers($m[1], $user));
     return;
 }
@@ -335,6 +356,14 @@ if ($method === 'POST' && preg_match('#^/driver/passengers/([^/]+)/(boarding|dro
     Response::ok($service->driverPassengerAction($m[1], $m[2], driverScopedBody($body, $user), $user));
     return;
 }
+if ($routeKey === 'GET /sync/painel') {
+    Response::ok($service->syncPanel($user));
+    return;
+}
+if ($routeKey === 'POST /sync/reenvio') {
+    Response::ok($service->syncReenvio($user));
+    return;
+}
 if ($routeKey === 'GET /indicadores/operador') {
     Response::ok($service->operatorIndicators());
     return;
@@ -369,6 +398,10 @@ if ($routeKey === 'GET /gestao/custos') {
 }
 if ($routeKey === 'GET /gestao/auditoria' || $routeKey === 'GET /auditoria') {
     Response::ok($service->audit());
+    return;
+}
+if ($routeKey === 'GET /seguranca/login-attempts') {
+    Response::ok($service->securityLoginAttempts());
     return;
 }
 if ($routeKey === 'GET /lgpd') {
@@ -423,6 +456,30 @@ function internalApiPath(string $uri): string
 }
 
 
+function authorizationHeader(): ?string
+{
+    $candidates = [
+        $_SERVER['HTTP_AUTHORIZATION'] ?? null,
+        $_SERVER['REDIRECT_HTTP_AUTHORIZATION'] ?? null,
+        $_SERVER['Authorization'] ?? null,
+    ];
+    if (function_exists('apache_request_headers')) {
+        $headers = apache_request_headers();
+        foreach ($headers as $name => $value) {
+            if (strtolower((string) $name) === 'authorization') {
+                $candidates[] = $value;
+            }
+        }
+    }
+    foreach ($candidates as $value) {
+        $value = trim((string) $value);
+        if ($value !== '') {
+            return $value;
+        }
+    }
+    return null;
+}
+
 function isPublicRoute(string $method, string $path, string $routeKey, array $publicRoutes): bool
 {
     return in_array($routeKey, $publicRoutes, true);
@@ -462,6 +519,9 @@ function routeResource(string $path, string $routeKey): string
     }
     if ($routeKey === 'GET /rastreamento' || $routeKey === 'GET /tracking') {
         return 'rastreamento';
+    }
+    if (preg_match('#^/seguranca/#', $path)) {
+        return 'seguranca';
     }
     return explode('/', trim($path, '/'))[0] ?: 'status';
 }

@@ -8,19 +8,28 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <title>Frota | Gestor</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
-    <link rel="stylesheet" href="/homologacao/public/assets/css/painel-acesso.css?v=h525">
-    <link rel="stylesheet" href="/homologacao/public/assets/css/mapas.css?v=h525">
-      <link rel="stylesheet" href="/homologacao/public/assets/css/theme-dark-fix.css?v=h525">
-  <link rel="stylesheet" href="/homologacao/public/assets/css/h520-forcado.css?v=h525">
-  <link rel="stylesheet" href="/homologacao/public/assets/css/h521-visual-definitivo.css?v=h525">
-  <link rel="stylesheet" href="/homologacao/public/assets/css/h524-menu-router.css?v=h525">
-  <link rel="stylesheet" href="/homologacao/public/assets/css/h525-menu-layout-final.css?v=h525">
+    <link rel="stylesheet" href="assets/css/painel-acesso.css?v=h540">
+    <link rel="stylesheet" href="assets/css/mapas.css?v=h540">
+      <link rel="stylesheet" href="assets/css/theme-dark-fix.css?v=h540">
+  <link rel="stylesheet" href="assets/css/h520-forcado.css?v=h540">
+  <link rel="stylesheet" href="assets/css/h521-visual-definitivo.css?v=h540">
+  <link rel="stylesheet" href="assets/css/h524-menu-router.css?v=h540">
+  <link rel="stylesheet" href="assets/css/h525-menu-layout-final.css?v=h540">
+  <link rel="stylesheet" href="assets/css/h530-auditoria-visual.css?v=h540" data-h530-visual="1">
+  <link rel="stylesheet" href="assets/css/h531-correcao-final.css?v=h540" data-h531-visual="1">
+  <link rel="stylesheet" href="assets/css/h533-correcao-final.css?v=h540" data-h533-visual="1">
+  <link rel="stylesheet" href="assets/css/h534-correcao-final.css?v=h540" data-h534-visual="1">
+  <link rel="stylesheet" href="assets/css/h536-contraste-tema-unificado.css?v=h540" data-h536-visual="1">
+  <link rel="stylesheet" href="assets/css/h537-transicao-tema-suave.css?v=h540" data-h537-transition="1">
+  <link rel="stylesheet" href="assets/css/h538-gestao-kpi-fix.css?v=h540" data-h538-gestao="1">
+  <link rel="stylesheet" href="assets/css/h539-gestao-final.css?v=h540" data-h539-gestao="1">
+  <link rel="stylesheet" href="assets/css/h540-interface-agatho-icons.css?v=h540" data-h540-interface="1">
 </head>
-  <body data-theme="dark" data-manager-screen="frota">
+  <body data-theme="" data-manager-screen="frota">
     <div class="dashboard-shell manager-app">
       <aside class="side-nav">
         <div class="side-brand compact-brand">
-          <img class="brand-logo" src="/homologacao/public/assets/img/andrade-gestao-saude.jpeg" alt="Andrade Gestão em Saúde">
+          <img class="brand-logo" src="assets/img/andrade-gestao-saude.jpeg" alt="Andrade Gestão em Saúde">
           <div><strong>Painel Gestor</strong><small>Transporte de Pacientes</small></div>
         </div>
         <nav class="nav-section" aria-label="Menu gestor">
@@ -38,6 +47,7 @@
           <a href="/homologacao/public/gestao-relatorios.html" data-manager-screen-link="relatorios"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5V4a2 2 0 0 1 2-2h9l5 5v12.5a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2Z"/><path d="M14 2v6h6"/><path d="M8 13h8M8 17h5"/></svg></span> Relatórios</a>
           <a href="/homologacao/public/gestao-exportacoes.html" data-manager-screen-link="exportacoes"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M5 21h14"/></svg></span> Exportações</a>
           <a href="/homologacao/public/gestao-seguranca.html" data-manager-screen-link="seguranca"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/><path d="M9 12l2 2 4-4"/></svg></span> Segurança Operacional</a>
+          <a href="/homologacao/public/gestao-lgpd.html" data-manager-screen-link="lgpd"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l7 4v5c0 5-3.5 8-7 9-3.5-1-7-4-7-9V7l7-4Z"/><path d="M9 12h6"/><path d="M12 9v6"/></svg></span> Privacidade / LGPD</a>
           <p>Configurações</p>
           <a href="/homologacao/public/gestao-operadores.html" data-manager-screen-link="operadores"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/><path d="M9 12l2 2 4-4"/></svg></span> Operadores Logísticos</a>
           <a href="/homologacao/public/gestao-perfis.html" data-manager-screen-link="perfis"><span class="nav-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 22c1.8-4 4.5-6 8-6s6.2 2 8 6"/></svg></span> Perfis de Acesso</a>
@@ -227,12 +237,42 @@
           </div>
         </section>
 
-        <section id="seguranca" class="panel manager-single-panel">
-          <div class="panel-header"><div><h2>Segurança Operacional</h2><small>Controle de acessos, alertas e auditoria do sistema.</small></div><span class="panel-tag">Gestor</span></div>
-          <div class="manager-placeholder-grid">
-            <article><span>Autenticação</span><strong>JWT ativo</strong><small>sessão protegida</small></article>
-            <article><span>Perfis</span><strong>Gestor / Operador</strong><small>acesso por função</small></article>
-            <article><span>Auditoria</span><strong>Eventos registrados</strong><small>acompanhe a tabela de auditoria</small></article>
+        <section id="seguranca" class="panel manager-single-panel security-panel">
+          <div class="panel-header"><div><h2>Segurança Operacional</h2><small>Controle de acessos, tentativas de login, backup e auditoria do sistema.</small></div><span class="panel-tag">H5.34</span></div>
+          <div id="h534SecurityPanel">
+            <div class="h534-grid">
+              <article class="h534-card-light"><span>Falhas de login</span><strong id="h534Failed15">0</strong><small>últimos 15 minutos</small></article>
+              <article class="h534-card-light"><span>Bloqueios ativos</span><strong id="h534BlockedNow">0</strong><small id="h534LoginPolicy">8 falhas por login/IP em 15 minutos</small></article>
+              <article class="h534-card-light"><span>Backup</span><strong>Manual protegido</strong><small><button id="h534RunBackup" class="h534-action secondary" type="button">Executar backup agora</button></small></article>
+            </div>
+            <div class="h534-table-wrap"><table class="h534-table"><thead><tr><th>IP</th><th>Status</th><th>Login hash</th><th>Data</th></tr></thead><tbody id="h534LoginAttemptsTable"><tr><td colspan="4">Carregando...</td></tr></tbody></table></div>
+            <h3>Bloqueios por força bruta</h3>
+            <div class="h534-table-wrap"><table class="h534-table"><thead><tr><th>IP</th><th>Falhas</th><th>Última tentativa</th></tr></thead><tbody id="h534BlockedList"><tr><td colspan="3">Carregando...</td></tr></tbody></table></div>
+          </div>
+        </section>
+
+        <section id="lgpd" class="panel manager-single-panel lgpd-panel">
+          <div class="panel-header"><div><h2>Privacidade / LGPD</h2><small>Consentimentos, solicitações de titular e rastreabilidade de acesso a dados pessoais.</small></div><span class="panel-tag">LGPD</span></div>
+          <div id="h534LgpdPanel">
+            <form id="h534ConsentForm" class="h534-form">
+              <select name="titular_tipo" required><option value="paciente">Paciente</option><option value="acompanhante">Acompanhante</option><option value="motorista">Motorista</option></select>
+              <input name="titular_id" placeholder="ID do titular" required>
+              <input name="finalidade" placeholder="Finalidade do tratamento" required>
+              <label><input name="consentido" type="checkbox" value="1" checked> Consentido</label>
+              <button type="submit">Registrar consentimento</button>
+            </form>
+            <form id="h534PrivacyRequestForm" class="h534-form">
+              <select name="titular_tipo" required><option value="paciente">Paciente</option><option value="acompanhante">Acompanhante</option><option value="motorista">Motorista</option></select>
+              <input name="titular_id" placeholder="ID do titular" required>
+              <select name="tipo"><option value="anonimizacao">Anonimização</option><option value="acesso">Acesso</option><option value="correcao">Correção</option><option value="eliminacao">Eliminação</option></select>
+              <button type="submit">Abrir solicitação</button>
+            </form>
+            <h3>Consentimentos</h3>
+            <div class="h534-table-wrap"><table class="h534-table"><thead><tr><th>Titular</th><th>ID</th><th>Finalidade</th><th>Consentido</th><th>Data</th></tr></thead><tbody id="h534LgpdConsents"><tr><td colspan="5">Carregando...</td></tr></tbody></table></div>
+            <h3>Solicitações do titular</h3>
+            <div class="h534-table-wrap"><table class="h534-table"><thead><tr><th>Titular</th><th>ID</th><th>Tipo</th><th>Status</th><th>Data</th></tr></thead><tbody id="h534LgpdRequests"><tr><td colspan="5">Carregando...</td></tr></tbody></table></div>
+            <h3>Acessos a dados pessoais</h3>
+            <div class="h534-table-wrap"><table class="h534-table"><thead><tr><th>Usuário</th><th>Entidade</th><th>ID</th><th>Data</th></tr></thead><tbody id="h534DataAccess"><tr><td colspan="4">Carregando...</td></tr></tbody></table></div>
           </div>
         </section>
 
@@ -258,15 +298,22 @@
     </div>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <script src="/homologacao/public/assets/js/api-config.js?v=h525"></script>
-    <script src="/homologacao/public/assets/js/auth-client.js?v=h525"></script>
-    <script src="/homologacao/public/assets/js/theme.js?v=h525"></script>
-    <script src="/homologacao/public/assets/js/charts/dashboard-charts.js?v=h525"></script>
-    <script src="/homologacao/public/assets/js/gestao.js?v=h525"></script>
-    <script src="/homologacao/public/assets/js/live-map.js?v=h525"></script>
-    <script src="/homologacao/public/assets/js/h520-force-ui.js?v=h525"></script>
-  <script src="/homologacao/public/assets/js/h521-force-ui.js?v=h525"></script>
-  <script src="/homologacao/public/assets/js/h524-menu-router.js?v=h525"></script>
-  <script src="/homologacao/public/assets/js/h525-menu-completo.js?v=h525"></script>
+    <script src="assets/js/api-config.js?v=h540"></script>
+    <script src="assets/js/auth-client.js?v=h540"></script>
+    <script src="assets/js/h526-security-auth.js?v=h540"></script>
+    <script src="assets/js/theme.js?v=h540"></script>
+    <script src="assets/js/charts/dashboard-charts.js?v=h540"></script>
+    <script src="assets/js/gestao.js?v=h540"></script>
+    <script src="assets/js/live-map.js?v=h540"></script>
+    <script src="assets/js/h520-force-ui.js?v=h540"></script>
+  <script src="assets/js/h521-force-ui.js?v=h540"></script>
+  <script src="assets/js/h524-menu-router.js?v=h540"></script>
+  <script src="assets/js/h525-menu-completo.js?v=h540"></script>
+  <script src="assets/js/h534-security-lgpd.js?v=h540"></script>
+  <script src="assets/js/h534-self-healing.js?v=h540"></script>
+  <script src="assets/js/h536-self-healing.js?v=h540"></script>
+  <script src="assets/js/h538-gestao-kpi-fix.js?v=h540"></script>
+  <script src="assets/js/h539-gestao-final.js?v=h540"></script>
+  <script src="assets/js/h540-interface-polish.js?v=h540"></script>
 </body>
 </html>

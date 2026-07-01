@@ -15,7 +15,7 @@
     auditoria: ["Auditoria", "Eventos e rastreabilidade"],
     relatorios: ["Relatórios", "Exportações e documentos gerenciais"],
     exportacoes: ["Exportações", "Arquivos CSV e bases de dados"],
-    seguranca: ["Segurança Operacional", "Perfis, auditoria e controle"],
+    seguranca: ["Segurança Operacional", "Perfis, auditoria e controle"],lgpd: ["Privacidade / LGPD", "Consentimentos e solicitações"],
     operadores: ["Operadores Logísticos", "Cadastro e controle de operadores"],
     perfis: ["Perfis de Acesso", "Papéis e permissões"],
     parametros: ["Parâmetros do Sistema", "Configuração do ambiente"]
