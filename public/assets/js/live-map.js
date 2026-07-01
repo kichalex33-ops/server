@@ -13,6 +13,11 @@
   let operatorLocationKnown = false;
   let operatorMarker = null;
   let operatorAccuracyCircle = null;
+  // Auditoria H548→H549, item 1.6: sinalizar dados desatualizados / falha de
+  // rede para o operador, já que o mapa mantém a última posição conhecida.
+  let lastSuccessAt = 0;
+  let consecutiveErrors = 0;
+  let freshnessTimer = null;
 
   L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
     maxZoom: 19,
@@ -40,12 +45,30 @@
       const source = Array.isArray(data.items) ? data.items : (Array.isArray(data.veiculos) ? data.veiculos : []);
       const items = source.map(normalizeItem).filter((item) => Number.isFinite(item.latitude) && Number.isFinite(item.longitude));
       render(items);
+      lastSuccessAt = Date.now();
+      consecutiveErrors = 0;
       updateStats(items, data);
       showMessage(items.length ? "" : "Nenhum veículo possui localização registrada.", "empty");
     } catch (error) {
-      showMessage(error.message || "Não foi possível atualizar o mapa.", "error");
-      setStat("updated", "Erro");
+      consecutiveErrors += 1;
+      // Só alarma o operador após 2 falhas seguidas (evita ruído em uma
+      // instabilidade pontual). Antes disso, mantém o horário do último dado.
+      if (consecutiveErrors >= 2) {
+        showMessage(error.message || "Sem conexão com o servidor. Dados podem estar desatualizados.", "error");
+        setStat("updated", lastSuccessAt ? `Sem conexão · ${relativeTime(lastSuccessAt)}` : "Sem conexão");
+      } else {
+        showMessage(error.message || "Não foi possível atualizar o mapa.", "error");
+      }
     }
+  }
+
+  function relativeTime(timestamp) {
+    if (!timestamp) return "sem atualização";
+    const seconds = Math.max(0, Math.round((Date.now() - timestamp) / 1000));
+    if (seconds < 60) return `há ${seconds}s`;
+    const minutes = Math.round(seconds / 60);
+    if (minutes < 60) return `há ${minutes} min`;
+    return `há ${Math.round(minutes / 60)} h`;
   }
 
   function normalizeItem(item) {
@@ -303,7 +326,15 @@
   }
 
   function updateTime(value) {
-    setStat("updated", value ? formatDate(value) : "Sem atualização");
+    if (value) lastSuccessAt = new Date(value).getTime() || lastSuccessAt || Date.now();
+    refreshFreshnessLabel();
+  }
+
+  // Mantém o rótulo "atualizado há Xs" vivo entre as sondagens, para o operador
+  // perceber quando o dado está envelhecendo mesmo sem uma falha explícita.
+  function refreshFreshnessLabel() {
+    if (consecutiveErrors >= 2) return;
+    setStat("updated", lastSuccessAt ? `atualizado ${relativeTime(lastSuccessAt)}` : "Sem atualização");
   }
 
   function setStat(name, value) {
@@ -324,4 +355,6 @@
 
   update();
   window.setInterval(update, refreshMs);
+  // Atualiza o indicador de frescor a cada 5s, independente do polling de 20s.
+  freshnessTimer = window.setInterval(refreshFreshnessLabel, 5000);
 })();

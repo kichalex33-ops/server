@@ -1,11 +1,14 @@
-/* H5.40 — Identidade visual: tipografia editorial + ícones lineares
+/* H5.40 — Identidade visual: tipografia + ícones lineares
    Referência: mockup aprovado pelo usuário.
-   Observação: esta folha usa a família "Agatho" se ela estiver disponível no servidor/navegador.
-   Os arquivos da fonte NÃO são empacotados aqui; fallback seguro: Georgia/serif. */
+   H549+ (auditoria H548→H549, item 1.1): a família "Agatho" nunca foi
+   empacotada e não existe @font-face para ela, então o navegador caía no
+   fallback serif (Georgia) em todo o produto. A tipografia agora usa "Inter"
+   — a mesma fonte já carregada via Google Fonts e adotada pelo design system
+   (h544) — para que toda a interface renderize de forma consistente. */
 
 :root {
-  --h540-font-display: "Agatho", "Cormorant Garamond", "Libre Baskerville", "Georgia", "Times New Roman", serif;
-  --h540-font-ui: "Agatho", "Georgia", "Times New Roman", serif;
+  --h540-font-display: "Inter", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+  --h540-font-ui: "Inter", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
   --h540-font-system: "Inter", "Segoe UI", Arial, sans-serif;
 
   --h540-ink: #0f172a;

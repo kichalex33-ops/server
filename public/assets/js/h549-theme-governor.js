@@ -48,10 +48,50 @@
     document.documentElement.dataset.selfHealing = "disabled";
   }
 
+  // Auditoria H548→H549, item 1.2: os formulários reais do sistema (cadastros,
+  // solicitações LGPD, etc.) são injetados via JS depois do carregamento, em
+  // modais/painéis. Um MutationObserver enxuto — com debounce e processando só
+  // os nós adicionados que contenham campos — reaplica os rótulos a esse
+  // conteúdo dinâmico, sem o custo do self-healing global antigo.
+  function observeDynamicForms() {
+    if (typeof MutationObserver === "undefined" || !document.body) return;
+    var pending = [];
+    var scheduled = false;
+
+    function flush() {
+      scheduled = false;
+      var nodes = pending;
+      pending = [];
+      nodes.forEach(function (node) {
+        if (node.nodeType !== 1) return;
+        if (node.matches && node.matches("input, select, textarea")) {
+          ensureInputLabels(node.parentNode || node);
+          protectSensitiveInputs(node.parentNode || node);
+        } else if (node.querySelector && node.querySelector("input, select, textarea")) {
+          ensureInputLabels(node);
+          protectSensitiveInputs(node);
+        }
+      });
+    }
+
+    var observer = new MutationObserver(function (mutations) {
+      for (var i = 0; i < mutations.length; i++) {
+        var added = mutations[i].addedNodes;
+        for (var j = 0; j < added.length; j++) pending.push(added[j]);
+      }
+      if (pending.length && !scheduled) {
+        scheduled = true;
+        window.setTimeout(flush, 150);
+      }
+    });
+    observer.observe(document.body, { childList: true, subtree: true });
+  }
+
   function init() {
     applyTheme();
     ensureInputLabels(document);
     protectSensitiveInputs(document);
+    observeDynamicForms();
     markReady();
   }
 

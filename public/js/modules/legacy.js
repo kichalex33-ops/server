@@ -18,7 +18,9 @@
   var VENDOR_SRI = {
     leafletCss: "sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=",
     leafletJs: "sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=",
-    chartJs: null
+    // Auditoria H548→H549, item 1.7: hash SRI do chart.js@4.4.9 (chart.umd.min.js
+    // servido pelo jsdelivr) gerado e aplicado, fechando o único CDN sem proteção.
+    chartJs: "sha256-vOFUCAlZxXS+C7axqST/MvCOvG/0YMFZFx9RxTgCyEQ="
   };
   var VENDOR_URLS = {
     chartJs: "https://cdn.jsdelivr.net/npm/chart.js@4.4.9/dist/chart.umd.min.js",
