@@ -68,7 +68,8 @@ function formatDate(value) {
 }
 
 function escapeHtml(value) {
-  return String(value ?? "").replace(/[&<>"']/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;" }[char]));
+  if (window.App?.Sanitize?.escapeHtml) return window.App.Sanitize.escapeHtml(value);
+  return String(value ?? "").replace(/[&<>"'`]/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;", "`": "&#096;" }[char]));
 }
 
 loadInfra().catch((error) => {

@@ -6,8 +6,8 @@ final class Rbac
 {
     private array $rules = [
         'ADMIN' => ['*'],
-        'GESTOR' => ['gestao', 'operadores', 'indicadores', 'graficos', 'auditoria', 'lgpd', 'export', 'motoristas', 'viagens', 'veiculos', 'pacientes', 'destinos', 'passageiros', 'trip-passengers', 'live-map', 'rastreamento', 'tracking', 'gps', 'ai'],
-        'OPERADOR' => ['dashboard', 'indicadores', 'graficos', 'motoristas', 'viagens', 'veiculos', 'pacientes', 'destinos', 'passageiros', 'trip-passengers', 'localizacoes', 'gps', 'live-map', 'rastreamento', 'tracking', 'alertas', 'mensagens', 'checklists', 'ocorrencias', 'despesas', 'sync', 'panico', 'emergencias', 'giroflex', 'watchdog', 'antifraude', 'ai'],
+        'GESTOR' => ['gestao', 'relatorios', 'operadores', 'sync', 'indicadores', 'graficos', 'auditoria', 'lgpd', 'seguranca', 'infra', 'export', 'motoristas', 'viagens', 'veiculos', 'pacientes', 'destinos', 'passageiros', 'trip-passengers', 'live-map', 'rastreamento', 'tracking', 'gps', 'ai', 'pwa', 'notifications', 'presenca', 'users', 'analytics', 'integrations', 'gamificacao'],
+        'OPERADOR' => ['dashboard', 'relatorios', 'indicadores', 'graficos', 'motoristas', 'viagens', 'veiculos', 'pacientes', 'destinos', 'passageiros', 'trip-passengers', 'localizacoes', 'gps', 'live-map', 'rastreamento', 'tracking', 'alertas', 'mensagens', 'checklists', 'ocorrencias', 'despesas', 'sync', 'panico', 'emergencias', 'giroflex', 'watchdog', 'antifraude', 'ai', 'pwa', 'notifications', 'presenca', 'users', 'analytics', 'integrations', 'gamificacao'],
         'MOTORISTA' => ['driver', 'gps', 'trip-passengers'],
         'CIDADAO' => ['status'],
     ];

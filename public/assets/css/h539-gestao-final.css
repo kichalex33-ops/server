@@ -1,0 +1,369 @@
+/* H5.39 — correção final do Painel Gestor
+   Foco: cards KPI quebrados, contraste do topo e isolamento do gestor contra CSS legado.
+   Carregar por último. */
+
+:root {
+  --h539-gestor-bg: #eef3f8;
+  --h539-topbar: #0d263d;
+  --h539-card: #ffffff;
+  --h539-card-border: #d8e1ea;
+  --h539-text: #0f172a;
+  --h539-muted: #475569;
+  --h539-soft: #64748b;
+  --h539-light: #f8fafc;
+  --h539-light-muted: #cbd5e1;
+  --h539-accent: #d6a93f;
+}
+
+/* Isolamento básico: o gestor não pode herdar regras agressivas do operador. */
+html body[data-manager-screen] .dashboard-shell.manager-app,
+html body .dashboard-shell.manager-app {
+  color: var(--h539-text) !important;
+}
+
+html body[data-manager-screen] .dashboard-shell.manager-app .main-dashboard,
+html body .dashboard-shell.manager-app .main-dashboard {
+  background: var(--h539-gestor-bg) !important;
+  color: var(--h539-text) !important;
+  overflow-x: hidden;
+}
+
+/* Topbar escura com letras claras, exceto controles brancos. */
+html body[data-manager-screen] .dashboard-shell.manager-app .topbar,
+html body .dashboard-shell.manager-app .topbar {
+  background: var(--h539-topbar) !important;
+  color: var(--h539-light) !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: 0 2px 10px rgba(15, 23, 42, .22) !important;
+}
+
+html body[data-manager-screen] .dashboard-shell.manager-app .topbar .top-title,
+html body[data-manager-screen] .dashboard-shell.manager-app .topbar .top-title *,
+html body[data-manager-screen] .dashboard-shell.manager-app .topbar .profile-pill,
+html body[data-manager-screen] .dashboard-shell.manager-app .topbar .profile-pill *:not(.profile-avatar),
+html body .dashboard-shell.manager-app .topbar .top-title,
+html body .dashboard-shell.manager-app .topbar .top-title *,
+html body .dashboard-shell.manager-app .topbar .profile-pill,
+html body .dashboard-shell.manager-app .topbar .profile-pill *:not(.profile-avatar) {
+  color: var(--h539-light) !important;
+}
+
+html body[data-manager-screen] .dashboard-shell.manager-app .topbar .top-title span,
+html body[data-manager-screen] .dashboard-shell.manager-app .topbar .profile-pill small,
+html body .dashboard-shell.manager-app .topbar .top-title span,
+html body .dashboard-shell.manager-app .topbar .profile-pill small {
+  color: var(--h539-light-muted) !important;
+}
+
+html body[data-manager-screen] .dashboard-shell.manager-app .topbar .profile-pill,
+html body .dashboard-shell.manager-app .topbar .profile-pill {
+  background: transparent !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+}
+
+html body[data-manager-screen] .dashboard-shell.manager-app .topbar :is(select.filter-button, button.filter-button),
+html body .dashboard-shell.manager-app .topbar :is(select.filter-button, button.filter-button) {
+  background: #ffffff !important;
+  color: #0f172a !important;
+  border: 1px solid #cbd5e1 !important;
+  border-radius: 10px !important;
+  min-height: 42px !important;
+  font-weight: 800 !important;
+}
+
+html body[data-manager-screen] .dashboard-shell.manager-app .topbar :is(.theme-button, .icon-button),
+html body .dashboard-shell.manager-app .topbar :is(.theme-button, .icon-button) {
+  background: #ffffff !important;
+  color: #0f172a !important;
+  border: 1px solid #cbd5e1 !important;
+  box-shadow: 0 8px 18px rgba(15,23,42,.16) !important;
+}
+
+html body[data-manager-screen] .dashboard-shell.manager-app .topbar :is(.theme-button, .icon-button) *,
+html body .dashboard-shell.manager-app .topbar :is(.theme-button, .icon-button) * {
+  color: #0f172a !important;
+  stroke: #0f172a !important;
+}
+
+/* Grid real dos KPIs do dashboard gerencial. */
+html body[data-manager-screen] .dashboard-shell.manager-app main.main-dashboard > section#dashboard.manager-grid,
+html body .dashboard-shell.manager-app main.main-dashboard > section#dashboard.manager-grid {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)) !important;
+  gap: 14px !important;
+  align-items: stretch !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  margin: 0 !important;
+  padding: 18px 24px 8px !important;
+  overflow: visible;
+}
+
+/* Card KPI: neutraliza h531/h533/h536 e usa a estrutura real do HTML. */
+html body[data-manager-screen] .dashboard-shell.manager-app main.main-dashboard > section#dashboard.manager-grid > article.kpi-card,
+html body .dashboard-shell.manager-app main.main-dashboard > section#dashboard.manager-grid > article.kpi-card {
+  position: relative !important;
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) 52px !important;
+  grid-template-rows: auto;
+  align-items: stretch !important;
+  gap: 10px !important;
+  min-width: 0 !important;
+  min-height: 138px !important;
+  height: auto !important;
+  padding: 18px !important;
+  border-radius: 10px !important;
+  overflow: hidden;
+  background: var(--h539-card) !important;
+  color: var(--h539-text) !important;
+  border: 1px solid var(--h539-card-border) !important;
+  box-shadow: 0 8px 20px rgba(15, 23, 42, .08) !important;
+  writing-mode: horizontal-tb;
+  text-orientation: mixed;
+  word-break: normal;
+  overflow-wrap: normal;
+  white-space: normal;
+}
+
+/* Bloco de texto: este é o div real que contém span, strong e small. */
+html body[data-manager-screen] .dashboard-shell.manager-app main.main-dashboard > section#dashboard.manager-grid > article.kpi-card > div:first-child,
+html body .dashboard-shell.manager-app main.main-dashboard > section#dashboard.manager-grid > article.kpi-card > div:first-child {
+  grid-column: 1 / 2;
+  grid-row: 1;
+  position: static !important;
+  z-index: 2;
+  display: flex !important;
+  flex-direction: column;
+  align-items: flex-start !important;
+  justify-content: space-between;
+  gap: 8px !important;
+  min-width: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  min-height: 100px !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  transform: none !important;
+  writing-mode: horizontal-tb;
+  text-orientation: mixed;
+  word-break: normal;
+  overflow-wrap: normal;
+  white-space: normal;
+}
+
+html body[data-manager-screen] .dashboard-shell.manager-app main.main-dashboard > section#dashboard.manager-grid > article.kpi-card > div:first-child > span,
+html body .dashboard-shell.manager-app main.main-dashboard > section#dashboard.manager-grid > article.kpi-card > div:first-child > span {
+  display: block !important;
+  flex: 0 0 auto;
+  width: 100% !important;
+  max-width: 142px !important;
+  min-width: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  color: var(--h539-muted) !important;
+  font-size: 12px !important;
+  line-height: 1.22 !important;
+  font-weight: 900 !important;
+  letter-spacing: .025em !important;
+  text-transform: uppercase !important;
+  text-align: left;
+  white-space: normal;
+  word-break: normal;
+  overflow-wrap: normal;
+  writing-mode: horizontal-tb;
+  text-orientation: mixed;
+}
+
+html body[data-manager-screen] .dashboard-shell.manager-app main.main-dashboard > section#dashboard.manager-grid > article.kpi-card > div:first-child > strong,
+html body .dashboard-shell.manager-app main.main-dashboard > section#dashboard.manager-grid > article.kpi-card > div:first-child > strong {
+  display: block !important;
+  flex: 1 1 auto;
+  align-self: stretch;
+  min-width: 0 !important;
+  max-width: 100% !important;
+  margin: 4px 0 0 !important;
+  padding: 0 !important;
+  color: var(--h539-text) !important;
+  font-size: clamp(24px, 2.4vw, 34px) !important;
+  line-height: 1.04 !important;
+  font-weight: 900 !important;
+  letter-spacing: -.045em !important;
+  text-align: left;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  word-break: normal;
+  overflow-wrap: normal;
+  writing-mode: horizontal-tb;
+  text-orientation: mixed;
+}
+
+html body[data-manager-screen] .dashboard-shell.manager-app main.main-dashboard > section#dashboard.manager-grid > article.kpi-card > div:first-child > small,
+html body .dashboard-shell.manager-app main.main-dashboard > section#dashboard.manager-grid > article.kpi-card > div:first-child > small {
+  display: block !important;
+  flex: 0 0 auto;
+  width: 100% !important;
+  max-width: 150px !important;
+  min-width: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  color: var(--h539-muted) !important;
+  font-size: 11px !important;
+  line-height: 1.25 !important;
+  font-weight: 700 !important;
+  text-align: left;
+  white-space: normal;
+  word-break: normal;
+  overflow-wrap: normal;
+  writing-mode: horizontal-tb;
+  text-orientation: mixed;
+}
+
+/* Ícone: coluna própria, sem esmagar texto. */
+html body[data-manager-screen] .dashboard-shell.manager-app main.main-dashboard > section#dashboard.manager-grid > article.kpi-card > div.kpi-icon,
+html body .dashboard-shell.manager-app main.main-dashboard > section#dashboard.manager-grid > article.kpi-card > div.kpi-icon {
+  grid-column: 2 / 3;
+  grid-row: 1;
+  position: static !important;
+  transform: none !important;
+  place-self: center end;
+  display: grid !important;
+  place-items: center !important;
+  width: 48px !important;
+  height: 48px !important;
+  min-width: 48px !important;
+  max-width: 48px !important;
+  min-height: 48px !important;
+  max-height: 48px !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  border-radius: 999px !important;
+  opacity: 1 !important;
+  z-index: 1;
+}
+
+html body[data-manager-screen] .dashboard-shell.manager-app main.main-dashboard > section#dashboard.manager-grid > article.kpi-card > div.kpi-icon svg,
+html body .dashboard-shell.manager-app main.main-dashboard > section#dashboard.manager-grid > article.kpi-card > div.kpi-icon svg {
+  width: 26px !important;
+  height: 26px !important;
+  min-width: 26px !important;
+  max-width: 26px !important;
+  color: #334155 !important;
+  stroke: currentColor !important;
+}
+
+html body[data-manager-screen] .dashboard-shell.manager-app main.main-dashboard > section#dashboard.manager-grid > article.kpi-card > div.kpi-icon.green,
+html body .dashboard-shell.manager-app main.main-dashboard > section#dashboard.manager-grid > article.kpi-card > div.kpi-icon.green { background: #dcfce7 !important; }
+html body[data-manager-screen] .dashboard-shell.manager-app main.main-dashboard > section#dashboard.manager-grid > article.kpi-card > div.kpi-icon.purple,
+html body .dashboard-shell.manager-app main.main-dashboard > section#dashboard.manager-grid > article.kpi-card > div.kpi-icon.purple { background: #ede9fe !important; }
+html body[data-manager-screen] .dashboard-shell.manager-app main.main-dashboard > section#dashboard.manager-grid > article.kpi-card > div.kpi-icon.blue,
+html body .dashboard-shell.manager-app main.main-dashboard > section#dashboard.manager-grid > article.kpi-card > div.kpi-icon.blue { background: #dbeafe !important; }
+html body[data-manager-screen] .dashboard-shell.manager-app main.main-dashboard > section#dashboard.manager-grid > article.kpi-card > div.kpi-icon.yellow,
+html body .dashboard-shell.manager-app main.main-dashboard > section#dashboard.manager-grid > article.kpi-card > div.kpi-icon.yellow { background: #fef3c7 !important; }
+html body[data-manager-screen] .dashboard-shell.manager-app main.main-dashboard > section#dashboard.manager-grid > article.kpi-card > div.kpi-icon.red,
+html body .dashboard-shell.manager-app main.main-dashboard > section#dashboard.manager-grid > article.kpi-card > div.kpi-icon.red { background: #fee2e2 !important; }
+
+/* Resumo operacional gerencial abaixo dos KPIs. */
+html body[data-manager-screen] .dashboard-shell.manager-app .ops-metric-strip,
+html body .dashboard-shell.manager-app .ops-metric-strip {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)) !important;
+  gap: 14px !important;
+  padding: 8px 24px 18px !important;
+}
+
+html body[data-manager-screen] .dashboard-shell.manager-app .ops-metric-strip > article,
+html body .dashboard-shell.manager-app .ops-metric-strip > article,
+html body[data-manager-screen] .dashboard-shell.manager-app .manager-placeholder-grid > article,
+html body .dashboard-shell.manager-app .manager-placeholder-grid > article {
+  display: flex !important;
+  flex-direction: column;
+  align-items: flex-start !important;
+  justify-content: center;
+  gap: 6px !important;
+  min-height: 96px !important;
+  padding: 16px !important;
+  background: #ffffff !important;
+  color: var(--h539-text) !important;
+  border: 1px solid var(--h539-card-border) !important;
+  border-radius: 10px !important;
+  box-shadow: 0 8px 20px rgba(15, 23, 42, .06) !important;
+  writing-mode: horizontal-tb;
+}
+
+html body[data-manager-screen] .dashboard-shell.manager-app .ops-metric-strip > article :is(span,strong,small),
+html body .dashboard-shell.manager-app .ops-metric-strip > article :is(span,strong,small),
+html body[data-manager-screen] .dashboard-shell.manager-app .manager-placeholder-grid > article :is(span,strong,small),
+html body .dashboard-shell.manager-app .manager-placeholder-grid > article :is(span,strong,small) {
+  display: block !important;
+  width: 100% !important;
+  text-align: left;
+  writing-mode: horizontal-tb;
+  word-break: normal;
+  overflow-wrap: normal;
+  white-space: normal;
+}
+
+html body[data-manager-screen] .dashboard-shell.manager-app .ops-metric-strip > article strong,
+html body .dashboard-shell.manager-app .ops-metric-strip > article strong,
+html body[data-manager-screen] .dashboard-shell.manager-app .manager-placeholder-grid > article strong,
+html body .dashboard-shell.manager-app .manager-placeholder-grid > article strong {
+  color: var(--h539-text) !important;
+  font-size: clamp(20px, 2vw, 28px) !important;
+  line-height: 1.05 !important;
+}
+
+html body[data-manager-screen] .dashboard-shell.manager-app .ops-metric-strip > article small,
+html body .dashboard-shell.manager-app .ops-metric-strip > article small,
+html body[data-manager-screen] .dashboard-shell.manager-app .manager-placeholder-grid > article small,
+html body .dashboard-shell.manager-app .manager-placeholder-grid > article small {
+  color: var(--h539-muted) !important;
+  font-size: 12px !important;
+  line-height: 1.3 !important;
+}
+
+/* Painéis e tabelas do gestor: claro com texto escuro. */
+html body[data-manager-screen] .dashboard-shell.manager-app :is(.panel, .chart-card, .table-wrap, .data-table, .h534-card-light, .h534-table-wrap, .security-panel, .lgpd-panel),
+html body .dashboard-shell.manager-app :is(.panel, .chart-card, .table-wrap, .data-table, .h534-card-light, .h534-table-wrap, .security-panel, .lgpd-panel) {
+  background: #ffffff !important;
+  color: var(--h539-text) !important;
+  border-color: var(--h539-card-border) !important;
+}
+
+html body[data-manager-screen] .dashboard-shell.manager-app :is(.panel, .chart-card, .table-wrap, .data-table, .h534-card-light, .h534-table-wrap, .security-panel, .lgpd-panel) :is(h1,h2,h3,h4,h5,h6,strong,b,p,label,li,dt,dd,td,th,a,input,textarea,select,option,div,span,small,em),
+html body .dashboard-shell.manager-app :is(.panel, .chart-card, .table-wrap, .data-table, .h534-card-light, .h534-table-wrap, .security-panel, .lgpd-panel) :is(h1,h2,h3,h4,h5,h6,strong,b,p,label,li,dt,dd,td,th,a,input,textarea,select,option,div,span,small,em) {
+  color: var(--h539-text) !important;
+}
+
+html body[data-manager-screen] .dashboard-shell.manager-app :is(.panel, .chart-card, .table-wrap, .data-table, .h534-card-light, .h534-table-wrap, .security-panel, .lgpd-panel) :is(small, .muted, .text-muted, .hint, .description),
+html body .dashboard-shell.manager-app :is(.panel, .chart-card, .table-wrap, .data-table, .h534-card-light, .h534-table-wrap, .security-panel, .lgpd-panel) :is(small, .muted, .text-muted, .hint, .description) {
+  color: var(--h539-muted) !important;
+}
+
+/* Responsividade segura. */
+@media (max-width: 900px) {
+  html body[data-manager-screen] .dashboard-shell.manager-app main.main-dashboard > section#dashboard.manager-grid,
+  html body .dashboard-shell.manager-app main.main-dashboard > section#dashboard.manager-grid {
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)) !important;
+    padding: 14px !important;
+  }
+}
+
+@media (max-width: 560px) {
+  html body[data-manager-screen] .dashboard-shell.manager-app main.main-dashboard > section#dashboard.manager-grid,
+  html body .dashboard-shell.manager-app main.main-dashboard > section#dashboard.manager-grid {
+    grid-template-columns: 1fr !important;
+  }
+  html body[data-manager-screen] .dashboard-shell.manager-app main.main-dashboard > section#dashboard.manager-grid > article.kpi-card,
+  html body .dashboard-shell.manager-app main.main-dashboard > section#dashboard.manager-grid > article.kpi-card {
+    min-height: 122px !important;
+  }
+  html body[data-manager-screen] .dashboard-shell.manager-app main.main-dashboard > section#dashboard.manager-grid > article.kpi-card > div:first-child > span,
+  html body .dashboard-shell.manager-app main.main-dashboard > section#dashboard.manager-grid > article.kpi-card > div:first-child > span,
+  html body[data-manager-screen] .dashboard-shell.manager-app main.main-dashboard > section#dashboard.manager-grid > article.kpi-card > div:first-child > small,
+  html body .dashboard-shell.manager-app main.main-dashboard > section#dashboard.manager-grid > article.kpi-card > div:first-child > small {
+    max-width: 100% !important;
+  }
+}
