@@ -20,6 +20,11 @@ self.addEventListener('fetch', event => {
   if (req.method !== 'GET') return;
   const url = new URL(req.url);
   if (url.pathname.indexOf('/api/') !== -1) return;
+  // Só gerenciamos recursos do próprio site. Fontes/CDNs (Google Fonts, unpkg,
+  // jsdelivr) são carregados direto pelo navegador (regidos por style-src/
+  // font-src/script-src do CSP) — o SW não pode dar fetch neles porque um fetch
+  // no SW cai em connect-src e seria bloqueado.
+  if (url.origin !== self.location.origin) return;
 
   const isDoc = req.mode === 'navigate';
   const isCode = url.origin === self.location.origin && /\.(?:js|css|html)(?:$|\?)/.test(url.pathname + url.search);
