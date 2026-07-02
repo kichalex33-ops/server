@@ -38,7 +38,8 @@ VALUES (
   'Gestor Inicial',
   'gestor',
   NULL,
-  '$2y$12$fORRY0P3jSx/HMBVGa2QRObaHGj3Y52glDjemdMTouZFfDPZ7SEhq',
+  -- Login inicial: GESTOR  /  Senha inicial: AG2026  (troque no primeiro acesso, em Configuracoes)
+  '$2y$12$3UIgdrJjS3dHfftMYlcRXOwSjuT9.N8I30VVnc0L02.0S9/FxeOGG',
   'GESTOR',
   'ativo',
   NOW(),

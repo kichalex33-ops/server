@@ -201,6 +201,8 @@ body[data-theme="dark"] .topbar{box-shadow:0 10px 26px rgba(0,0,0,.4) !important
 }
 .andrade-switch input:checked + span{background:linear-gradient(135deg,var(--an-gold-2),var(--an-gold))}
 .andrade-switch input:checked + span::after{left:23px}
+.andrade-settings .as-pass{margin-bottom:9px}
+.andrade-settings .as-pass input{width:100%;padding:11px 14px;font-family:var(--an-font);font-size:13.5px;border-radius:12px}
 .andrade-settings footer{display:flex;gap:10px;justify-content:flex-end;margin-top:18px}
 .andrade-settings footer .as-save{
   border:0;border-radius:12px;padding:11px 20px;font-weight:700;font-size:13.5px;cursor:pointer;

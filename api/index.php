@@ -66,6 +66,7 @@ $router->post('/auth/login', fn () => $controller->respond($auth->login($body)))
 $router->post('/auth/refresh', fn () => $controller->respond($auth->refresh((string) ($body['refreshToken'] ?? $body['refresh_token'] ?? ''))));
 $router->post('/auth/logout', fn () => $controller->respond($auth->logout((string) ($body['refreshToken'] ?? $body['refresh_token'] ?? ''), $user)));
 $router->post('/auth/revoke-all', fn () => $controller->respond($auth->revokeAllTokens($user)));
+$router->post('/auth/change-password', fn () => $controller->respond($auth->changePassword($body, $user)));
 $router->get('/auth/sessions', fn () => $controller->respond($auth->sessions($user)));
 $router->post('/auth/sessions/{id}/revoke', fn (string $id) => $controller->respond($auth->revokeSession($id, $user)));
 

@@ -223,6 +223,14 @@
           '<label class="andrade-switch"><input type="checkbox" id="asVoz"><span></span></label></div>' +
         '<div class="as-row"><div><strong>Modo escuro</strong><small>Alternar o tema da plataforma</small></div>' +
           '<label class="andrade-switch"><input type="checkbox" id="asDark"><span></span></label></div>' +
+        '<div class="as-group" style="margin-top:16px;border-top:1px solid var(--an-line);padding-top:16px">' +
+          '<label>Trocar senha</label>' +
+          '<div class="as-pass"><input type="password" id="asCur" placeholder="Senha atual" autocomplete="current-password"></div>' +
+          '<div class="as-pass"><input type="password" id="asNew" placeholder="Nova senha (mín. 6)" autocomplete="new-password"></div>' +
+          '<div class="as-pass"><input type="password" id="asNew2" placeholder="Repetir nova senha" autocomplete="new-password"></div>' +
+          '<button type="button" class="as-cancel" id="asPassBtn" style="width:100%;margin-top:4px">Alterar senha</button>' +
+          '<div class="as-hint" id="asPassMsg" hidden></div>' +
+        "</div>" +
         '<footer><button type="button" class="as-cancel" data-close>Cancelar</button>' +
         '<button type="button" class="as-save" id="asSave">Salvar</button></footer>' +
       "</div>";
@@ -236,6 +244,40 @@
     function close() { overlay.remove(); }
     overlay.addEventListener("click", function (e) { if (e.target === overlay) close(); });
     overlay.querySelectorAll("[data-close]").forEach(function (b) { b.addEventListener("click", close); });
+
+    // Trocar senha (POST /auth/change-password)
+    var passBtn = overlay.querySelector("#asPassBtn");
+    var passMsg = overlay.querySelector("#asPassMsg");
+    function showPassMsg(text, ok) {
+      passMsg.hidden = false;
+      passMsg.textContent = text;
+      passMsg.style.color = ok ? "var(--an-green)" : "var(--an-red)";
+    }
+    passBtn.addEventListener("click", function () {
+      var cur = overlay.querySelector("#asCur").value;
+      var nova = overlay.querySelector("#asNew").value;
+      var nova2 = overlay.querySelector("#asNew2").value;
+      if (!cur || !nova) { showPassMsg("Preencha a senha atual e a nova.", false); return; }
+      if (nova.length < 6) { showPassMsg("A nova senha deve ter pelo menos 6 caracteres.", false); return; }
+      if (nova !== nova2) { showPassMsg("A nova senha e a repetição não conferem.", false); return; }
+      if (!window.apiUrl) { showPassMsg("Serviço indisponível.", false); return; }
+      passBtn.disabled = true; passBtn.textContent = "Alterando…";
+      var request = window.authFetch || window.fetch;
+      request(window.apiUrl("/auth/change-password"), {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Accept: "application/json" },
+        body: JSON.stringify({ senha_atual: cur, senha_nova: nova })
+      }).then(function (r) { return r.json().then(function (b) { return { ok: r.ok, b: b }; }); })
+        .then(function (res) {
+          if (res.ok && res.b && res.b.ok !== false) {
+            showPassMsg("Senha alterada com sucesso.", true);
+            overlay.querySelector("#asCur").value = overlay.querySelector("#asNew").value = overlay.querySelector("#asNew2").value = "";
+          } else {
+            showPassMsg((res.b && (res.b.error || res.b.message)) || "Não foi possível alterar a senha.", false);
+          }
+        }).catch(function () { showPassMsg("Falha de conexão ao alterar a senha.", false); })
+        .finally(function () { passBtn.disabled = false; passBtn.textContent = "Alterar senha"; });
+    });
 
     overlay.querySelector("#asSave").addEventListener("click", function () {
       var next = prefs();

@@ -51,6 +51,44 @@ final class Auth
         return ['usuario' => $publicUser] + $tokens;
     }
 
+    /**
+     * Troca a senha do próprio usuário autenticado (gestor ou operador do painel).
+     * Exige a senha atual correta e uma nova senha com pelo menos 6 caracteres.
+     */
+    public function changePassword(array $body, ?array $user = null): array
+    {
+        $userId = (string) ($user['id'] ?? '');
+        if ($userId === '') {
+            throw new RuntimeException('Sessão inválida. Faça login novamente.');
+        }
+        $atual = (string) ($body['senha_atual'] ?? $body['current'] ?? $body['currentPassword'] ?? '');
+        $nova = (string) ($body['senha_nova'] ?? $body['nova'] ?? $body['newPassword'] ?? '');
+        if ($atual === '' || $nova === '') {
+            throw new RuntimeException('Informe a senha atual e a nova senha.');
+        }
+        if (strlen($nova) < 6) {
+            throw new RuntimeException('A nova senha deve ter pelo menos 6 caracteres.');
+        }
+        if ($nova === $atual) {
+            throw new RuntimeException('A nova senha deve ser diferente da atual.');
+        }
+        $stored = $this->db->fetch('SELECT id, senha_hash FROM usuarios WHERE id = :id LIMIT 1', ['id' => $userId]);
+        if (!$stored) {
+            throw new RuntimeException('Usuário não encontrado.');
+        }
+        if (!password_verify($atual, (string) $stored['senha_hash'])) {
+            $this->audit->failure('auth_change_password_failed', 'usuarios', $userId);
+            throw new RuntimeException('Senha atual incorreta.');
+        }
+        $hash = password_hash($nova, PASSWORD_BCRYPT, ['cost' => 12]);
+        $this->db->execute(
+            'UPDATE usuarios SET senha_hash = :hash, atualizado_em = NOW() WHERE id = :id',
+            ['hash' => $hash, 'id' => $userId]
+        );
+        $this->audit->record('change_password', 'usuarios', $userId, ['id' => $userId]);
+        return ['ok' => true, 'message' => 'Senha alterada com sucesso.'];
+    }
+
     public function refresh(string $refreshToken): array
     {
         $this->ensureAuthHardening();
