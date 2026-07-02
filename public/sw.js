@@ -1,4 +1,4 @@
-const CACHE = 'logisaude-h548-static';
+const CACHE = 'logisaude-andrade2-static';
 const OFFLINE_URL = './offline.html';
 const STATIC_ASSETS = [
   './offline.html', './portal.html', './operador.html', './gestao.html', './manifest.json',
@@ -20,13 +20,34 @@ self.addEventListener('fetch', event => {
   if (req.method !== 'GET') return;
   const url = new URL(req.url);
   if (url.pathname.indexOf('/api/') !== -1) return;
+
+  const isDoc = req.mode === 'navigate';
+  const isCode = url.origin === self.location.origin && /\.(?:js|css|html)(?:$|\?)/.test(url.pathname + url.search);
+
+  // Páginas e código (HTML/JS/CSS): NETWORK-FIRST — sempre pega a versão nova
+  // quando online; usa o cache apenas como fallback offline. Isso evita telas
+  // "presas" na versão antiga depois de um deploy.
+  if (isDoc || isCode) {
+    event.respondWith(
+      fetch(req).then(res => {
+        if (res.ok && url.origin === self.location.origin) {
+          const copy = res.clone();
+          caches.open(CACHE).then(cache => cache.put(req, copy));
+        }
+        return res;
+      }).catch(() => caches.match(req).then(cached => cached || (isDoc ? caches.match(OFFLINE_URL) : undefined)))
+    );
+    return;
+  }
+
+  // Demais recursos (imagens, fontes, etc.): CACHE-FIRST.
   event.respondWith(
     caches.match(req).then(cached => cached || fetch(req).then(res => {
       const copy = res.clone();
       if (res.ok && (url.origin === self.location.origin)) caches.open(CACHE).then(cache => cache.put(req, copy));
       return res;
     }).catch(() => {
-      if (req.mode === 'navigate') return caches.match(OFFLINE_URL);
+      if (isDoc) return caches.match(OFFLINE_URL);
       return caches.match(req);
     }))
   );
