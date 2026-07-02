@@ -1,4 +1,4 @@
-const CACHE_NAME = "painel-logistico-motorista-v2";
+const CACHE_NAME = "painel-logistico-motorista-v3";
 const BASE_PATH = new URL(self.registration.scope).pathname.replace(/\/$/, "");
 const appUrl = (path = "") => `${BASE_PATH}${path.startsWith("/") ? path : `/${path}`}`;
 

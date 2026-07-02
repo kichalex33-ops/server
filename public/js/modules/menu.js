@@ -36,38 +36,32 @@
     alert:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.55"><path d="M12 9v4"/><path d="M12 17h.01"/><path d="M10.3 3.9 2.5 18a2 2 0 0 0 1.7 3h15.6a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"/></svg>',
     logout:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.55"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/></svg>'
   };
+  /* Andrade UX: 1 ícone = 1 tela. Antes havia 6 itens apontando para
+     'monitoring', 4 para 'registrations', 3 para 'drivers' e 2 para 'trips' —
+     telas repetidas no menu. Cada tela agora aparece uma única vez; as áreas
+     internas (abas/âncoras) continuam acessíveis dentro da própria tela. */
   const op=[
-    {section:'Agenda'},
+    {section:'Operação'},
     {label:'Visão Geral',href:'operador.html',screen:'agenda',icon:'home'},
-    {label:'Criar Viagem',href:'operador-criar-viagem.html',screen:'trips',focus:'#nova-viagem',icon:'plus'},
-    {label:'Viagens do Dia',href:'operador-viagens.html',screen:'trips',focus:'#viagens',icon:'calendar'},
-    {label:'Mapa / Rastreamento',href:'operador-mapa.html',screen:'monitoring',focus:'#mapa-operacional',icon:'target'},
-    {label:'Resumo da Operação',href:'operador-resumo.html',screen:'monitoring',focus:'#checklistCount',icon:'chart'},
-    {label:'Alertas em Tempo Real',href:'operador-alertas.html',screen:'monitoring',focus:'#operatorAlerts',icon:'bell'},
-    {label:'Eventos Recentes',href:'operador-eventos.html',screen:'monitoring',focus:'#operatorFeed',icon:'clock'},
-    {label:'Rotas e Atenção',href:'operador-rotas.html',screen:'monitoring',focus:'#operatorRouteDigest',icon:'route'},
-    {label:'Gráficos Operacionais',href:'operador-graficos.html',screen:'monitoring',focus:'#operatorStatusChart',icon:'chart'},
+    {label:'Viagens',href:'operador-viagens.html',screen:'trips',focus:'#viagens',icon:'calendar'},
+    {label:'Monitoramento',href:'operador-mapa.html',screen:'monitoring',focus:'#mapa-operacional',icon:'target'},
     {section:'Cadastros'},
-    {label:'Pacientes e Acompanhantes',href:'operador-pacientes.html',screen:'registrations',focus:'#pacientes-cadastrados',icon:'users'},
-    {label:'Destinos',href:'operador-destinos.html',screen:'registrations',focus:'#destinos-cadastrados',icon:'map'},
-    {label:'Passageiros em Viagens',href:'operador-passageiros.html',screen:'registrations',focus:'#passageiros-cadastrados',icon:'route'},
-    {label:'Cadastros Gerais',href:'operador-cadastros.html',screen:'registrations',focus:'#cadastros',icon:'plus'},
-    {section:'Equipe e Frota'},
-    {label:'Cadastro de Motorista',href:'operador-motoristas.html',screen:'drivers',driverTab:'people',focus:'#motoristas',icon:'user'},
-    {label:'Frota de Veículos',href:'operador-frota.html',screen:'drivers',driverTab:'fleet',focus:'#frota',icon:'car'},
-    {label:'Conectar App / Senha',href:'operador-conectar-app.html',screen:'drivers',driverTab:'qr',focus:'#conectar-app',icon:'phone'},
+    {label:'Cadastros',href:'operador-cadastros.html',screen:'registrations',focus:'#cadastros',icon:'users'},
+    {label:'Motoristas e Frota',href:'operador-motoristas.html',screen:'drivers',driverTab:'people',focus:'#motoristas',icon:'car'},
     {label:'Sincronização',href:'operador-sincronizacao.html',icon:'sync'},
     {section:'Apoio Operacional'},
     {label:'IA Operacional',href:'operador-ia.html',screen:'ai',focus:'#ia-operacional',icon:'spark'},
-    {label:'Sala de Situação',href:(window.appUrl?window.appUrl('/painel-logistico/sala-situacao'):'/painel-logistico/sala-situacao'),icon:'gear'},
+    {label:'Sala de Situação',href:(window.appUrl?window.appUrl('/painel-logistico/sala-situacao'):'/painel-logistico/sala-situacao'),icon:'map'},
     {label:'Ocorrências',href:(window.appUrl?window.appUrl('/painel-logistico/emergencias'):'/painel-logistico/emergencias'),icon:'alert'},
     {label:'App Motorista',href:(window.appUrl?window.appUrl('/public/motorista/'):'/public/motorista/'),icon:'phone'},
+    {label:'Configurações',href:'#',icon:'gear',settings:true},
     {label:'Sair',href:'#',icon:'logout',logout:true}
   ];
   const manager=[
     {section:'Gestão'},
     {label:'Dashboard Gerencial',href:'gestao.html',screen:'dashboard',icon:'home'},
-    {label:'Indicadores',href:'gestao-indicadores.html',screen:'indicadores',icon:'chart'},
+    /* 'Indicadores' removido: exibia exatamente as mesmas views do Dashboard
+       (#dashboard + #gestaoResumoOperacional) — tela repetida no menu. */
     {label:'IA Gerencial',href:'gestao-ia.html',screen:'ia',icon:'spark'},
     {label:'Mapa Gerencial',href:'gestao-mapa.html',screen:'mapa',icon:'map'},
     {label:'Custos Operacionais',href:'gestao-custos.html',screen:'custos',icon:'money'},
@@ -80,20 +74,21 @@
     {label:'Exportações',href:'gestao-exportacoes.html',screen:'exportacoes',icon:'down'},
     {label:'Segurança Operacional',href:'gestao-seguranca.html',screen:'seguranca',icon:'shield'},
     {label:'Privacidade / LGPD',href:'gestao-lgpd.html',screen:'lgpd',icon:'shield'},
-    {section:'Configurações'},
+    {section:'Administração'},
     {label:'Operadores Logísticos',href:'gestao-operadores.html',screen:'operadores',icon:'shield'},
     {label:'Perfis de Acesso',href:'gestao-perfis.html',screen:'perfis',icon:'user'},
     {label:'Parâmetros do Sistema',href:'gestao-parametros.html',screen:'parametros',icon:'gear'},
+    {label:'Configurações',href:'#',icon:'gear',settings:true},
     {label:'Sair',href:'#',icon:'logout',logout:true}
   ];
-  const managerViews={dashboard:['#dashboard','#gestaoResumoOperacional'],indicadores:['#dashboard','#gestaoResumoOperacional'],ia:['#ia-gerencial'],mapa:['#mapa-gerencial'],custos:['#custos'],combustivel:['#combustivel'],frota:['#frota'],motoristas:['#motoristas'],passageiros:['#passageiros'],auditoria:['#auditoria'],relatorios:['#relatorios'],exportacoes:['#exportacoes'],seguranca:['#seguranca','#auditoria'],lgpd:['#lgpd'],operadores:['#operadores-logisticos'],perfis:['#perfis'],parametros:['#parametros']};
+  const managerViews={dashboard:['#dashboard','#gestaoResumoOperacional'],indicadores:['#dashboard','#gestaoResumoOperacional'],ia:['#ia-gerencial'],mapa:['#mapa-gerencial'],custos:['#custos'],combustivel:['#combustivel'],frota:['#frota'],motoristas:['#motoristas'],passageiros:['#passageiros'],auditoria:['#auditoria'],relatorios:['#relatorios'],exportacoes:['#exportacoes'],seguranca:['#seguranca'],lgpd:['#lgpd'],operadores:['#operadores-logisticos'],perfis:['#perfis'],parametros:['#parametros']};
   const managerTitles={dashboard:['Painel do Gestor','Visão estratégica'],indicadores:['Indicadores','KPIs e resumo operacional'],ia:['IA Gerencial','Relatórios e recomendações'],mapa:['Mapa Gerencial','Frota e alertas em tempo real'],custos:['Custos Operacionais','Custos por quilômetro e por paciente'],combustivel:['Combustível','Consumo e abastecimento'],frota:['Frota','Veículos e utilização'],motoristas:['Motoristas','Equipe e desempenho'],passageiros:['Passageiros','Transporte e categorias'],auditoria:['Auditoria','Eventos e rastreabilidade'],relatorios:['Relatórios','Documentos gerenciais'],exportacoes:['Exportações','Arquivos e bases de dados'],seguranca:['Segurança Operacional','Controle e auditoria'],lgpd:['Privacidade / LGPD','Consentimentos e solicitações'],operadores:['Operadores Logísticos','Cadastro de operadores'],perfis:['Perfis de Acesso','Papéis e permissões'],parametros:['Parâmetros do Sistema','Configurações da homologação']};
 
   function ensureH530Assets(){ return; }
   function abs(h){return h==='#'||h.startsWith('/')?h:HOME+h;}
   function file(){return location.pathname.split('/').pop()||'';}
   function pathOf(h){try{return new URL(abs(h),location.origin).pathname.replace(/\/+$/,'');}catch(_){return String(h)}}
-  function navHtml(items){const cur=location.pathname.replace(/\/+$/,'');return items.map(it=>{if(it.section)return '<p>'+it.section+'</p>'; const href=abs(it.href); const active=href!=='#'&&(cur===pathOf(it.href)||cur.endsWith('/'+it.href)); const cls=(active?'active ':'')+(it.logout?'nav-logout':''); const data=it.logout?' data-logout="true"':''; return `<a href="${href}" class="${cls.trim()}"${data}><span class="nav-icon" aria-hidden="true">${icons[it.icon]||icons.home}</span><span class="nav-label">${it.label}</span></a>`;}).join('');}
+  function navHtml(items){const cur=location.pathname.replace(/\/+$/,'');return items.map(it=>{if(it.section)return '<p>'+it.section+'</p>'; const href=abs(it.href); const active=href!=='#'&&(cur===pathOf(it.href)||cur.endsWith('/'+it.href)); const cls=(active?'active ':'')+(it.logout?'nav-logout':''); const data=(it.logout?' data-logout="true"':'')+(it.settings?' data-andrade-settings="1"':''); return `<a href="${href}" class="${cls.trim()}"${data}><span class="nav-icon" aria-hidden="true">${icons[it.icon]||icons.home}</span><span class="nav-label">${it.label}</span></a>`;}).join('');}
   function buildMenu(){const shell=document.querySelector('.dashboard-shell'); const nav=document.querySelector('.side-nav .nav-section'); if(!shell||!nav)return; const isManager=/gestao/.test(location.pathname)||shell.classList.contains('manager-app'); const isOperator=/operador/.test(location.pathname)||shell.classList.contains('operator-app'); if(isManager){shell.classList.add('manager-app'); nav.innerHTML=navHtml(manager); nav.setAttribute('aria-label','Menu gestor');} else if(isOperator){shell.classList.add('operator-app'); nav.innerHTML=navHtml(op); nav.setAttribute('aria-label','Menu operador');}}
   function showOperator(){
     if(!/operador/.test(location.pathname))return;
@@ -110,7 +105,7 @@
   function screenFromGestor(){const m=manager.find(x=>x.href===file()); return queryValue('screen')||document.body?.dataset.managerScreen||m?.screen||'dashboard';}
   function showManager(){if(!/gestao/.test(location.pathname))return; const screen=screenFromGestor(); document.body.dataset.managerScreen=screen; const selectors=managerViews[screen]||managerViews.dashboard; const sections=[...document.querySelectorAll('main.main-dashboard > section')]; const articles=[...document.querySelectorAll('main.main-dashboard > section.manager-content > article')]; sections.forEach(s=>{s.hidden=true; s.classList.remove('active','manager-visible');}); articles.forEach(a=>{a.hidden=true; a.classList.remove('active');}); selectors.forEach(sel=>{const el=document.querySelector(sel); if(!el)return; const parent=el.closest('main.main-dashboard > section'); if(parent){parent.hidden=false; parent.classList.add('active','manager-visible');} el.hidden=false; el.classList.add('active');}); const t=managerTitles[screen]||managerTitles.dashboard; const h=document.querySelector('#managerScreenTitle')||document.querySelector('.top-title h1'); const e=document.querySelector('#managerScreenEyebrow')||document.querySelector('.top-title span'); if(h)h.textContent=t[0]; if(e)e.textContent=t[1]; document.title=t[0]+' | Painel Gestor';}
   function closeMenu(){document.body.classList.remove('operator-menu-open','manager-menu-open');}
-  function bind(){const btn=document.querySelector('.menu-button'); const side=document.querySelector('.side-nav'); if(btn&&!btn.dataset.h525){btn.dataset.h525='1'; btn.addEventListener('click',ev=>{ev.preventDefault(); ev.stopImmediatePropagation(); const shell=document.querySelector('.dashboard-shell'); const isManager=shell?.classList.contains('manager-app')||/gestao/.test(location.pathname); const open=document.body.classList.contains('operator-menu-open')||document.body.classList.contains('manager-menu-open'); closeMenu(); if(!open)document.body.classList.add(isManager?'manager-menu-open':'operator-menu-open');},true);} document.addEventListener('click',ev=>{if(!document.body.classList.contains('operator-menu-open')&&!document.body.classList.contains('manager-menu-open'))return; if(side?.contains(ev.target)||btn?.contains(ev.target))return; closeMenu();},true); document.addEventListener('keydown',ev=>{if(ev.key==='Escape')closeMenu();},true); document.querySelectorAll('[data-logout]').forEach(a=>{if(a.dataset.h525)return; a.dataset.h525='1'; a.addEventListener('click',ev=>{ev.preventDefault(); try{sessionStorage.removeItem('painel-logistico-auth');localStorage.removeItem('painel-logistico-auth');}catch(_){} if(window.clearAuthSession)window.clearAuthSession(); location.href=window.appUrl?window.appUrl('/'):'/';},true);});}
+  function bind(){const btn=document.querySelector('.menu-button'); const side=document.querySelector('.side-nav'); if(btn&&!btn.dataset.h525){btn.dataset.h525='1'; btn.addEventListener('click',ev=>{ev.preventDefault(); ev.stopImmediatePropagation(); const shell=document.querySelector('.dashboard-shell'); const isManager=shell?.classList.contains('manager-app')||/gestao/.test(location.pathname); const open=document.body.classList.contains('operator-menu-open')||document.body.classList.contains('manager-menu-open'); closeMenu(); if(!open)document.body.classList.add(isManager?'manager-menu-open':'operator-menu-open');},true);} document.addEventListener('click',ev=>{if(!document.body.classList.contains('operator-menu-open')&&!document.body.classList.contains('manager-menu-open'))return; if(side?.contains(ev.target)||btn?.contains(ev.target))return; closeMenu();},true); document.addEventListener('keydown',ev=>{if(ev.key==='Escape')closeMenu();},true); document.querySelectorAll('[data-logout]').forEach(a=>{if(a.dataset.h525)return; a.dataset.h525='1'; a.addEventListener('click',ev=>{ev.preventDefault(); try{sessionStorage.removeItem('painel-logistico-auth');localStorage.removeItem('painel-logistico-auth');}catch(_){} if(window.clearAuthSession)window.clearAuthSession(); location.href=window.appUrl?window.appUrl('/'):'/';},true);}); document.querySelectorAll('[data-andrade-settings]').forEach(a=>{if(a.dataset.h525)return; a.dataset.h525='1'; a.addEventListener('click',ev=>{ev.preventDefault(); if(window.App&&window.App.AndradeUI)window.App.AndradeUI.openSettings();},true);});}
   function theme(){
     const saved=localStorage.getItem('painel-logistico-theme')||document.body?.dataset.theme||document.documentElement.dataset.theme||'light';
     const normalized=saved==='dark'?'dark':'light';
