@@ -36,30 +36,22 @@
     alert:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.55"><path d="M12 9v4"/><path d="M12 17h.01"/><path d="M10.3 3.9 2.5 18a2 2 0 0 0 1.7 3h15.6a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"/></svg>',
     logout:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.55"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/></svg>'
   };
+  /* Andrade UX: 1 ícone = 1 tela. Antes havia 6 itens apontando para
+     'monitoring', 4 para 'registrations', 3 para 'drivers' e 2 para 'trips' —
+     telas repetidas no menu. Cada tela agora aparece uma única vez; as áreas
+     internas (abas/âncoras) continuam acessíveis dentro da própria tela. */
   const op=[
-    {section:'Agenda'},
+    {section:'Operação'},
     {label:'Visão Geral',href:'operador.html',screen:'agenda',icon:'home'},
-    {label:'Criar Viagem',href:'operador-criar-viagem.html',screen:'trips',focus:'#nova-viagem',icon:'plus'},
-    {label:'Viagens do Dia',href:'operador-viagens.html',screen:'trips',focus:'#viagens',icon:'calendar'},
-    {label:'Mapa / Rastreamento',href:'operador-mapa.html',screen:'monitoring',focus:'#mapa-operacional',icon:'target'},
-    {label:'Resumo da Operação',href:'operador-resumo.html',screen:'monitoring',focus:'#checklistCount',icon:'chart'},
-    {label:'Alertas em Tempo Real',href:'operador-alertas.html',screen:'monitoring',focus:'#operatorAlerts',icon:'bell'},
-    {label:'Eventos Recentes',href:'operador-eventos.html',screen:'monitoring',focus:'#operatorFeed',icon:'clock'},
-    {label:'Rotas e Atenção',href:'operador-rotas.html',screen:'monitoring',focus:'#operatorRouteDigest',icon:'route'},
-    {label:'Gráficos Operacionais',href:'operador-graficos.html',screen:'monitoring',focus:'#operatorStatusChart',icon:'chart'},
+    {label:'Viagens',href:'operador-viagens.html',screen:'trips',focus:'#viagens',icon:'calendar'},
+    {label:'Monitoramento',href:'operador-mapa.html',screen:'monitoring',focus:'#mapa-operacional',icon:'target'},
     {section:'Cadastros'},
-    {label:'Pacientes e Acompanhantes',href:'operador-pacientes.html',screen:'registrations',focus:'#pacientes-cadastrados',icon:'users'},
-    {label:'Destinos',href:'operador-destinos.html',screen:'registrations',focus:'#destinos-cadastrados',icon:'map'},
-    {label:'Passageiros em Viagens',href:'operador-passageiros.html',screen:'registrations',focus:'#passageiros-cadastrados',icon:'route'},
-    {label:'Cadastros Gerais',href:'operador-cadastros.html',screen:'registrations',focus:'#cadastros',icon:'plus'},
-    {section:'Equipe e Frota'},
-    {label:'Cadastro de Motorista',href:'operador-motoristas.html',screen:'drivers',driverTab:'people',focus:'#motoristas',icon:'user'},
-    {label:'Frota de Veículos',href:'operador-frota.html',screen:'drivers',driverTab:'fleet',focus:'#frota',icon:'car'},
-    {label:'Conectar App / Senha',href:'operador-conectar-app.html',screen:'drivers',driverTab:'qr',focus:'#conectar-app',icon:'phone'},
+    {label:'Cadastros',href:'operador-cadastros.html',screen:'registrations',focus:'#cadastros',icon:'users'},
+    {label:'Motoristas e Frota',href:'operador-motoristas.html',screen:'drivers',driverTab:'people',focus:'#motoristas',icon:'car'},
     {label:'Sincronização',href:'operador-sincronizacao.html',icon:'sync'},
     {section:'Apoio Operacional'},
     {label:'IA Operacional',href:'operador-ia.html',screen:'ai',focus:'#ia-operacional',icon:'spark'},
-    {label:'Sala de Situação',href:(window.appUrl?window.appUrl('/painel-logistico/sala-situacao'):'/painel-logistico/sala-situacao'),icon:'gear'},
+    {label:'Sala de Situação',href:(window.appUrl?window.appUrl('/painel-logistico/sala-situacao'):'/painel-logistico/sala-situacao'),icon:'map'},
     {label:'Ocorrências',href:(window.appUrl?window.appUrl('/painel-logistico/emergencias'):'/painel-logistico/emergencias'),icon:'alert'},
     {label:'App Motorista',href:(window.appUrl?window.appUrl('/public/motorista/'):'/public/motorista/'),icon:'phone'},
     {label:'Sair',href:'#',icon:'logout',logout:true}
@@ -67,7 +59,8 @@
   const manager=[
     {section:'Gestão'},
     {label:'Dashboard Gerencial',href:'gestao.html',screen:'dashboard',icon:'home'},
-    {label:'Indicadores',href:'gestao-indicadores.html',screen:'indicadores',icon:'chart'},
+    /* 'Indicadores' removido: exibia exatamente as mesmas views do Dashboard
+       (#dashboard + #gestaoResumoOperacional) — tela repetida no menu. */
     {label:'IA Gerencial',href:'gestao-ia.html',screen:'ia',icon:'spark'},
     {label:'Mapa Gerencial',href:'gestao-mapa.html',screen:'mapa',icon:'map'},
     {label:'Custos Operacionais',href:'gestao-custos.html',screen:'custos',icon:'money'},
@@ -86,7 +79,7 @@
     {label:'Parâmetros do Sistema',href:'gestao-parametros.html',screen:'parametros',icon:'gear'},
     {label:'Sair',href:'#',icon:'logout',logout:true}
   ];
-  const managerViews={dashboard:['#dashboard','#gestaoResumoOperacional'],indicadores:['#dashboard','#gestaoResumoOperacional'],ia:['#ia-gerencial'],mapa:['#mapa-gerencial'],custos:['#custos'],combustivel:['#combustivel'],frota:['#frota'],motoristas:['#motoristas'],passageiros:['#passageiros'],auditoria:['#auditoria'],relatorios:['#relatorios'],exportacoes:['#exportacoes'],seguranca:['#seguranca','#auditoria'],lgpd:['#lgpd'],operadores:['#operadores-logisticos'],perfis:['#perfis'],parametros:['#parametros']};
+  const managerViews={dashboard:['#dashboard','#gestaoResumoOperacional'],indicadores:['#dashboard','#gestaoResumoOperacional'],ia:['#ia-gerencial'],mapa:['#mapa-gerencial'],custos:['#custos'],combustivel:['#combustivel'],frota:['#frota'],motoristas:['#motoristas'],passageiros:['#passageiros'],auditoria:['#auditoria'],relatorios:['#relatorios'],exportacoes:['#exportacoes'],seguranca:['#seguranca'],lgpd:['#lgpd'],operadores:['#operadores-logisticos'],perfis:['#perfis'],parametros:['#parametros']};
   const managerTitles={dashboard:['Painel do Gestor','Visão estratégica'],indicadores:['Indicadores','KPIs e resumo operacional'],ia:['IA Gerencial','Relatórios e recomendações'],mapa:['Mapa Gerencial','Frota e alertas em tempo real'],custos:['Custos Operacionais','Custos por quilômetro e por paciente'],combustivel:['Combustível','Consumo e abastecimento'],frota:['Frota','Veículos e utilização'],motoristas:['Motoristas','Equipe e desempenho'],passageiros:['Passageiros','Transporte e categorias'],auditoria:['Auditoria','Eventos e rastreabilidade'],relatorios:['Relatórios','Documentos gerenciais'],exportacoes:['Exportações','Arquivos e bases de dados'],seguranca:['Segurança Operacional','Controle e auditoria'],lgpd:['Privacidade / LGPD','Consentimentos e solicitações'],operadores:['Operadores Logísticos','Cadastro de operadores'],perfis:['Perfis de Acesso','Papéis e permissões'],parametros:['Parâmetros do Sistema','Configurações da homologação']};
 
   function ensureH530Assets(){ return; }

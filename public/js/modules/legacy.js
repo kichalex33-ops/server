@@ -91,6 +91,8 @@
       sequence.push(publicScript("assets/js/h539-gestao-final.js", true));
     }
     sequence.push(publicScript("assets/js/h540-interface-polish.js", true));
+    // Experiência Andrade (menu retrátil, boas-vindas com clima/voz, Configurações)
+    if (ctx.isGestao || ctx.isOperador) sequence.push(publicScript("assets/js/andrade-ui.js", true));
 
     await load(sequence);
   }
